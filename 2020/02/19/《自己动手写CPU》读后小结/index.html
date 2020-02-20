@@ -19,6 +19,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
 
 
 <script id="hexo-configurations">
@@ -55,15 +57,15 @@
   };
 </script>
 
-  <meta name="description" content="本书的前十一章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。 当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网">
+  <meta name="description" content="本书的前11章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。 当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《自己动手写CPU》读后小结">
 <meta property="og:url" content="http://yoursite.com/2020/02/19/%E3%80%8A%E8%87%AA%E5%B7%B1%E5%8A%A8%E6%89%8B%E5%86%99CPU%E3%80%8B%E8%AF%BB%E5%90%8E%E5%B0%8F%E7%BB%93/index.html">
 <meta property="og:site_name" content="DOA&#39;s Blog">
-<meta property="og:description" content="本书的前十一章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。 当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网">
+<meta property="og:description" content="本书的前11章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。 当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-02-19T14:31:33.000Z">
-<meta property="article:modified_time" content="2020-02-19T14:42:08.153Z">
+<meta property="article:modified_time" content="2020-02-20T04:21:23.367Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="CPU">
 <meta property="article:tag" content="计算机组成">
@@ -291,6 +293,7 @@
         </h1>
 
         <div class="post-meta">
+          
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
@@ -301,11 +304,19 @@
                 
               
 
-              <time title="Created: 2020-02-19 22:31:33 / Modified: 22:42:08" itemprop="dateCreated datePublished" datetime="2020-02-19T22:31:33+08:00">2020-02-19</time>
+              <time title="Created: 2020-02-19 22:31:33" itemprop="dateCreated datePublished" datetime="2020-02-19T22:31:33+08:00">2020-02-19</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-02-20 12:21:23" itemprop="dateModified" datetime="2020-02-20T12:21:23+08:00">2020-02-20</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -345,9 +356,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本书的前十一章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。</p>
+        <p>本书的前11章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。</p>
 <p>当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网上推荐的书有《自己动手写CPU》和《CPU自制入门》，比较了一下感觉前者更适合我，便开始着手看了。</p>
-<p>看完这本书的主要感想是，原来<strong>CPU并没有那么神秘！</strong></p>
+<p>看完这本书的首要感想是，原来<strong>CPU并没有那么神秘！</strong></p>
 <a id="more"></a>
 
 <p>在这里我想讲一下两方面的收获：</p>
@@ -356,7 +367,7 @@
 <li>计算机组成与体系结构</li>
 </ol>
 <p><strong>首先说一说我之前对CPU的一些好奇和疑惑：</strong></p>
-<p>以前的我只知道CPU是按照时钟的频率的工作的，但是不知道为什s么要由时钟来控制，以及如何控制，同时也会想，既然是按照时钟来工作，那为什么不“无限制”提高频率以加快CPU的处理速度呢？</p>
+<p>以前的我只知道CPU是按照时钟的频率的工作的，但是不知道为什么要由时钟来控制，以及如何控制，同时也会想，既然是按照时钟来工作，那为什么不“无限制”提高频率以加快CPU的处理速度呢？</p>
 <p>看完本书后，我知道了这些问题的答案。</p>
 <p>首先，为什么要有时钟？是为了保证CPU内部的正常秩序，“到了什么时间就做什么事”，没有一个良好的秩序，一个团队的效率是不可能高的，甚至乱作一团，导致不能工作。</p>
 <p>那么，时钟是如何控制（组织）CPU内部的工作的呢？时钟会产生一个周期信号，我们可以规定在信号的每一个上升沿or下降沿开始执行一个操作，CPU中的不同模块能同时进行操作，但CPU中的一个模块在同一个时刻只能做一件事，这样就能保证各个模块之间不冲突，各个功能正常执行。</p>
@@ -378,13 +389,15 @@
 <p>对于不同层次的程序员来说，他们看到的计算机的属性也不相同。例如，对现在的许多高级语言程序员来说，他们看到的计算机的属性大多数是操作系统（OS）提供的，而对于OS程序员来说，他们看到的体系结构就是ISA（或许还有其他我目前不知道的…）提供的。</p>
 <p>至于计算机组成，就是由五个经典的部分组成：输入、输出、存储器、数据通路（运算器）、控制器。后面两个部分组成CPU，通过本书的前11章，我们也实现了这两个部分。</p>
 <p>首先，任何一个ISA都会提供给底层程序员几个类别的指令，本书实现的OpenMIPS就包括了：逻辑指令、位移指令、（数据）移动指令（寄存器之间相互移动）、算术指令、转移指令、加载存储指令（寄存器与ram和rom之间移动）、协处理器访问指令、异常相关指令。ISA所提供的指令类别需要保证通过不同指令的组合就能完成任何程序的任何逻辑，现在同一个类（RISC或CISC）中的不同ISA的指令类别应该大同小异了。</p>
-<p>具体的指令设计可是一个大学问，这需要考虑到指令有哪些格式，什么样功能的指令是必要的，什么是冗余的，如何设计执行过程的方法才能提升指令的执行效率。当然，这些都是那些专门设计指令集的大佬们干的事，本书实现OpenMIPS仅仅是把现有的开源指令集拿来实现（并且还是简化版的）。</p>
+<p>具体的指令设计可是一个大学问，这需要考虑到指令有哪些格式，什么样功能的指令是必要的，什么是冗余的，如何设计执行过程的方法才能提升指令的执行效率。当然，这些都是那些专门设计指令集的大佬们干的事，本书实现的OpenMIPS仅仅是把现有的开源指令集拿来实现（并且还是简化版的）。</p>
 <p>不同的指令执行所需要的时间也不一定一样，在OpenMIPS中，大部分指令执行阶段都只需要一个时钟周期，少部分需要两到三个，最花时间的是除法指令，它需要至少32个时钟周期，这是由除法本身的算法（试商法）决定的。</p>
 <p>实现同一个功能可以由多种不同的指令组合完成，如何提高程序的执行效率，也就可以通过寻找所需最短时间的指令组合来实现，这个过程是由编译器实现的。实现这个我想并不容易，否则编译原理也就不会是CS系学生的噩梦了（顺便膜拜一波写编译器的大佬们）。</p>
 <blockquote>
 <p>在《计算机组成与体系结构（性能设计）》中，还讲到过指令发射策略，本质上是一种改变指令执行顺序来提高执行效率的过程（前提是程序逻辑不变），不过这里我看地有些似懂非懂……也就不详细说了。</p>
 </blockquote>
-<p>暂时先写到这吧。。。还有总线部分有待补充</p>
+<p>为了方便CPU与外部设备的交互，我们采用了总线的结构，具体原因在十二章的笔记中有说过，进一步总结就是，为了减少不同功能模块之间的耦合，因此通过一个中间模块（在这里就是总线）来使需要连接的模块的接口标准化，使模块之间的互联逻辑变得清晰，易于维护修改。</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>总的来说，这本书所实现的CPU很简单，内容也不是很多（就是代码多了点），与当今时代个人PC机的CPU差别挺大的，有许多高级设计并没有使用到（这也是为了降低难度），例如：超标量流水线、指令发射、指令预测等等。对这些感兴趣的话可以看看上面提到的那本黑皮书，不过说实话。。。中文翻译得确实不是很流畅，有些地方不慢慢地多读多想不易理解（当然，这也与知识本身的难度有关）。</p>
+<p>话说回来，看这本书的收获也挺多，可以算是入了CPU和计算机硬件的门，我想，如果是先看完本书之后再去看那本黑皮书或者《计算机组成与设计（硬件/软件接口）》（该书正好就是用MIPS指令集来做例子的）也是极好的，能帮助理解其中的许多概念（流水线、延迟槽、相关性问题、异常处理等等），也不会像我当初上课时那样摸不着头脑了。</p>
 
     </div>
 
@@ -470,7 +483,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU的结构及设计"><span class="nav-text">CPU的结构及设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算机组成与体系结构"><span class="nav-text">计算机组成与体系结构</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU的结构及设计"><span class="nav-text">CPU的结构及设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算机组成与体系结构"><span class="nav-text">计算机组成与体系结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-text">最后</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
