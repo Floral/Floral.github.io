@@ -98,4 +98,35 @@
 </ol>
 ]]></content>
   </entry>
+  <entry>
+    <title>浅谈继承中函数有无virtual的影响</title>
+    <url>/2020/01/28/%E5%85%B3%E4%BA%8E%E7%BB%A7%E6%89%BF%E4%B8%ADvirtual%E5%BD%B1%E5%93%8D%E7%9A%84%E8%AE%A8%E8%AE%BA/</url>
+    <content><![CDATA[<p>本文讨论了一下C++的继承关系中函数加或不加virtual的影响，总结了一下本人对动态绑定、静态绑定的理解。</p>
+<a id="more"></a>
+
+<p>首先直接上一段实验代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">     <span class="comment">/* virtual */</span> <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm A!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm B!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    B b;</span><br><span class="line">    A* p = &amp;b;</span><br><span class="line">    p-&gt;func();    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// a.func();</span></span><br><span class="line">    <span class="comment">// b.func();</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行的输出结果是：I’m A!。如果p的声明类型是B*，那么输出结果是：I’m B!。这里基类A的func方法并没有加virtual关键字。如果我们加上virtual，那么结果就会变成，无论p的声明是A*还是B*，输出结果都是：I’m B!。</p>
+<p>但是如果我们在这里直接通过对象本身a或b调用他们的func方法，那么结果就是调用它们各自类型中定义的func，也就是a.func()输出“I’m A!”。b.func()输出“I’m B!”。</p>
+<p>于是我们可以总结一下，virtual只是对于<strong>通过指针</strong>（<strong>引用</strong>也行，大家可以自行实验）<strong>来调用父类子类的方法</strong>有影响。在父类的func前加上virtual的情况下，通过指针（或引用）调用该方法，实际调用的是该指针所指向的实际的类中定义的方法。这也就是<strong>动态绑定</strong>的意思，也就是在运行的过程中动态确定指针（或引用）所指向的实际对象是什么（是父类还是子类）并调用实际对象的方法。相对的，<strong>静态绑定</strong>就是仅仅根据声明的指针或引用的类型来决定调用的方法，即静态绑定到了<strong>声明对象的类型</strong>上。</p>
+<p>因此，无论父类的方法加不加virtual，<strong>通过对象本身调用</strong>重载过的方法都是对象本身定义的方法。</p>
+<p>至于为什么动态绑定和静态绑定只是针对使用指针和引用的情况，个人觉得这是因为指针/引用在实现多态、模板的时候具有很大的用处。</p>
+<p>这里有一条建议，来自《Effective C++ 》：</p>
+<blockquote>
+<p>绝对不要重新定义继承而来的非虚(non-virtual)函数</p>
+</blockquote>
+<p>也就是说，本次实验的原始代码中B类重载A的非虚函数func的做法是不好的，这里仅仅是为了实验。具体原因嘛，由于篇幅限制，就不展开了，请各位自行搜索。</p>
+<p><strong>PS:</strong> 这里所说的静态绑定、动态绑定的含义仅仅是针对程序运行的结果来说的（主要是便于理解其实际影响），这两个概念的背后其实还有一些更深入的知识点，例如：静态类型、动态类型、编译期、运行期。想要了解的话也请各位自行搜索。</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>继承</tag>
+        <tag>动态/静态绑定</tag>
+        <tag>virtual关键字</tag>
+      </tags>
+  </entry>
 </search>
