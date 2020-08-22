@@ -1,6 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Cache映射机制与逻辑实现</title>
+    <url>/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>Cache是现代CPU中不可缺少的一部分，大大提高了CPU访问数据的速度。</p>
+<p>Cache与主存（RAM）的映射关系分为三类：</p>
+<ul>
+<li>直接相联</li>
+<li>全相联</li>
+<li>组相联</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="直接相联映射"><a href="#直接相联映射" class="headerlink" title="直接相联映射"></a>直接相联映射</h2><p>直接相联就是主存中的一块（行）只能映射到Cache中固定的某一块（行）。</p>
+<blockquote>
+<p>一块（Block）中包含多个字。</p>
+</blockquote>
+<p>同时，主存会根据Cache的块的数量来分区，假设Cache有n块，那么主存中每n块就构成一个区。于是主存地址可以分为3个部分：<strong>区地址、行地址、字地址</strong>，如下图：</p>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822113513832.png" alt="image-20200822113513832" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<p>Cache的存储器中，存储一行数据的同时，还会存储区地址以及一些标志位（有效位、一致性Dirty位等），以供在查找数据的时候的判断。</p>
+<p>查找的流程如下：</p>
+<ol>
+<li>根据行地址查找Cache中对应的行</li>
+<li>根据区地址（标记位TAG）以及一些标志位（有效位 ）来判断是否与主存中所要查找的区对应</li>
+<li>如果TAG一致，则输出该行的数据内容，同时根据字地址来选择最终字的输出</li>
+<li>如果TAG不一致，则从主存中载入到相应地址的内容到Cache中，再由Cache传输给CPU</li>
+</ol>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822111450390.png" alt="image-20200822111450390" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<blockquote>
+<p>这种方法的命中率较低，因为主存中的块只能对应一个Cache块。一个块可能刚进入Cache，就被另一个块给覆盖了。</p>
+<p>不过其优点是硬件逻辑简单，成本较低。</p>
+</blockquote>
+<h2 id="全相联映射"><a href="#全相联映射" class="headerlink" title="全相联映射"></a>全相联映射</h2><p>全相联就是主存中的任意一块（行）可以放在Cache中的任意一块（行）中，没有分区的概念。于是贮存地址就只分为两部分：<strong>主存块地址（标记部分）、字地址</strong>。</p>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822185746130.png" alt="image-20200822185746130" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<p>由于主存中一个块对应的Cache块地址不确定，所以需要其他的结构来辅助确定，即查找表。查找表的行数与Cache的行数相同，每一行存放着一个主存块地址，一个对应的Cache块地址，以及一些标志位。值得注意的是，查找表（CAM）与Cache是分开存放的，而直接相联中的区地址、标记位等与Cache数据则是一起存放的。</p>
+<p>查找流程如下：</p>
+<ol>
+<li>根据主存块地址在CAM中并行查找Cache中是否存在该块地址</li>
+<li>若存在，则根据该行对应的Cache块地址直接访问Cache中的相应行，然后根据字地址选择输出的字</li>
+<li>若不存在，则从RAM中载入相应地址的块到一个空的Cache行中，然后输出</li>
+</ol>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822203942775.png" alt="image-20200822203942775" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<blockquote>
+<p>这种方法的命中率比直接相联要高不少，不过其缺点就是硬件开销较大。</p>
+</blockquote>
+<h2 id="组相联映射"><a href="#组相联映射" class="headerlink" title="组相联映射"></a>组相联映射</h2><p>组相联映射结合了直接相联和全相联的特点，首先将Cache分为n组，一组中有k行。主存中也是按照每n行进行分割（类比直接相联的分区），每一行只能进入到相应的Cache组中，但是可以是组中的任意一行（类比全相联）。</p>
+<blockquote>
+<p>每一组中的行数即路数，有k行则被称为k路组相联</p>
+</blockquote>
+<p>于是主存的地址就被分为3个部分：<strong>标记字段（区地址）、组地址、字地址。</strong></p>
+<p>Cache中一行的组成与直接相联映射类似。</p>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822210623668.png" alt="image-20200822210623668" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<p>查找的流程如下：</p>
+<ol>
+<li>首先根据组地址来确定所要查找的组，相应的组信号（S0-3）</li>
+<li>根据标记字段TAG、有效位确定所要查找的行是否存在于该组中，并输出相应信号（K0、K1…）</li>
+<li>根据（K0、K1…）以及组信号（S0-3）确定Cache中具体的某一行</li>
+<li>根据字地址选择最终输出的字</li>
+<li>若在第2步中，不存在所要查找的行，则从主存中载入，然后再进行步骤3</li>
+</ol>
+<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822211010019.png" alt="image-20200822211010019" style="zoom:33%;">
+
+<center>来源于华中科技大学课件</center>
+
+<blockquote>
+<p>由组相联的映射机制可知，它结合了直接相联和全相联的特点，是一个比较折中的方案，命中率相比直接相联要高，但是硬件成本也要高一些，相比全相联，其硬件成本较低，但是命中率也要低一些。</p>
+</blockquote>
+<p>由此，我们可以得到一个真理——这个世界上没有什么事物是各个方面都理想的，想要在某方面有所提升，就要付出相应的代价！</p>
+<p>同理，想成为大佬就要付出努力！</p>
+<blockquote>
+<p>参考资料：</p>
+<p>《计算机硬件系统设计》.华中科技大学计算机学院</p>
+<p>链接：<a href="https://www.icourse163.org/course/HUST-1205809816" target="_blank" rel="noopener">https://www.icourse163.org/course/HUST-1205809816</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>计算机组成与体系结构</category>
+      </categories>
+      <tags>
+        <tag>Cache</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>《自己动手写CPU》读后小结</title>
     <url>/2020/02/19/%E3%80%8A%E8%87%AA%E5%B7%B1%E5%8A%A8%E6%89%8B%E5%86%99CPU%E3%80%8B%E8%AF%BB%E5%90%8E%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<p>本书的前11章是教学版的OpenMIPS CPU设计过程，后面的章节是实践版的设计和实物的实验。对于本书的名字《自己动手写CPU》来说，我认为前12章就已经完成了任务。后面部分的实验需要DE2开发板的支持，所以暂时做不了。</p>
@@ -100,7 +196,7 @@
   </entry>
   <entry>
     <title>浅谈继承中函数有无virtual的影响</title>
-    <url>/2020/01/28/%E5%85%B3%E4%BA%8E%E7%BB%A7%E6%89%BF%E4%B8%ADvirtual%E5%BD%B1%E5%93%8D%E7%9A%84%E8%AE%A8%E8%AE%BA/</url>
+    <url>/2020/01/28/%E6%B5%85%E8%B0%88%E7%BB%A7%E6%89%BF%E4%B8%AD%E5%87%BD%E6%95%B0%E6%9C%89%E6%97%A0virtual%E7%9A%84%E5%BD%B1%E5%93%8D/</url>
     <content><![CDATA[<p>本文讨论了一下C++的继承关系中函数加或不加virtual的影响，总结了一下本人对动态绑定、静态绑定的理解。</p>
 <a id="more"></a>
 
@@ -120,8 +216,8 @@
 <p><strong>PS:</strong> 这里所说的静态绑定、动态绑定的含义仅仅是针对程序运行的结果来说的（主要是便于理解其实际影响），这两个概念的背后其实还有一些更深入的知识点，例如：静态类型、动态类型、编译期、运行期。想要了解的话也请各位自行搜索。</p>
 ]]></content>
       <categories>
-        <category>C++</category>
         <category>随笔</category>
+        <category>C++</category>
       </categories>
       <tags>
         <tag>继承</tag>
