@@ -392,14 +392,12 @@
 <li>组相联</li>
 </ul>
 <a id="more"></a>
-
 <h2 id="直接相联映射"><a href="#直接相联映射" class="headerlink" title="直接相联映射"></a>直接相联映射</h2><p>直接相联就是主存中的一块（行）只能映射到Cache中固定的某一块（行）。</p>
 <blockquote>
 <p>一块（Block）中包含多个字。</p>
 </blockquote>
 <p>同时，主存会根据Cache的块的数量来分区，假设Cache有n块，那么主存中每n块就构成一个区。于是主存地址可以分为3个部分：<strong>区地址、行地址、字地址</strong>，如下图：</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822113513832.png" alt="image-20200822113513832" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822113513832.png" alt="image-20200822113513832" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>Cache的存储器中，存储一行数据的同时，还会存储区地址以及一些标志位（有效位、一致性Dirty位等），以供在查找数据的时候的判断。</p>
@@ -410,8 +408,7 @@
 <li>如果TAG一致，则输出该行的数据内容，同时根据字地址来选择最终字的输出</li>
 <li>如果TAG不一致，则从主存中载入到相应地址的内容到Cache中，再由Cache传输给CPU</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822111450390.png" alt="image-20200822111450390" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822111450390.png" alt="image-20200822111450390" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -419,8 +416,7 @@
 <p>不过其优点是硬件逻辑简单，成本较低。</p>
 </blockquote>
 <h2 id="全相联映射"><a href="#全相联映射" class="headerlink" title="全相联映射"></a>全相联映射</h2><p>全相联就是主存中的任意一块（行）可以放在Cache中的任意一块（行）中，没有分区的概念。于是贮存地址就只分为两部分：<strong>主存块地址（标记部分）、字地址</strong>。</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822185746130.png" alt="image-20200822185746130" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822185746130.png" alt="image-20200822185746130" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>由于主存中一个块对应的Cache块地址不确定，所以需要其他的结构来辅助确定，即查找表。查找表的行数与Cache的行数相同，每一行存放着一个主存块地址，一个对应的Cache块地址，以及一些标志位。值得注意的是，查找表（CAM）与Cache是分开存放的，而直接相联中的区地址、标记位等与Cache数据则是一起存放的。</p>
@@ -430,8 +426,7 @@
 <li>若存在，则根据该行对应的Cache块地址直接访问Cache中的相应行，然后根据字地址选择输出的字</li>
 <li>若不存在，则从RAM中载入相应地址的块到一个空的Cache行中，然后输出</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822203942775.png" alt="image-20200822203942775" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822203942775.png" alt="image-20200822203942775" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -443,8 +438,7 @@
 </blockquote>
 <p>于是主存的地址就被分为3个部分：<strong>标记字段（区地址）、组地址、字地址。</strong></p>
 <p>Cache中一行的组成与直接相联映射类似。</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822210623668.png" alt="image-20200822210623668" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822210623668.png" alt="image-20200822210623668" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>查找的流程如下：</p>
@@ -455,8 +449,7 @@
 <li>根据字地址选择最终输出的字</li>
 <li>若在第2步中，不存在所要查找的行，则从主存中载入，然后再进行步骤3</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822211010019.png" alt="image-20200822211010019" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822211010019.png" alt="image-20200822211010019" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -505,6 +498,10 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/" rel="prev" title="《线性代数的本质》笔记">
+                  《线性代数的本质》笔记 <i class="fa fa-chevron-right"></i>
+                </a>
               
             </div>
           </div>
@@ -572,7 +569,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -585,7 +582,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -598,7 +595,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>

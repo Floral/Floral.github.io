@@ -1,6 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>《线性代数的本质》笔记</title>
+    <url>/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/</url>
+    <content><![CDATA[<blockquote>
+<p>课程地址：<a href="https://www.bilibili.com/video/BV1ys411472E" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1ys411472E</a></p>
+</blockquote>
+<h2 id="01-什么是向量"><a href="#01-什么是向量" class="headerlink" title="01 什么是向量"></a>01 什么是向量</h2><p>向量在不同专业的人眼里有不同的看法：</p>
+<p>在物理学的学生眼里，向量是一个空间中的箭头，决定它的是这个箭头的长短和方向，它的位置可以是任意的。</p>
+<p>在计算机的学生眼里，向量是一个“列表”（即向量的代数表达），该列表可以有不同的行和列，同时每一个位置的值对应的物理意义都是一定的，不能交换位置。</p>
+<p>在数学家眼里，向量可以是以上两种中任何一种表达（也可以是其他很多事物的表达），这两者其实是相互关联的。</p>
+<a id="more"></a>
+<p>后面的讲解都是把向量看作一个坐标系中，以原点为起点的箭头，这个箭头与一对数（一个“列表”，向量坐标）唯一对应。通常是竖着写的向量，在二维坐标系中，列表（向量）中的第一个数代表向量箭头终点在x轴方向上的偏移，第二个数代表向量箭头终点在y轴方向上的偏移。</p>
+<p>这对数的值同时也是该向量箭头终点的坐标。</p>
+<p>向量有两个重要的运算：<strong>向量加法</strong>和<strong>向量数乘</strong>。后续的内容 基本上都是围绕这两种运算展开的。</p>
+<p>向量加法就是把第二个向量的起点移动到第一个向量的终点，然后由第一个向量的起点（原点）指向第二个向量的终点，构成一个新的向量，代数的表达就是向量对应位置的数值直接相加。</p>
+<p>向量的数乘在几何方面就是对箭头长度的缩放（scaling），负号代表方向取反。在代数方面就是乘数（标量scalars）与向量对应位置的数值相乘的结果。</p>
+<h2 id="02-线性组合、张成的空间与基向量"><a href="#02-线性组合、张成的空间与基向量" class="headerlink" title="02 线性组合、张成的空间与基向量"></a>02 线性组合、张成的空间与基向量</h2><p>首先谈谈线性组合，什么是线性组合，这里我们定义<strong>两个向量数乘后的向量和即为线性组合</strong>，形如 $ a\vec i+b\vec j$的式子（三维形式则再加一个向量$\vec k$，更高维的以此类推）。然后我们看一个向量的代数表达，这时我们可以将两个数的值（x和y）看作两个向量（x轴方向上的单位向量$\vec i$和y轴方向上的单位向量$\vec j$）的缩放（数乘的值），那么这个向量就可以被表示为$ x\vec i+y\vec j$。</p>
+<p>我们将可以将$\vec i$和$\vec j$称为一对<strong>基向量</strong>。二维平面中的任意一个向量都能表示为这两个<strong>基向量的线性组合</strong>。同时我们将能够由基向量的线性组合而得到的<strong>向量的集合</strong>称为这一对向量所<strong>张成的空间（span）</strong>（或者说是向量空间？）。</p>
+<p>同理，三维空间中也存在三个基向量，它们的span就是整个三维空间。</p>
+<p>同时，一个平面的基向量并不是唯一的一对，它可以有多对不同的组合（只要他们不共线/至少一个为零向量）。因为共线/包含零向量的一对向量他们的线性组合并不是整个平面，而是一条线或者一个点。</p>
+<p>在学线性代数的时候老师讲过一个概念：线性相关和线性无关。当一组向量中，存在某一个向量能被其他向量<strong>线性表示</strong>（即能被表示为其他向量的线性组合），那么我们就说这一组向量<strong>线性相关</strong>。换一种说法就是这个向量对这一组其他向量张成的空间没有任何贡献，它是多余的，因为它能被分解为其他的向量的线性组合。上一段中所说的共线/包含零向量的情况就是线性相关的情况。反之，若一组向量互相都不能线性表示，则成为<strong>线性无关</strong>（向量组）。</p>
+<p>再回到开头 ，什么样的向量可以称为基向量呢？在了解线性相关和线性无关后，我们可以说，<strong>一个向量空间的一组基是张成该空间的一组线性无关的向量集。</strong></p>
+<h2 id="03-矩阵与线性变换"><a href="#03-矩阵与线性变换" class="headerlink" title="03 矩阵与线性变换"></a>03 矩阵与线性变换</h2><p>什么是变换，就是给定一个输入，它会给出一个变换后的输出，这与函数的定义几乎一致。</p>
+<p>线性变换的要求：</p>
+<ul>
+<li>所有的直线变换后仍是直线</li>
+<li>原点保持不变</li>
+</ul>
+<p>正是由于这两个特性，当一个向量以及能表示它的基向量<strong>都经历变换</strong>这个过程之后，它们之间的<strong>线性关系保持不变</strong>，即该向量被基向量表示的<strong>数乘系数不变</strong>。于是，我们只需要知道一个空间的一组基向量变换后的向量值，就能求得该空间中其他任一向量变换后的值。</p>
+<p>我们将一组<strong>变换后的基向量</strong>（2×1）按列组合起来（以二维平面中的基向量为例），即构成了一个2×2的<strong>矩阵</strong>。这个矩阵就可以成为描述这个变换的工具，我们将变换的过程表示为该矩阵与一个特定向量的乘积（矩阵左乘向量），得到的结果就是该向量变换后的坐标。如下图：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200926163609382.png" alt="image-20200926163609382" style="zoom: 50%;"></p>
+<p>所以，<strong>任何一个矩阵都可以看做一个特定的线性变换，而矩阵与向量的乘积，则表示线性变换的过程，其结果表示向量变换后的结果。</strong></p>
+<blockquote>
+<p>PS：这里向量变换前后的坐标值都是相对于同一个坐标系来讲的，只有这样两个坐标的比较才能有意义。一般讨论中都是相对原坐标系（笛卡尔坐标系）来说的。</p>
+</blockquote>
+<h2 id="04-矩阵乘法与线性变换复合"><a href="#04-矩阵乘法与线性变换复合" class="headerlink" title="04 矩阵乘法与线性变换复合"></a>04 矩阵乘法与线性变换复合</h2><p>由上一节可知，一个矩阵对应一种线性变换，一个矩阵与一个向量相乘则对应对该向量进行一种线性变换，结果得到变换后的向量。如果再次用另一个矩阵与该向量相乘，则又会得到原向量进行第二次变换后的向量。如果我们不写中间第一次变换后的结果，把两次变换连起来写，那么就得到两个矩阵相乘的形式（如下图等式左侧）。我们可以找到直接用一个变换就能使原向量变为最终向量的变换（复合矩阵），于是有理由相信，左侧的两个矩阵相乘的结果就是符合矩阵（这一点也很容易由我们线性代数课上学的计算法则证明，或者通过变换的几何概念也很容易证明），于是我们可以得到矩阵相乘的结合律了：$(AB)C=A(BC)$。这一个性质也很容易由只觉得到，因为括号并不影响进行线性变换的顺序。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200926170506213.png" alt="image-20200926170506213" style="zoom:50%;"></p>
+<p>不过值得注意的是，矩阵相乘并没有交换律：$AB\neq BA$，这很容易通过举例证明 （上图中的例子就行）。</p>
+<h2 id="附1-三维空间中的线性变换"><a href="#附1-三维空间中的线性变换" class="headerlink" title="附1 三维空间中的线性变换"></a>附1 三维空间中的线性变换</h2><p>三维空间中的线性变换就是二维空间线性变换的扩展，即每一个基向量变成了一个3维向量，变换的矩阵也变成了3×3的矩阵，其他概念可类推。</p>
+<h2 id="05-行列式"><a href="#05-行列式" class="headerlink" title="05 行列式"></a>05 行列式</h2><p>行列式（determinant）的几何意义就是一块区域在经过该矩阵所表示的线性变换后，得到的新的区域的面积与原区域面积的比例（也可以看作单位正方形经过变换后的平行四边形的面积，即该矩阵的两个向量所构成平行四边形的面积）。</p>
+<blockquote>
+<p>PS：这里的面积是在二维平面的条件下讨论的，对于三维空间来说则是体积。</p>
+</blockquote>
+<p>具体的证明可以通过几何画图来证明：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200926195633637.png" alt="image-20200926195633637" style="zoom:50%;"></p>
+<p>有了这个结论，我们很容易就知道，为什么<strong>行列式为0的矩阵中的向量组一定线性相关</strong>了。因为变换后的两个向量是共线/至少有一个为零向量的（二维平面范围内）。</p>
+<p>还有一点需要注意的是，行列式是有负值的，在二维平面中，负号所代表的意义是平面的翻转（这一点与通量很类似）；在三维空间中，负号所代表的是左手系和右手系之间的转换。但是行列式的绝对值的意义还是变换后面积/体积的缩放比例。</p>
+<h2 id="06-逆矩阵、列空间、秩与零空间"><a href="#06-逆矩阵、列空间、秩与零空间" class="headerlink" title="06 逆矩阵、列空间、秩与零空间"></a>06 逆矩阵、列空间、秩与零空间</h2><p>矩阵的一个用处是用来解线性方程组的，形如：$A\vec x=\vec v$，其中变换矩阵$A$和变换后的向量$\vec v$已知，我们需要求变换前的向量$\vec x$。由几何意义可知，只要该变换不是将原向量空间压缩成更低维度的向量空间，即<strong>det(A)不等于0</strong>，那么我们<strong>就能唯一确定一个逆变换$A^{-1}$使得$\vec v$能还原为$\vec x$</strong>，该方程就有唯一解，否则（det(A)=0）为无穷解（或无解）。</p>
+<p>$A^{-1}$和$A$的乘积为单位矩阵E，于是可得$\vec x=A^{-1}\vec v$，即求得了$\vec x$。</p>
+<p>列空间就是<strong>矩阵的列向量所张成的空间</strong>。</p>
+<p>秩的概念就是矩阵所表示的线性变换后的空间维度，或者说是列空间的维度。例如一个3×3的矩阵所表示的线性变换会把任何三维向量压缩到一个二维平面里，那么就说这个矩阵的秩为2，同时这个矩阵的列向量所张成的空间为一个二维平面，同时该矩阵的行列式为0。</p>
+<p>如果一个经过矩阵变换前后的维度没有改变，我们把这种情况称为满秩，<strong>满秩矩阵</strong>的齐次方程的解（$Ax=\vec 0$）只有一个（只有0向量能变换为0向量），一个<strong>非满秩矩阵的变换</strong>的齐次方程的解就有无穷个了，因为有许多向量可以经过变换变为0向量，这些<strong>经过变换后落到零点的向量的集合被称为零空间/核</strong>。</p>
+<h2 id="附2-非方阵"><a href="#附2-非方阵" class="headerlink" title="附2 非方阵"></a>附2 非方阵</h2><p>我们之前讨论的都是方阵，即向量数与向量维度相等，当两者不等时则称非方阵。</p>
+<p>若有一个矩阵是3×2，我们可以将它看成是一个将二维平面映射到三维空间中的一个二维平面的变换，听起来有点绕，意思就是把单纯的一个平面映射为空间中的一个平面，使它的基向量变为有三个维度的向量。</p>
+<p>若一个矩阵是1×2，则可以看成是将一个二维平面映射到一个一维的线上的变换，即减小了基向量一个维度。</p>
+<h2 id="07-点积与对偶性"><a href="#07-点积与对偶性" class="headerlink" title="07 点积与对偶性"></a>07 点积与对偶性</h2><p>点积的标准计算方式就是按照向量中对应位置的坐标相乘再相加。点积的几何意义是点积的大小等于一个向量$\vec x$在另一个向量$\vec y$上的投影的长度与$\vec y$的长度的乘积，点积的正负号取决于$\vec x$投影后的向量与$\vec y$的方向是否相反，若相反，则为负，否则为正。这个投影的过程可以交换，即也可看作$\vec y$向$\vec x$的投影。</p>
+<p>现假设一个向量单位$\vec u$，横纵坐标分别为$u_x$和$u_y$，再假设一个变换为把其他向量都投影到该向量所在直线上，那么这个变换的矩阵是什么呢？跟据对偶性可知（见下图，详见视频），该变换矩阵就是$[u_x, u_y]$，所以要求其他向量经过改变换得到的值时，直接用$[u_x, u_y]$与所需变化向量$\vec v$相乘即可，由线性代数所学的运算法则可得结果是一个数，即投影后在那条直线上的长度。这个相乘的过程与我们的点积定义形式惊人的一致，于是，如果我们把$\vec v$与$\vec u$的点积的计算过程就可以看作求$\vec v$向$\vec u$所在直线投影与$\vec u$的长度相乘的过程（包括符号）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200927090916490.png" alt="image-20200927090916490" style="zoom:50%;"></p>
+<p>从数学式子来看，如果我们相求两个列向量$\vec u$和$\vec v$的的点积$\vec u \cdot\vec v$，我们可以<strong>把前者转换成一个线性变换的矩阵与后者相乘</strong>，那么式子的<strong>几何意义就变成了求$\vec v$向$\vec u$投影与$\vec u$的大小的积</strong>。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200927090744950.png" alt="image-20200927090744950" style="zoom:50%;"></p>
+<h2 id="08-叉积"><a href="#08-叉积" class="headerlink" title="08    叉积"></a>08    叉积</h2><p>叉积的结果还是一个向量，叉积的标准计算方法如下图：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20200928001327577.png" alt="image-20200928001327577" style="zoom:50%;"></p>
+<p>结果向量的大小是两个相乘向量所形成的平行四边形的面积，它的方向由右手法则确定——which means 叉积不满足交换律。</p>
+<h2 id="09-基变换"><a href="#09-基变换" class="headerlink" title="09 基变换"></a>09 基变换</h2><p>本节的基变换讲的是，如何在两个不同的坐标系（不同的基向量）之间进行坐标的转换，换一种说法就是，如和从两个坐标系的角度来看同一个向量。这里有个前提是，我们把向量看作一组对基向量数乘的数，同时，我们也必须有一个可供这两个坐标系参考的标准坐标系（一般都是取笛卡尔正交坐标系）。</p>
+<p>假设第一个坐标系的两个基向量分别为$\vec a_1$和$\vec a_2$，第二个坐标系的两个基向量分别为$\vec b_1$和$\vec b_2$，我们以第三方的标准坐标系的视角来看，假设$\vec a_1=[1\ 0]^T， \vec a_2=[0\ 1]^T，\vec b_1=[2\ 1]^T，\vec b_2=[-1\ 1]^T$。</p>
+<p>现有一个向量，以我们的第三方视角来看$\vec v=[3\ 2]^T$，那么在第一个坐标系中，坐标仍为$[3\ 2]^T$，而在第二个坐标系中，它的坐标变为了$[\frac{5}{3}\ \frac{1}{3}]^T$。那么，如果已知两个坐标系的基向量和一个向量在其中一个坐标系中的坐标，我们该如何得到该向量在另一个坐标系中的坐标呢？</p>
+<p>从第一坐标系的基向量变换到第二个坐标系的基向量的变换矩阵，就是第二个坐标系两个基向量所组成的矩阵$[\vec b_1\ \vec b_2]$。如果我们把我一个坐标系中的一个向量$[x\ y]^T$坐标左乘这个矩阵，那么得到了变换后在第二个坐标系中的向量的坐标。但是！这个坐标的数值还是以第一个坐标系的视角来看的（如下图，下方是数值的转换方向）！</p>
+<p>于是，实际上我们得到的是，在第二个坐标系中坐标为$[x\ y]^T$的向量在第一个坐标系的角度来看的坐标值（听起来有点绕……看视频的理解会好一点）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005114531405.png" alt="image-20201005114531405" style="zoom:50%;"></p>
+<p>如果想从第一个坐标系的向量坐标值转换为第二个坐标系的值，那么可以进行一个逆过程，如下图：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005115309322.png" alt="image-20201005115309322" style="zoom:50%;"></p>
+<p>还是以$\vec v=[3\ 2]^T$作为例子，如果我们想知道$\vec v$在第二个坐标系中的坐标是多少，那么就左乘该基变换矩阵的逆矩阵：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005115710340.png" alt="image-20201005115710340" style="zoom:50%;"></p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005120031333.png" alt="image-20201005120031333" style="zoom:50%;"></p>
+<p>以上讲述的是针对<strong>一个向量在两个坐标系中的转换</strong>，我们还可以扩展到<strong>如何在两个坐标系中描述同一种线性变换</strong>。</p>
+<p>现在我们知道第二个坐标系中的向量$\vec v_2$，想要知道在第二个坐标系中做逆时针旋转90°的变换，但目前我们只知道第一个坐标系下表示的第二个坐标系的基向量$A$，我们可以通过如下操作来实现：</p>
+<ol>
+<li>把$\vec v_2$转换为第一个坐标系中的值</li>
+</ol>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005143158500.png" alt="image-20201005143158500" style="zoom:33%;"></p>
+<ol>
+<li>在第一个坐标系中进行逆时针旋转90°的变换</li>
+</ol>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005143259207.png" alt="image-20201005143259207" style="zoom:33%;"></p>
+<ol>
+<li>再转换回第二个坐标系中的坐标值</li>
+</ol>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005143321058.png" alt="image-20201005143321058" style="zoom:33%;"></p>
+<p>左侧的三个矩阵可以归纳为：$P^{-1}AP$形式，也就是线代数上<strong>相似矩阵</strong>的定义。</p>
+<p>中间的$A$就是在第一个坐标系下（你所见到的）一种变换，而$P$则是由第一个坐标系变换到另一个坐标系的<strong>基变换矩阵</strong>（也就是变换后的基向量构成的矩阵）。</p>
+<blockquote>
+<p> 本节的总结可能不是很清楚，可以参考原视频或者下文：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/69069042" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/69069042</a></p>
+</blockquote>
+<h2 id="10-特征向量与特征值"><a href="#10-特征向量与特征值" class="headerlink" title="10 特征向量与特征值"></a>10 特征向量与特征值</h2><p>书上特征值与特征向量的公式如下:</p>
+<script type="math/tex; mode=display">
+A\vec v=\lambda\vec v</script><p>其中$\vec v$称为$A$的特征向量，$\lambda$称为特征值。</p>
+<p>其实学完之前的矩阵与向量的乘法和数乘之后，我们也能从这个式子中推测出来特征值与特征向量的几何意义——特征向量就是一个向量，这个向量满足以下的特性：<strong>经过一个线性变换后，变换向量仍然保持在原向的方向上（换一种说法就是，特征向量经过线性变换后，变换前后的两个向量所张成的空间并没有发生改变的），只是在长度上有所缩放，缩放的倍数就是特征值$\lambda$。</strong></p>
+<p>关于特征值和特征向量的求法，思路如下：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003114021759.png" alt="image-20201003114021759" style="zoom:50%;"></p>
+<p>然后把相应的$\lambda$带入原方程，用行/列变换化简$(A-\lambda I)$，然后给$\vec v$中的一个变量手动赋值（一般取1），就可以解出其他的变量（因为特征向量本来就不是一定的数值，可以有数乘关系）。</p>
+<p>如果一个变换矩阵恰好是对角矩阵，也就是仅仅在对角线上有值，其他都为0，那么这就是说，这个变换的基向量刚好都是特征向量，这个变换只对基向量的长度进行缩放，于是连续对某一向量进行多个该矩阵的变换计算就很容易了（如下图）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003120729541.png" alt="image-20201003120729541" style="zoom:50%;"></p>
+<p>可以化简为下式：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003120747334.png" alt="image-20201003120747334" style="zoom:50%;"></p>
+<p>如果是遇到一个非对角矩阵的连续乘法，直接计算会非常痛苦（如下图）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003122104635.png" alt="image-20201003122104635" style="zoom:50%;"></p>
+<p>但是学过09的基变换之后，我们可以把这个变换看作在另一个以该变换的两个特征向量为基向量的视角下进行100次变换，然后再把结果从那个视角下变换回来，就可以很容易计算出来结果（如下图，换了一个矩阵作为例子）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003123846057.png" alt="image-20201003123846057" style="zoom:50%;"></p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003124033910.png" alt="image-20201003124033910" style="zoom:50%;"></p>
+<p>上图的过程也被称为<strong>矩阵的对角化</strong>。</p>
+<h2 id="11-抽象向量空间"><a href="#11-抽象向量空间" class="headerlink" title="11 抽象向量空间"></a>11 抽象向量空间</h2><p>回到第01节中的一个问题，在数学家眼里，什么是向量呢？</p>
+<p>事实上，向量这个概念可以是任何一组事物的几何，比如，空间中的一组箭头、计算机中的一组数、一组函数等。</p>
+<p>其中，一个多项式函数也可以看作一个向量，所有的多项式函数就构成了一个向量空间。But，为什么？</p>
+<p>如果一个事物满足向量的相加与数乘的性质，那么就可以被看作向量。多项式函数正好满足：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003175715263.png" alt="image-20201003175715263" style="zoom:33%;"></p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003175726265.png" alt="image-20201003175726265" style="zoom:33%;"></p>
+<p>任何一个变换，满足线性的性质，就能被看作线性变换，线性性质包括可加性和齐次性（如下图）。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003172625939.png" alt="image-20201003172625939" style="zoom:50%;"></p>
+<p>以函数为向量（空间），那么变换就是把一个函数变成另一个函数。</p>
+<p>例如，微积分里的微分和积分都是线性变换，因此，他们都可以用矩阵的形式表示出来。我们也把这些变换叫做<strong>线性算子</strong>。</p>
+<p><strong>如何一个事物，它想能应用我们之前在线性代数中所推出的任何结论，它满足以下八条公理：</strong></p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201003180452468.png" alt="image-20201003180452468" style="zoom:50%;"></p>
+<h2 id="12-克莱姆法则"><a href="#12-克莱姆法则" class="headerlink" title="12 克莱姆法则"></a>12 克莱姆法则</h2><p>首先我们看看什么是克莱姆法则，给出以下一个线性方程组：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201004171257529.png" alt="image-20201004171257529" style="zoom:50%;"></p>
+<p>克莱姆法则的求解方法如下，即把变换后的向量依次替换到变换矩阵中的对应位置后，计算其行列式，并除以原矩阵的行列式：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201004171321619.png" alt="image-20201004171321619" style="zoom:50%;"></p>
+<p>首先我们以一个二维的向量$\vec v=[x,\ y]^T$来作为例子：</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201004170814887.png" alt="image-20201004170814887" style="zoom:50%;"><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201004170832199.png" alt="image-20201004170832199"></p>
+<p>它与一个基向量所构成的平行四边形的面积（有符号的）就是它的一个坐标值，上图就是与$\vec i$构成的情况（与$\vec j$的情况可类比）。</p>
+<p>经过一个线性变换矩阵$A$之后，上图区域的面积就变成了$det(A)\cdot y$，由于是线性方程组，变换后的向量我们已经知道了（以下图为例就是$[4\ 2]^T$），于是$[4\ 2]^T$与$\vec i$变换后的新的基向量$[2\ 0]^T$所构成的平行四边形就是$det(A)\cdot y$，于是y就等于新的面积（变换后的向量与变换后的一个基向量所构成矩阵的行列式）除以A的行列式，x的求法可以类比。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005105336931.png" alt="image-20201005105336931" style="zoom:50%;"></p>
+<p>在三维空间中，面积就被类比成了体积（如下图），其他的也很容易推导出来。</p>
+<p><img src="/2020/10/24/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/image-20201005105923798.png" alt="image-20201005105923798" style="zoom:50%;"></p>
+]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>数学</tag>
+        <tag>线性代数</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Cache映射机制与逻辑实现</title>
     <url>/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>Cache是现代CPU中不可缺少的一部分，大大提高了CPU访问数据的速度。</p>
@@ -11,14 +154,12 @@
 <li>组相联</li>
 </ul>
 <a id="more"></a>
-
 <h2 id="直接相联映射"><a href="#直接相联映射" class="headerlink" title="直接相联映射"></a>直接相联映射</h2><p>直接相联就是主存中的一块（行）只能映射到Cache中固定的某一块（行）。</p>
 <blockquote>
 <p>一块（Block）中包含多个字。</p>
 </blockquote>
 <p>同时，主存会根据Cache的块的数量来分区，假设Cache有n块，那么主存中每n块就构成一个区。于是主存地址可以分为3个部分：<strong>区地址、行地址、字地址</strong>，如下图：</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822113513832.png" alt="image-20200822113513832" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822113513832.png" alt="image-20200822113513832" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>Cache的存储器中，存储一行数据的同时，还会存储区地址以及一些标志位（有效位、一致性Dirty位等），以供在查找数据的时候的判断。</p>
@@ -29,8 +170,7 @@
 <li>如果TAG一致，则输出该行的数据内容，同时根据字地址来选择最终字的输出</li>
 <li>如果TAG不一致，则从主存中载入到相应地址的内容到Cache中，再由Cache传输给CPU</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822111450390.png" alt="image-20200822111450390" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822111450390.png" alt="image-20200822111450390" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -38,8 +178,7 @@
 <p>不过其优点是硬件逻辑简单，成本较低。</p>
 </blockquote>
 <h2 id="全相联映射"><a href="#全相联映射" class="headerlink" title="全相联映射"></a>全相联映射</h2><p>全相联就是主存中的任意一块（行）可以放在Cache中的任意一块（行）中，没有分区的概念。于是贮存地址就只分为两部分：<strong>主存块地址（标记部分）、字地址</strong>。</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822185746130.png" alt="image-20200822185746130" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822185746130.png" alt="image-20200822185746130" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>由于主存中一个块对应的Cache块地址不确定，所以需要其他的结构来辅助确定，即查找表。查找表的行数与Cache的行数相同，每一行存放着一个主存块地址，一个对应的Cache块地址，以及一些标志位。值得注意的是，查找表（CAM）与Cache是分开存放的，而直接相联中的区地址、标记位等与Cache数据则是一起存放的。</p>
@@ -49,8 +188,7 @@
 <li>若存在，则根据该行对应的Cache块地址直接访问Cache中的相应行，然后根据字地址选择输出的字</li>
 <li>若不存在，则从RAM中载入相应地址的块到一个空的Cache行中，然后输出</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822203942775.png" alt="image-20200822203942775" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822203942775.png" alt="image-20200822203942775" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -62,8 +200,7 @@
 </blockquote>
 <p>于是主存的地址就被分为3个部分：<strong>标记字段（区地址）、组地址、字地址。</strong></p>
 <p>Cache中一行的组成与直接相联映射类似。</p>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822210623668.png" alt="image-20200822210623668" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822210623668.png" alt="image-20200822210623668" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <p>查找的流程如下：</p>
@@ -74,8 +211,7 @@
 <li>根据字地址选择最终输出的字</li>
 <li>若在第2步中，不存在所要查找的行，则从主存中载入，然后再进行步骤3</li>
 </ol>
-<img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822211010019.png" alt="image-20200822211010019" style="zoom:33%;">
-
+<p><img src="/2020/08/22/Cache%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0/image-20200822211010019.png" alt="image-20200822211010019" style="zoom:33%;"></p>
 <center>来源于华中科技大学课件</center>
 
 <blockquote>
@@ -103,7 +239,6 @@
 <p>当初看这本书的目的是进一步了解计算机组成与体系结构，因为上学期上了一门《计算机组成与体系结构》的课，感觉学得很模糊，于是想着干脆通过自己写一个CPU来增强一下对计算机的理解。网上推荐的书有《自己动手写CPU》和《CPU自制入门》，比较了一下感觉前者更适合我，便开始着手看了。</p>
 <p>看完这本书的首要感想是，原来<strong>CPU并没有那么神秘！</strong></p>
 <a id="more"></a>
-
 <p>在这里我想讲一下两方面的收获：</p>
 <ol>
 <li>CPU的结构与设计</li>
@@ -167,8 +302,7 @@
 <li>《自己动手写CPU》    雷思磊</li>
 </ul>
 </li>
-<li><p>汇编语言</p>
-<ul>
+<li>汇编语言<ul>
 <li>《汇编语言（第三版）》 王爽</li>
 </ul>
 </li>
@@ -199,10 +333,8 @@
     <url>/2020/01/28/%E6%B5%85%E8%B0%88%E7%BB%A7%E6%89%BF%E4%B8%AD%E5%87%BD%E6%95%B0%E6%9C%89%E6%97%A0virtual%E7%9A%84%E5%BD%B1%E5%93%8D/</url>
     <content><![CDATA[<p>本文讨论了一下C++的继承关系中函数加或不加virtual的影响，总结了一下本人对动态绑定、静态绑定的理解。</p>
 <a id="more"></a>
-
 <p>首先直接上一段实验代码：</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">     <span class="comment">/* virtual */</span> <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm A!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm B!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    B b;</span><br><span class="line">    A* p = &amp;b;</span><br><span class="line">    p-&gt;func();    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// a.func();</span></span><br><span class="line">    <span class="comment">// b.func();</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>运行的输出结果是：I’m A!。如果p的声明类型是B*，那么输出结果是：I’m B!。这里基类A的func方法并没有加virtual关键字。如果我们加上virtual，那么结果就会变成，无论p的声明是A*还是B*，输出结果都是：I’m B!。</p>
 <p>但是如果我们在这里直接通过对象本身a或b调用他们的func方法，那么结果就是调用它们各自类型中定义的func，也就是a.func()输出“I’m A!”。b.func()输出“I’m B!”。</p>
 <p>于是我们可以总结一下，virtual只是对于<strong>通过指针</strong>（<strong>引用</strong>也行，大家可以自行实验）<strong>来调用父类子类的方法</strong>有影响。在父类的func前加上virtual的情况下，通过指针（或引用）调用该方法，实际调用的是该指针所指向的实际的类中定义的方法。这也就是<strong>动态绑定</strong>的意思，也就是在运行的过程中动态确定指针（或引用）所指向的实际对象是什么（是父类还是子类）并调用实际对象的方法。相对的，<strong>静态绑定</strong>就是仅仅根据声明的指针或引用的类型来决定调用的方法，即静态绑定到了<strong>声明对象的类型</strong>上。</p>

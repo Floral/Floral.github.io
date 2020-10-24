@@ -400,10 +400,8 @@
       
         <p>本文讨论了一下C++的继承关系中函数加或不加virtual的影响，总结了一下本人对动态绑定、静态绑定的理解。</p>
 <a id="more"></a>
-
 <p>首先直接上一段实验代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">     <span class="comment">/* virtual */</span> <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm A!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"I'm B!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    B b;</span><br><span class="line">    A* p = &amp;b;</span><br><span class="line">    p-&gt;func();    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// a.func();</span></span><br><span class="line">    <span class="comment">// b.func();</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>运行的输出结果是：I’m A!。如果p的声明类型是B*，那么输出结果是：I’m B!。这里基类A的func方法并没有加virtual关键字。如果我们加上virtual，那么结果就会变成，无论p的声明是A*还是B*，输出结果都是：I’m B!。</p>
 <p>但是如果我们在这里直接通过对象本身a或b调用他们的func方法，那么结果就是调用它们各自类型中定义的func，也就是a.func()输出“I’m A!”。b.func()输出“I’m B!”。</p>
 <p>于是我们可以总结一下，virtual只是对于<strong>通过指针</strong>（<strong>引用</strong>也行，大家可以自行实验）<strong>来调用父类子类的方法</strong>有影响。在父类的func前加上virtual的情况下，通过指针（或引用）调用该方法，实际调用的是该指针所指向的实际的类中定义的方法。这也就是<strong>动态绑定</strong>的意思，也就是在运行的过程中动态确定指针（或引用）所指向的实际对象是什么（是父类还是子类）并调用实际对象的方法。相对的，<strong>静态绑定</strong>就是仅仅根据声明的指针或引用的类型来决定调用的方法，即静态绑定到了<strong>声明对象的类型</strong>上。</p>
@@ -520,7 +518,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -533,7 +531,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -546,7 +544,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
