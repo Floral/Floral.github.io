@@ -1,6 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>一个神奇的c语言程序</title>
+    <url>/2020/12/10/%E4%B8%80%E4%B8%AA%E7%A5%9E%E5%A5%87%E7%9A%84c%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F/</url>
+    <content><![CDATA[<p>写代码时为了节省空间，就是用了uint8_t，然后发现一个很神奇的现象，程序很简单，但是现象很神奇：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdint&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">uint8_t</span> a = <span class="number">123</span>, b;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// scanf("%d", &amp;a);</span></span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d %d"</span>, &amp;a, &amp;b);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d, %d"</span>, a, b);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1 15</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0, 15</span><br></pre></td></tr></table></figure>
+<p>可以看到，对于变量a，不仅没有成功输入，并且初始化的123也没了。</p>
+<p>很神奇。。。</p>
+<p>同时，如果只输入一个a，是可以正常读入到a中的，读入a和b就不行，即使用两个scanf分开来读。</p>
+<p>个人猜测与uint8_t这个类型本身其实是unsigned char类型，以及scanf的%d读入有关（但是感觉用%d读入char型也没毛病呀。。。毕竟单独输入a就可以正常读入。</p>
+<p>暂时做一个记录，以后有时间深入研究。</p>
+<p>如果有大佬知道是什么原理，请在评论留言！</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>C</category>
+      </categories>
+      <tags>
+        <tag>C</tag>
+        <tag>uint8_t</tag>
+        <tag>日常迷惑</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C/C++变长参数及64位机器未指定整数类型的情况</title>
+    <url>/2020/11/07/%E5%85%B3%E4%BA%8EC%E8%AF%AD%E8%A8%80%E7%9A%84%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0%E5%8F%8A64%E4%BD%8D%E6%9C%BA%E5%99%A8%E6%9C%AA%E6%8C%87%E5%AE%9A%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%83%85%E5%86%B5/</url>
+    <content><![CDATA[<p>记2020.11.7</p>
+<p>在看《程序员的自我修养 ——链接、装载与库》第11章的时候，看到了C语言变长参数的实现，于是按照它给的例程写了一个测试程序：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> num, ...)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span>* p = &amp;num+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (num--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, (*p));</span><br><span class="line">        sum+=(*p);</span><br><span class="line">        p++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, sum(<span class="number">3</span>, <span class="number">16</span>, <span class="number">38</span>, <span class="number">53</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0</span><br><span class="line">16</span><br><span class="line">0</span><br><span class="line">16</span><br></pre></td></tr></table></figure>
+<p>显然，不符合预期（预期是三个参数的和107）。</p>
+<p>那么，这是为什么呢？跟据变长指令实现的原理（_cdecl调用惯例和栈的利用），猜测是由于我是64位的CPU（书中作者的CPU是32位），所以每次PUSH送入栈的数据位宽大小是64位，而int类型应该是32位的，指针一次只增加和读取4个字节，于是我将main函数中调用的第一个num的参数值改为6。再次运行，结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0</span><br><span class="line">16</span><br><span class="line">0</span><br><span class="line">38</span><br><span class="line">0</span><br><span class="line">53</span><br><span class="line">107</span><br></pre></td></tr></table></figure>
+<p>结果正确。猜测正确，同时也可以看出来我的CPU是大端模式。</p>
+<p>为了使功能正确（num的值等于参数的数量），于是考虑把int类型改为long，谁知还是一样的结果。</p>
+<p>经过@AgNo3的提醒，<strong>C语言中int、long这些基本整型变量的位宽没有确定的标准</strong>，也就是不同编译器给这些数据类型的位宽不一定一样。如果想要指定确定的位宽，只能使用头文件<code>stdint.h</code>中的int8_t，int_16_t、int32_t、uint8_t……这些类型（见<a href="https://www.gnu.org/software/libc/manual/html_node/Integers.html）。" target="_blank" rel="noopener">https://www.gnu.org/software/libc/manual/html_node/Integers.html）。</a></p>
+<p>于是将所有的int类型改为int64_t，结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">16</span><br><span class="line">38</span><br><span class="line">53</span><br><span class="line">107</span><br></pre></td></tr></table></figure>
+<p>结果正确。</p>
+<p>同时还可以<strong>猜测</strong>，C程序在使用没有指定类型的整型常量（字面值）时，默认是使用与CPU字长相同的宽度。</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>C</category>
+      </categories>
+      <tags>
+        <tag>C语言</tag>
+        <tag>变长参数</tag>
+        <tag>整型数据宽度</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ORB-SLAM2移植经历（二）</title>
+    <url>/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="二、移植过程"><a href="#二、移植过程" class="headerlink" title="二、移植过程"></a>二、移植过程</h2><h3 id="1-了解ORB的算法流程"><a href="#1-了解ORB的算法流程" class="headerlink" title="1. 了解ORB的算法流程"></a>1. 了解ORB的算法流程</h3><p>作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。</p>
+<a id="more"></a>
+<p>以rgbd_tum.cc为例，首先就是通过LoadImages加载图像。然后构造System类，System类是整个ORB-SLAM系统的类，其中会构造Tracking、LocalMapping和LocalClosing这三个线程（其中Tracking就存在于主线程main中，所以不需要单独创建线程，其他两个需要在System初始化的时候创建了新的线程），同时还会有一个Viewer线程，用来显示效果，用于用户交互。然后这几个线程通过SetXXX来使得线程之间可以相互操作（读写数据什么的），以实现线程间的数据交互（代码在System类构造函数的末尾）。</p>
+<p>在Tracking的构造函数中，会初始化ORBextractor用于特征提取和描述子计算。</p>
+<p>System类构造完成后（变量名为SLAM），就开始对图像序列的处理了（一个for循环），直接在循环中对每一帧图像调用SLAM.TrackRGBD()方法，在这个函数里，对每一帧进行Grab操作（GrabImageRGBD），这个方法将图像转为灰度图，接着用其构造Frame，在Frame的构造函数中，会对该帧图像进行ORB提取操作（ExtractORB()）和一些其他操作（暂时不知道是干啥），接着正式进入Track流程（Track()），然后GrabImageRGBD函数返回的是mTcw（相机位姿）的clone。</p>
+<p>第一次进入Track()时，会执行初始化操作（StereoInitialization()），若不是第一次进入，接着就是：相机位姿的跟踪、局部地图的跟踪、以及决定是否生成关键帧。紧接着帧数据就会进入LocalMapping线程。</p>
+<h3 id="2-对比CMakeLists-txt"><a href="#2-对比CMakeLists-txt" class="headerlink" title="2. 对比CMakeLists.txt"></a>2. 对比CMakeLists.txt</h3><h3 id="3-了解ORBextractor"><a href="#3-了解ORBextractor" class="headerlink" title="3. 了解ORBextractor"></a>3. 了解ORBextractor</h3>]]></content>
+      <categories>
+        <category>踩坑经历</category>
+        <category>打工人的日常</category>
+      </categories>
+      <tags>
+        <tag>ORB-SLAM2</tag>
+        <tag>移植</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ORB-SLAM2移植经历（一）</title>
+    <url>/2020/11/02/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<p>移植内容是将修改版的ORB-SLAM2工程移植到ARM+DSP（FPGA实现）系统上。</p>
+<p>项目来源于导师（苦逼的打工人/(ㄒoㄒ)/~~），由于该项目涉及到公司商业信息，我只是讲述有关移植部分的通用经历。</p>
+<a id="more"></a>
+<h2 id="一、环境搭建与安装"><a href="#一、环境搭建与安装" class="headerlink" title="一、环境搭建与安装"></a>一、环境搭建与安装</h2><p>因为我之前已经在笔记本上安装了Ubuntu20.04，所以一上来，我就不管三七二十一，直接在网上搜索ORB-SLAM2的安装与运行教程，找到一个后，跟着步骤来。</p>
+<p>在安装opencv的时候，一开始选择的是3.4.12，结果中途报错（错误及解决方法见：<a href="https://stackoverflow.com/questions/46884682/error-in-building-opencv-with-ffmpeg），个人猜测与opencv版本与gcc版本有关（后面会提到）。" target="_blank" rel="noopener">https://stackoverflow.com/questions/46884682/error-in-building-opencv-with-ffmpeg），个人猜测与opencv版本与gcc版本有关（后面会提到）。</a></p>
+<p>解决opencv的安装后，我直接就在发来的原工程里运行<code>./build.sh</code>，编译过程中也遇到了一个问题：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;usr&#x2F;include&#x2F;c++&#x2F;9&#x2F;bits&#x2F;stl_map.h:122:71: error: static assertion failed: std::map must have the same value_type as its allocator</span><br><span class="line">  122 |       static_assert(is_same&lt;typename _Alloc::value_type, value_type&gt;::value</span><br></pre></td></tr></table></figure>
+<p>经过查询，需要改一下源码中一个头文件的typedef内容（<a href="https://blog.csdn.net/lixujie666/article/details/90023059），同样，这个问题显然也与gcc版本有关（因为他们发给我的东西肯定都是测试能跑通的，可惜当时我没有意识到gcc版本的问题）。" target="_blank" rel="noopener">https://blog.csdn.net/lixujie666/article/details/90023059），同样，这个问题显然也与gcc版本有关（因为他们发给我的东西肯定都是测试能跑通的，可惜当时我没有意识到gcc版本的问题）。</a></p>
+<p>编译好后，想都没想，直接运行Examples中的Monocular例子，报找不到动态链接库xxx的问题，于是经过搜索，了解到了<code>ld.so.conf</code>、<code>ld.so.conf.d</code>、<code>ldconfig</code>和<code>ldd</code>这些东西，是用于管理Linux下的动态链接库的。参考链接如下：</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/98027a1f014d" target="_blank" rel="noopener">https://www.jianshu.com/p/98027a1f014d</a></p>
+<p><a href="https://www.cnblogs.com/lyongde/p/4190588.html" target="_blank" rel="noopener">https://www.cnblogs.com/lyongde/p/4190588.html</a></p>
+</blockquote>
+<p>但是修改过后，反复尝试编译了很多遍，Monocular中的例子仍然报错。。。许久之后，绝望之中决定查看CMakeLists.txt的内容，看看是否没有添加相关的库。结果一看就发现了问题所在——原来是因为这个CMakeLists.txt被他们的工程师给修改过了，只产生RGB-D中的可执行文件。。。</p>
+<p><strong>于是得到第一条经验：在接收别人修改过的工程后，最好先看看CMakeLists.txt中的内容</strong>。</p>
+<p>于是运行RGB-D中的例子，仍然报错，并且是找不到DBoW2和g2o两个动态链接库，我寻思这不是自带的吗？build.sh中也有相关的编译过程。于是再次编译整个过程，仔细查看发现问题：新建build文件夹失败，文件夹已存在，balabala……</p>
+<p>原来是原来编译的东西没有删除。。。</p>
+<p><strong>于是得到第二条经验：重新编译工程的时候最好把原来编译的残留文件都删除</strong>。</p>
+<p>删除之后再次重新编译运行，这次终于成功运行了程序，激动不已，但是几秒后，程序就结束了运行——opencv报错。经过各种搜索，都没有找到ORB-SLAM2遇到过这种问题的。于是想是不是opencv版本的问题？经过询问，他们使用的是opencv3.4.9，于是重新安装 ，但是结果还是一样/(ㄒoㄒ)/~~</p>
+<p>怀着近乎崩溃的心情，把这个错误截下来，发给了他们的工程师，得到的一个重要信息是，他们使用的 ubuntu版本是16.04，同时gcc版本与我的不同，他们建议我安装16.04版本。</p>
+<p>但是作为经历过许多次重装系统的我，不想再经历一次了（重装系统本身不麻烦，麻烦的是重装后的软件安装、环境配置）。。。</p>
+<p>于是把希望放在gcc的版本上，查询到16.04的默认gcc大版本为5，而20.04的是9.3版本，差距有点大(lll￢ω￢)。。。直接<code>apt get install gcc-5</code>是不成功的，因为20版本的软件源里没有版本5（最低的貌似是7），于是查询ubuntu gcc降级及多版本共存的方法（<a href="https://blog.csdn.net/EternallyAccompany/article/details/108865331），原理就是添加16.04的源（所以可以换成16.04的国内源），然后更新、安装" target="_blank" rel="noopener">https://blog.csdn.net/EternallyAccompany/article/details/108865331），原理就是添加16.04的源（所以可以换成16.04的国内源），然后更新、安装</a> 。</p>
+<p>安装后得到5.3.1的gcc和g++，重新编译、运行工程，功夫不负有心人，最终成功运行！！！</p>
+<p><strong>于是得到第三条经验：对于C++项目来说，GCC、G++的版本很重要！</strong>因为C++的复杂机制与杂乱的标准，导致不同版本的编译器编译同一个项目时，结果可能会不一样（比如一个 通过，另一个报错），这也是C++广遭吐槽的一点。</p>
+<p>同时，<strong>总结出第四条经验：要积极主动地与他人沟通，接收项目时一定要事先询问好搭建的环境（系统、编译器版本和环境），不要害羞</strong>。</p>
+<p>未完待续…..</p>
+]]></content>
+      <categories>
+        <category>踩坑经历</category>
+        <category>打工人的日常</category>
+      </categories>
+      <tags>
+        <tag>ORB-SLAM2</tag>
+        <tag>移植</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>stm32与PC机的大小端一致性问题</title>
+    <url>/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>记2020.10.28</p>
+<p>今天心血来潮想把上学期末计划做的用STM32在LCD上播放Bad Apple，需要用到的东西包括：FatFs文件系统、LCD显示驱动，以及视频转二进制文件的工具。</p>
+<a id="more"></a>
+<p>FatFs及LCD驱动都是直接拿教程的源代码改的（毕竟我懒，and时间也有限……），视频转二进制的工具是我上学期末写的一个脚本（Github：<a href="https://github.com/Floral/MyGadgets），今天遇到的问题主要就是跟这个脚本及LCD显示的程序有关。" target="_blank" rel="noopener">https://github.com/Floral/MyGadgets），今天遇到的问题主要就是跟这个脚本及LCD显示的程序有关。</a></p>
+<p>这个脚本目前只支持黑白视频的转换（毕竟是是根据Bad Apple来写的嘛），并且我在今天发现了一个问题，就是python的二进制写入文件模式是以字节为单位的，即假设一个bool数组只有一个True，我原本想的是写入后文件只含有一位二进制，而实际是这个bool被扩展为了一个字节，最终的结果就是0x01（想想也是，毕竟所有的汇编语言的读写最小单位都是byte，而不是bit）。所以该脚本目前的版本中生成的结果bin文件中也是按照一个像素对应一个字节的，在嵌入式程序中，显示控制程序也很简单，一个byte用来决定一个像素的值。<strong>这种方案的实验结果很成功</strong>，让我开心了一小会儿，可惜快乐总是短暂的。</p>
+<p>由于这个视频只是一个黑白视频，所以一个像素所需要的位数并不要一个字节，一位就够了，可以节省大量空间。于是强迫症的我一下午的时间就花在了怎么按位写入。查阅资料后得到的结论是，并不能按位写入，只能通过转换的手段，一组一组地把八位转换为一个byte再写入。</p>
+<p>改好脚本后，本以为大功告成，上板子一实验，问题大了，画面纵向割裂，分成10列（整体是80×60像素），仔细观察，造成这一现象的原因是某些列被“镜像”了（如图），由程序中的显示流程大致可以判断，这个错误与生成的bin文件的大小端存储方式、STM32读取文件的大小端存储方式以及STM32的C语言中一个字节中访问LSB和MSB的先后有关。</p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232739129.png" alt="image-20201107232739129" style="zoom: 50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232802323.png" alt="image-20201107232802323" style="zoom:50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232815642.png" alt="image-20201107232815642" style="zoom:50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232828944.png" alt="image-20201107232828944" style="zoom:50%;"></p>
+<p>经过多次检查及修改测试，发现python脚本生成过程并没有问题，于是针对c语言程序进行排查，尝试了几种大小端读取的组合后，还是没有解决，甚至怀疑是不是STM32的程序中途错乱了（毕竟有跑飞的可能）。一晃时间就到了晚上九点多。。。一天其他啥事都没干，于是决定把这个问题暂时放下，先记录下这个现象，等待以后或许某一天再跑的时候能奇迹般地正常！或者有时间系统地测试一下问题。</p>
+<p>不过这次经历也提醒了我，<strong>在用不同平台或不同语言读写二进制文件的时候，需要格外注意大小端的字节序和一个字节中的比特序</strong>。</p>
+]]></content>
+      <categories>
+        <category>硬件</category>
+        <category>STM32</category>
+      </categories>
+      <tags>
+        <tag>STM32</tag>
+        <tag>字节序</tag>
+        <tag>比特序</tag>
+        <tag>大小端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于常量不加位数限制的坑</title>
     <url>/2020/10/25/%E5%85%B3%E4%BA%8E%E5%B8%B8%E9%87%8F%E4%B8%8D%E5%8A%A0%E4%BD%8D%E6%95%B0%E9%99%90%E5%88%B6%E7%9A%84%E5%9D%91/</url>
     <content><![CDATA[<p>遇坑代码如下：</p>
@@ -23,7 +166,7 @@
       </categories>
       <tags>
         <tag>FPGA</tag>
-        <tag>位数限制</tag>
+        <tag>位宽</tag>
       </tags>
   </entry>
   <entry>
