@@ -59,15 +59,15 @@
   };
 </script>
 
-  <meta name="description" content="二、移植过程1. 了解ORB的算法流程作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。">
+  <meta name="description" content="二、移植过程1. 了解ORB的算法流程作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。 ORB SLAM2源码中变量的命名规则： m: 代表类成员变量(member)t: 线程类型变量(thread)l: 代表list类型变量n: 代表int类型变量p: 代表指针类型变量(pointer)b: 代表bool类">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ORB-SLAM2移植经历（二）">
 <meta property="og:url" content="https://floral.github.io/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
 <meta property="og:site_name" content="DOA&#39;s Blog">
-<meta property="og:description" content="二、移植过程1. 了解ORB的算法流程作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。">
+<meta property="og:description" content="二、移植过程1. 了解ORB的算法流程作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。 ORB SLAM2源码中变量的命名规则： m: 代表类成员变量(member)t: 线程类型变量(thread)l: 代表list类型变量n: 代表int类型变量p: 代表指针类型变量(pointer)b: 代表bool类">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-11-06T04:19:40.000Z">
-<meta property="article:modified_time" content="2020-11-10T08:59:55.187Z">
+<meta property="article:modified_time" content="2020-12-25T13:54:28.356Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="ORB-SLAM2">
 <meta property="article:tag" content="移植">
@@ -330,7 +330,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-10 16:59:55" itemprop="dateModified" datetime="2020-11-10T16:59:55+08:00">2020-11-10</time>
+                <time title="Modified: 2020-12-25 21:54:28" itemprop="dateModified" datetime="2020-12-25T21:54:28+08:00">2020-12-25</time>
               </span>
             
           
@@ -399,7 +399,76 @@
 
       
         <h2 id="二、移植过程"><a href="#二、移植过程" class="headerlink" title="二、移植过程"></a>二、移植过程</h2><h3 id="1-了解ORB的算法流程"><a href="#1-了解ORB的算法流程" class="headerlink" title="1. 了解ORB的算法流程"></a>1. 了解ORB的算法流程</h3><p>作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。</p>
+<p>ORB SLAM2源码中变量的命名规则：</p>
+<p>m: 代表类成员变量(member)<br>t: 线程类型变量(thread)<br>l: 代表list类型变量<br>n: 代表int类型变量<br>p: 代表指针类型变量(pointer)<br>b: 代表bool类型变量<br>v: 代表vector类型变量<br>s: 代表set 类型变量</p>
+<p>只有极少数变量不是这样命名的。</p>
 <a id="more"></a>
+<p>首先，整个SLAM工程的入口函数main位于Examples文件夹下的不同传感器类型文件夹中，每个传感器跟据不同的数据集对应有一个文件（已RGBD为例，使用tum数据集的程序名为rgbd_tum.cc），其中就有main函数。</p>
+<p>以rgbd_tum.cc的main函数的流程：</p>
+<ol>
+<li>从视频源（摄像头/文件）加载每一帧的图像（Image）</li>
+<li>检查图像和深度信息数量的一致性</li>
+<li>构造System类，命名为SLAM，这个变量即是整个SLAM系统，这个类初始化的时候会初始化三个线程，然后等待处理图像帧</li>
+<li>接下来就进入到了对每一帧图像进行处理的Main loop。在这个循环中，取出每一帧，然后通过调用SLAM变量的TrackRGBD，将一帧图像传入SLAM系统处理，然后计算处理的时间戳</li>
+<li>处理完所有图像后，关闭SLAM系统，保存处理后的数据（处理时间、相机轨迹、关键帧等）</li>
+</ol>
+<p>接着查看System类初始化的具体操作有哪些：</p>
+<ol>
+<li>检查配置文件</li>
+<li>加载ORB vocabulary</li>
+<li>构造关键帧的Database、Map、FrameDrawer、MapDrawer等</li>
+<li>构造Tracking、LocalMapping、LoopClosing三个线程，其中Tracking线程就存在于main线程中，所以不用单独再开一个</li>
+<li>然后再开一个Viewer线程，用于显示可视化结果</li>
+<li>最后设置前面三个线程之间的指针关系，以便可以在他们之间传递数据</li>
+</ol>
+<p>接着看看TrackRGBD方法的操作：</p>
+<p>一开始是一些检查，最关键的是调用了mpTracker的GrabImageRGBD函数，这个函数返回的是对相机的姿态估计Tcw，类型是cv::Mat。</p>
+<p>于是进入Tracking.cc文件查看GrabImageRGBD函数：</p>
+<ol>
+<li>这个函数的输入是左目RGB或RGBA图像和深度图</li>
+<li>将图像和深度信息转为灰度图像mImGray和imDepth</li>
+<li>根据当前图像构造Frame（mCurrentFrame），会传入mpORBextractorLeft（也就是左目的ORBextractor），在Frame的构造函数里，就完成了ORB特征点提取的任务</li>
+<li>调用Track()方法进行tracking过程</li>
+<li>输出世界坐标系到该帧相机坐标系的变换矩阵</li>
+</ol>
+<p>在Frame类的构造函数里：</p>
+<ol>
+<li>首先初始化一些提取的参数（金字塔层数、缩放因子等）</li>
+<li>然后执行ExtractORB()方法，这个方法就是调用mpORBextractorLeft的重载过的括号运算符</li>
+<li>用OpenCV的矫正函数、内参对提取到的特征点进行矫正</li>
+<li>计算去畸变后图像边界，将特征点分配到网格中（这一步不是很懂……看别的blog说的）</li>
+</ol>
+<p>在Tracking.cc的Track()方法中，主要分为两步：估计运动、跟踪局部地图。</p>
+<ol>
+<li>首先根据当前使用的相机做一个初始化</li>
+<li>选择是否进入正常的SLAM模式，即定位+建图；还可以进入仅仅定位的模式</li>
+<li>进入正常SLAM模式后，跟据当前状态选择是用最近的关键帧来跟踪当前的普通帧（TrackReferenceKeyFrame()）还是用最近的普通帧来跟踪当前普通帧（恒速模型TrackWithMotionModel()）</li>
+</ol>
+<p>在Tracking.cc的TrackReferenceKeyFrame()中：</p>
+<p>计算当前帧特征点的Bow映射是在Tracking类的Relocalization()方法中调用Frame的computeBoW()方法实现的。</p>
+<p>ORBextractor的operator()方法流程：</p>
+<ol>
+<li>检查图像有效性</li>
+<li>构建图像金字塔，ComputePyramid()方法</li>
+<li>计算图像特征点，使用的是ComputeKeyPointsOctTree()方法</li>
+<li>计算特征点的描述子，使用的是本文件（ORBextractor.cc）中的static的computeDescriptors()方法，在此之前还用了高斯模糊来减小噪声的影响</li>
+</ol>
+<p>CEVA公司给的代码修改的是调用FAST9方法，那么主要的修改就是在ComputeKeyPointsOctTree()方法中，把原来的直接调用opencv库的FAST改为DO_FAST()，这个DO_FAST()方法是他们自己写的一个调用，主要还是调用CSIFlowManager（CSI类）的runFAST9Detector()函数</p>
+<p>要利用DSP来计算ImagePyramid，只需修改ORBextractor.cc的ComputePyramid函数，直接在其中调用：</p>
+<p><code>CSIFlowManager_.runBilinearPyramid(image, mvImagePyramid, scaleFactor, nlevels);</code>即可。</p>
+<p>注释掉原本的for循环，不过应该还要加上其中的copyMakeBorder这个处理函数。</p>
+<p>值得注意的是，这个DSP的线性金字塔的函数是一次性计算出所有层，而不用像原来一样，一层一层地计算。</p>
+<p>要利用DSP来计算ORB的描述子，需要调用CSI的<code>runORBDescriptor()</code>函数，这个函数首先计算角点的方向，然后用高斯模糊算子处理图像（可选操作）来降低噪声的影响，接着提取图像的oriented BRIEF描述子。</p>
+<blockquote>
+<p>参数中：</p>
+<p>std::vector<int> umax;           <em>///&lt;计算特征点方向的时候，有个圆形的图像区域，这个vector中存储了每行u轴的边界（四分之一，其他部分通过对称获得）</em></int></p>
+<p>pattern是用于计算描述子的随机采样点集合</p>
+<p>nKPLevel    是Number of input points</p>
+<p>blurType 是高斯模糊的方式，但是他们好像<strong>没有给blurType取值的例子（！！！）</strong></p>
+</blockquote>
+<p>值得注意的是这个ORBDescriptor函数只是计算金字塔中的一层图像，所以需要for循环遍历每一层。</p>
+<p>CEVA的<code>runGridMatcher()</code>方法目前跟ORB-SLAM2所使用的BoW匹配方法不一样，所以暂时替换不了。</p>
+<p>//OLD VERSION</p>
 <p>以rgbd_tum.cc为例，首先就是通过LoadImages加载图像。然后构造System类，System类是整个ORB-SLAM系统的类，其中会构造Tracking、LocalMapping和LocalClosing这三个线程（其中Tracking就存在于主线程main中，所以不需要单独创建线程，其他两个需要在System初始化的时候创建了新的线程），同时还会有一个Viewer线程，用来显示效果，用于用户交互。然后这几个线程通过SetXXX来使得线程之间可以相互操作（读写数据什么的），以实现线程间的数据交互（代码在System类构造函数的末尾）。</p>
 <p>在Tracking的构造函数中，会初始化ORBextractor用于特征提取和描述子计算。</p>
 <p>System类构造完成后（变量名为SLAM），就开始对图像序列的处理了（一个for循环），直接在循环中对每一帧图像调用SLAM.TrackRGBD()方法，在这个函数里，对每一帧进行Grab操作（GrabImageRGBD），这个方法将图像转为灰度图，接着用其构造Frame，在Frame的构造函数中，会对该帧图像进行ORB提取操作（ExtractORB()）和一些其他操作（暂时不知道是干啥），接着正式进入Track流程（Track()），然后GrabImageRGBD函数返回的是mTcw（相机位姿）的clone。</p>
@@ -515,7 +584,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -528,7 +597,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -541,7 +610,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
@@ -591,7 +660,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
