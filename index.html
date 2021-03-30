@@ -1249,141 +1249,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="DOA">
-      <meta itemprop="description" content="A music lover">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DOA's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">ORB-SLAM2移植经历（二）</a>
-          
-        </h2>
-
-        <div class="post-meta">
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2020-11-06 12:19:40" itemprop="dateCreated datePublished" datetime="2020-11-06T12:19:40+08:00">2020-11-06</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-25 21:54:28" itemprop="dateModified" datetime="2020-12-25T21:54:28+08:00">2020-12-25</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/" itemprop="url" rel="index">
-                    <span itemprop="name">踩坑经历</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/%E6%89%93%E5%B7%A5%E4%BA%BA%E7%9A%84%E6%97%A5%E5%B8%B8/" itemprop="url" rel="index">
-                    <span itemprop="name">打工人的日常</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-        
-      
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="二、移植过程"><a href="#二、移植过程" class="headerlink" title="二、移植过程"></a>二、移植过程</h2><h3 id="1-了解ORB的算法流程"><a href="#1-了解ORB的算法流程" class="headerlink" title="1. 了解ORB的算法流程"></a>1. 了解ORB的算法流程</h3><p>作为新手的我，首先肯定要知道程序运行的流程，由于移植的部分主要是ORB特征提取部分，时间有限，所以我主要关注Tracking的ORB部分。</p>
-<p>ORB SLAM2源码中变量的命名规则：</p>
-<p>m: 代表类成员变量(member)<br>t: 线程类型变量(thread)<br>l: 代表list类型变量<br>n: 代表int类型变量<br>p: 代表指针类型变量(pointer)<br>b: 代表bool类型变量<br>v: 代表vector类型变量<br>s: 代表set 类型变量</p>
-<p>只有极少数变量不是这样命名的。</p>
-          <!--noindex-->
-          
-            <div class="post-button">
-              <a class="btn" href="/2020/11/06/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-    
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://floral.github.io/2020/11/02/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1513,6 +1378,139 @@
   
 
     
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A music lover">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">stm32与PC机的大小端一致性问题</a>
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-10-28 21:12:45" itemprop="dateCreated datePublished" datetime="2020-10-28T21:12:45+08:00">2020-10-28</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-07 23:29:16" itemprop="dateModified" datetime="2020-11-07T23:29:16+08:00">2020-11-07</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A1%AC%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">硬件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A1%AC%E4%BB%B6/STM32/" itemprop="url" rel="index">
+                    <span itemprop="name">STM32</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>记2020.10.28</p>
+<p>今天心血来潮想把上学期末计划做的用STM32在LCD上播放Bad Apple，需要用到的东西包括：FatFs文件系统、LCD显示驱动，以及视频转二进制文件的工具。</p>
+          <!--noindex-->
+          
+            <div class="post-button">
+              <a class="btn" href="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+    
   </div>
 
   
@@ -1565,7 +1563,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
