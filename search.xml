@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>objdump反汇编对于小白的一个坑</title>
+    <url>/2021/04/21/objdump%E5%8F%8D%E6%B1%87%E7%BC%96%E5%AF%B9%E4%BA%8E%E5%B0%8F%E7%99%BD%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/</url>
+    <content><![CDATA[<p>作为一名小白，在WSL中做一个操作系统小实验的时候，需要查看编译后代码的汇编实现，于是使用<code>objdump</code>工具直接反汇编。发现跟以前学过的汇编有些不一样（学过8086汇编），上网查询Intel x86汇编的格式（因为我的机器是Intel的CPU），发现得到的汇编格式于Intel标准的汇编格式有些不一样（如下）。</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0000000000001203 &lt;do_sum&gt;:</span><br><span class="line">    1203:       f3 0f 1e fa             endbr64</span><br><span class="line">    1207:       48 8b 15 0a 2e 00 00    mov    0x2e0a(%rip),%rdx        # 4018 &lt;sum&gt;</span><br><span class="line">    120e:       b8 00 e1 f5 05          mov    $0x5f5e100,%eax</span><br><span class="line">    1213:       83 e8 01                sub    $0x1,%eax</span><br><span class="line">    1216:       75 fb                   jne    1213 &lt;do_sum+0x10&gt;</span><br><span class="line">    1218:       48 8d 82 00 e1 f5 05    lea    0x5f5e100(%rdx),%rax</span><br><span class="line">    121f:       48 89 05 f2 2d 00 00    mov    %rax,0x2df2(%rip)        # 4018 &lt;sum&gt;</span><br><span class="line">    1226:       c3                      retq</span><br></pre></td></tr></table></figure>
+<p>主要是对于第一个操作数和第二个操作数顺序的疑惑，以一个<code>mov</code>命令为例：<code>mov A, B</code>。</p>
+<blockquote>
+<p>这里的A、B只是表示一个操作数的符号，用于代替一个寄存器or一个地址</p>
+</blockquote>
+<p>在Intel标准中，<code>mov</code>的第一个操作数A是目的操作数，第二个操作数B是源操作数，即这条汇编的含义是，把B的值赋值给A。</p>
+<p>如果按照这种标准，我上面反汇编得到的第二条mov指令（<code>mov $0x5f5e100,%eax</code>）就是把<code>eax</code>寄存器的值赋值给<code>$0x5f5e100</code>，但是这个16进制的值是我定义的一个循环次数n（100,000,000，也就是一亿），于是感觉有问题。</p>
+<p>经过大佬的指点，在Windows中使用IDA软件对这个程序进行反汇编，得到如下结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.text:0000000000001203                 public do_sum</span><br><span class="line">.text:0000000000001203 do_sum          proc near               ; DATA XREF: main+8↓o</span><br><span class="line">.text:0000000000001203                                         ; main+14↓o</span><br><span class="line">.text:0000000000001203 ; __unwind &#123;</span><br><span class="line">.text:0000000000001203                 endbr64</span><br><span class="line">.text:0000000000001207                 mov     rdx, cs:sum</span><br><span class="line">.text:000000000000120E                 mov     eax, 5F5E100h</span><br><span class="line">.text:0000000000001213</span><br><span class="line">.text:0000000000001213 loc_1213:                               ; CODE XREF: do_sum+13↓j</span><br><span class="line">.text:0000000000001213                 sub     eax, 1</span><br><span class="line">.text:0000000000001216                 jnz     short loc_1213</span><br><span class="line">.text:0000000000001218                 lea     rax, [rdx+5F5E100h]</span><br><span class="line">.text:000000000000121F                 mov     cs:sum, rax</span><br><span class="line">.text:0000000000001226                 retn</span><br><span class="line">.text:0000000000001226 ; &#125; &#x2F;&#x2F; starts at 1203</span><br><span class="line">.text:0000000000001226 do_sum          endp</span><br></pre></td></tr></table></figure>
+<p>可以很明显的观察到，与objdump的反汇编结果的样子有较大区别，对比第二条mov指令，发现两个操作数的顺序反了过来，对头！（这熟悉的味道，这才是Intel的汇编嘛）这种的汇编按照Intel的解释也很合理（将循环次数赋值给eax，然后不断减一判断循环）。</p>
+<p>于是发现问题所在，可以确定objdump所得到的汇编肯定不是Intel格式的，经过进一步的搜索，发现objdump默认的汇编格式是<strong>AT&amp;T</strong>。并且知道了objdump可以通过<code>-M</code>参数来修改反汇编的格式（具体请<code>man objdump</code>），于是使用<code>objudmp -d test -M intel | less</code>（其中test是我需要反汇编的文件名）命令得到如下汇编结果（部分）：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0000000000001203 &lt;do_sum&gt;:</span><br><span class="line">    1203:       f3 0f 1e fa             endbr64</span><br><span class="line">    1207:       48 8b 15 0a 2e 00 00    mov    rdx,QWORD PTR [rip+0x2e0a]        # 4018 &lt;sum&gt;</span><br><span class="line">    120e:       b8 00 e1 f5 05          mov    eax,0x5f5e100</span><br><span class="line">    1213:       83 e8 01                sub    eax,0x1</span><br><span class="line">    1216:       75 fb                   jne    1213 &lt;do_sum+0x10&gt;</span><br><span class="line">    1218:       48 8d 82 00 e1 f5 05    lea    rax,[rdx+0x5f5e100]</span><br><span class="line">    121f:       48 89 05 f2 2d 00 00    mov    QWORD PTR [rip+0x2df2],rax        # 4018 &lt;sum&gt;</span><br><span class="line">    1226:       c3                      ret</span><br></pre></td></tr></table></figure>
+<p>总结一下本次经历学到的一些知识：</p>
+<p><strong>x86架构汇编指令一般有两种格式</strong>：<strong>Intel汇编和AT&amp;T汇编</strong>，DOS、Windows使用Intel汇编，而Unix、Linux、MacOS使用AT&amp;T汇编。</p>
+<p>下面简单列出几个Intel和AT&amp;T汇编格式的区别：</p>
+<ol>
+<li>第一当然是两个操作数的顺序啦：Intel的第一个操作数是目标操作数，第二个操作数是源操作数；AT&amp;T的第一个操作数是源操作数，第二个操作数是目标操作数。</li>
+<li>寄存器的表示：Intel的寄存器直接写寄存器的名字就行（eax）；AT&amp;T的寄存器需要在前面加一个百分号%修饰（%eax）。</li>
+<li>立即数表示：Intel的立即数前不用加任何标志（1）；AT&amp;T的立即数前需要加<code>$</code>符号修饰（$1）。</li>
+<li><p>括号的使用：Intel中寻址时用的括号是中括号<code>[]</code>；AT&amp;T中使用的是小括号<code>()</code>。</p>
+</li>
+<li><p>……</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>踩坑日记</category>
+        <category>逆向/反汇编</category>
+      </categories>
+      <tags>
+        <tag>objdump</tag>
+        <tag>汇编语言</tag>
+        <tag>反汇编</tag>
+        <tag>汇编格式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>《程序员的自我修养》 Ch7 动态链接（上）</title>
     <url>/2021/04/09/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch7-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<h3 id="7-1-为什么要动态链接"><a href="#7-1-为什么要动态链接" class="headerlink" title="7.1 为什么要动态链接"></a>7.1 为什么要动态链接</h3><p>首先，要明确一个问题：<strong>为什么要用动态链接？静态链接这么简单好用，不香吗？</strong></p>
@@ -583,7 +624,7 @@
 <p>未完待续…..</p>
 ]]></content>
       <categories>
-        <category>踩坑经历</category>
+        <category>踩坑日记</category>
         <category>打工人的日常</category>
       </categories>
       <tags>
