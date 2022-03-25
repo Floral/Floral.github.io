@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>基于FPGA的MPU6050姿态解算（1）</title>
+    <url>/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="项目说明"><a href="#项目说明" class="headerlink" title="项目说明"></a>项目说明</h2><p>该项目仅仅是我个人的一个练手项目，为的是锻炼我的整体架构设计以及算法实现能力。</p>
+<p>首先说明，该项目的设计很烂，为了“快速”完成（虽然并不快），几乎没有考虑资源的时分复用，因此资源消耗很大（7742个LUT），主要是因为其中的多个定点数除法IP、开方IP，位数比较多，所以资源消耗也多。同时也没有使用流水线的机制，所以效率也不高（主要是由于UART的传输速率限制，算的再快也没用hhhhh）。</p>
+<a id="more"></a>
+<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><p>项目的整体架构框图如下：</p>
+<p><img src="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/image-20220325194245903.png" alt="image-20220325194245903"></p>
+<p>其中所有模块都默认连接了CLK。</p>
+<h3 id="模块说明"><a href="#模块说明" class="headerlink" title="模块说明"></a>模块说明</h3><h4 id="clk-div"><a href="#clk-div" class="headerlink" title="clk div"></a>clk div</h4><p>给I2C模块的分频</p>
+<h4 id="Keyboard-scan"><a href="#Keyboard-scan" class="headerlink" title="Keyboard scan"></a>Keyboard scan</h4><p>扫描按键，用来给Kalman ctrl发送开始信号，复位后按下一次按键以开始实时卡尔曼滤波。</p>
+<h4 id="timer"><a href="#timer" class="headerlink" title="timer"></a>timer</h4><p>用于控制Kalman ctrl读取I2C数据的速率</p>
+<h4 id="edge-detect"><a href="#edge-detect" class="headerlink" title="edge detect"></a>edge detect</h4><p>因为I2C模块的时钟与其他模块不一致，所以需要此模块来检测I2C master控制信号的上升沿。</p>
+<h4 id="I2C-master-logic-和-I2C-buffer"><a href="#I2C-master-logic-和-I2C-buffer" class="headerlink" title="I2C master logic 和 I2C buffer"></a>I2C master logic 和 I2C buffer</h4><p>实际组成了I2C master模块。</p>
+<h4 id="Kalman-Ctrl"><a href="#Kalman-Ctrl" class="headerlink" title="Kalman Ctrl"></a>Kalman Ctrl</h4><p>整个卡尔曼滤波的流程控制模块，整个流程包括一下流程：</p>
+<ol>
+<li>等待状态（WAIT）</li>
+<li>MPU配置（CONFIG）</li>
+<li>数据校正（CALIBRATE）</li>
+<li>滤波计算（CALCULATE）</li>
+</ol>
+<h4 id="Kalman-calibration-和-Kalman-Calculate"><a href="#Kalman-calibration-和-Kalman-Calculate" class="headerlink" title="Kalman calibration 和 Kalman Calculate"></a>Kalman calibration 和 Kalman Calculate</h4><p>共同组成Kalman Filter。</p>
+<p>calibration负责数据校正（计算数据偏移），Calculate负责具体的滤波计算</p>
+<h4 id="data-packing"><a href="#data-packing" class="headerlink" title="data packing"></a>data packing</h4><p>执行对角度数据的封帧操作，以满足上位机的协议</p>
+<h4 id="FIFO-和-UART-TX"><a href="#FIFO-和-UART-TX" class="headerlink" title="FIFO 和 UART TX"></a>FIFO 和 UART TX</h4><p>存储和传输每帧数据给上位机</p>
+<blockquote>
+<p>实际工程中还用了数码管动态显示的模块，只是为了测试用，可有可无。</p>
+</blockquote>
+<h2 id="整体计算流程"><a href="#整体计算流程" class="headerlink" title="整体计算流程"></a>整体计算流程</h2><p>整体计算流程如下图（很容易理解）：<img src="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/image-20220325203319342.png" alt="image-20220325203319342"></p>
+<h2 id="第三方IP使用"><a href="#第三方IP使用" class="headerlink" title="第三方IP使用"></a>第三方IP使用</h2><h3 id="I2C-IP"><a href="#I2C-IP" class="headerlink" title="I2C IP"></a>I2C IP</h3><p>首先是I2C的IP，使用的是小脚丫社区开源的IP，本项目在该IP的基础上进行了完善和改进，以完成本项目的目标。</p>
+<p>链接：<a href="https://www.stepfpga.com/doc/i2c_master_core" target="_blank" rel="noopener">i2c_master_core TEP FPGA开源社区</a></p>
+<h3 id="开方IP"><a href="#开方IP" class="headerlink" title="开方IP"></a>开方IP</h3><p>使用的开方IP是vivado中自带的square root IP</p>
+<h3 id="除法IP"><a href="#除法IP" class="headerlink" title="除法IP"></a>除法IP</h3><p>使用的是vivado自带的Divider Generator IP</p>
+<h3 id="UART-IP"><a href="#UART-IP" class="headerlink" title="UART IP"></a>UART IP</h3><p>UART是参考的小脚丫的IP写的，链接：<a href="https://www.stepfpga.com/doc/uart_verilog" target="_blank" rel="noopener">uart_verilog STEP FPGA开源社区</a></p>
+<p>通过该IP，也学到了DDS任意分频的方法👍</p>
+<h3 id="CORDIC求反正切IP"><a href="#CORDIC求反正切IP" class="headerlink" title="CORDIC求反正切IP"></a>CORDIC求反正切IP</h3><p>参考的是黑金的教程中的IP</p>
+]]></content>
+      <categories>
+        <category>个人项目</category>
+        <category>FPGA</category>
+      </categories>
+      <tags>
+        <tag>FPGA</tag>
+        <tag>MPU6050</tag>
+        <tag>姿态解算</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>《程序员的自我修养》 Ch8 Linux共享库的组织</title>
     <url>/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/</url>
     <content><![CDATA[<p>本章开始，记录的方式将变得越来越简要（以节省时间，提升更新速度），起到一个要点记录的作用。</p>

@@ -401,6 +401,131 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/" class="post-title-link" itemprop="url">基于FPGA的MPU6050姿态解算（1）</a>
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2022-03-25 22:48:10 / Modified: 22:59:03" itemprop="dateCreated datePublished" datetime="2022-03-25T22:48:10+08:00">2022-03-25</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AA%E4%BA%BA%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">个人项目</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AA%E4%BA%BA%E9%A1%B9%E7%9B%AE/FPGA/" itemprop="url" rel="index">
+                    <span itemprop="name">FPGA</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="项目说明"><a href="#项目说明" class="headerlink" title="项目说明"></a>项目说明</h2><p>该项目仅仅是我个人的一个练手项目，为的是锻炼我的整体架构设计以及算法实现能力。</p>
+<p>首先说明，该项目的设计很烂，为了“快速”完成（虽然并不快），几乎没有考虑资源的时分复用，因此资源消耗很大（7742个LUT），主要是因为其中的多个定点数除法IP、开方IP，位数比较多，所以资源消耗也多。同时也没有使用流水线的机制，所以效率也不高（主要是由于UART的传输速率限制，算的再快也没用hhhhh）。</p>
+          <!--noindex-->
+          
+            <div class="post-button">
+              <a class="btn" href="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://floral.github.io/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1413,143 +1538,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="DOA">
-      <meta itemprop="description" content="A student">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DOA's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/" class="post-title-link" itemprop="url">《程序员的自我修养》 Ch6 可执行文件的装载与进程</a>
-          
-        </h2>
-
-        <div class="post-meta">
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2021-03-30 21:35:18" itemprop="dateCreated datePublished" datetime="2021-03-30T21:35:18+08:00">2021-03-30</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-22 21:52:25" itemprop="dateModified" datetime="2021-04-22T21:52:25+08:00">2021-04-22</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index">
-                    <span itemprop="name">读书笔记</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">《程序员的自我修养》</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-        
-      
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在讲装载之前，我们首先要了解程序和进程的区别，我用一种不严谨的说法来一句话解释：硬盘中的程序被装载到内存中就变成了进程。</p>
-<blockquote>
-<p>程序（狭义上是可执行文件）是一个静态概念，它是一些预先编译好的指令和数据的集合的一个文件；进程则是一个动态的概念，它是程序运行时的一个过程，或者讲，一个正在运行的程序。很多时候把动态库叫做运行时（Runtime）就有这种含义。</p>
-<p>有一个很形象的比喻就是，程序是一个大厨做菜时的菜谱，计算机的CPU相当于这个大厨，相关的厨具就是计算机的其他硬件，整个做菜的过程就是一个进程。</p>
-</blockquote>
-<p>所谓装载，就是把存储在硬盘等介质内的程序（指令和数据），加载到内存中的某个位置，然后才能由CPU执行。这是由传统的冯·诺伊曼结构的所决定的（学过计组的都懂）。</p>
-          <!--noindex-->
-          
-            <div class="post-button">
-              <a class="btn" href="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1602,7 +1590,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1615,7 +1603,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -1628,7 +1616,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">67</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
@@ -1658,6 +1646,28 @@
         <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
     
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
   </div>
 
 
@@ -1678,7 +1688,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
