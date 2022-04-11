@@ -1,6 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>基于FPGA的MPU6050姿态解算（3）</title>
+    <url>/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="本篇为沉浸式DEBUG记录（"><a href="#本篇为沉浸式DEBUG记录（" class="headerlink" title="本篇为沉浸式DEBUG记录（"></a>本篇为沉浸式DEBUG记录（</h2><p>废话比较多，纯流水账和我自己的内心戏，大家看个乐，最后的总结就是两点：</p>
+<ol>
+<li>好好写tb，测试数据尽量多</li>
+<li>用杜邦线的时候要保证连接的稳定性，因为杜邦线很容易松动，导致传输出错</li>
+</ol>
+<a id="more"></a>
+<h3 id="BUG1："><a href="#BUG1：" class="headerlink" title="BUG1："></a>BUG1：</h3><p>数码管上显示的ROLL角度值目测是正确的，但是经过data_packing之后就传输错误，具体错误是上位机解码错误，通过串口调试器查看接收到的数据之后，发现经过一段时间的传输后，每一帧的数据量并不是13字节，如下：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220315111552606.png" alt="image-20220315111552606" style="zoom:50%;"></p>
+<p>从220行开始就错位了。</p>
+<ol>
+<li>尝试不同UART速率，问题仍存在</li>
+<li>UART改为每次间隔一个空闲位传输，问题仍存在</li>
+</ol>
+<p>同时可以发现，前面正确的每一帧，最后两个checksum计算存在问题，例如可以带入208行的数据验算一下，发现checksum就是错的，这个问题的原因很简单，就是我代码截位因为马虎写错了。</p>
+<p>经过ILA的波形抓取分析，发现FIFO在一段时间后一直处于满的状态，这将导致后面的数据写不进去，进而导致丢数据。</p>
+<p><strong>根本原因是I2C的读取速率与UART发送的速率不匹配。</strong></p>
+<p>下面来分析一下，I2C配置的分频后的时钟是400K，但是根据I2C ip中的verilog，实际的SCL频率要除以2，也就是200K，1s能传输200K bit，一组数据大约是7x16+=128bit，1s能读取3125组数据，一组数据经过处理会变成13字节的一帧，也就是1s产生3125帧。</p>
+<p>UART的发送速率假设为115200，那么就是1s发送115200个bit，发送一个字节要1+1+8+1=11bit，1s就只能发送大约10472个字节，再除以一帧13个字节，1s最多只能发送805帧。</p>
+<p>产生数据的速度大约是发送数据的4倍，这很不行。所以，我们要限制数据产生的速率（或者方案2就是当FIFO不能保存一帧的时候就丢弃整个帧，不过这要判断FIFO还差多少个数据就满，能不能保存一帧）。</p>
+<p>具体方案是，写一个定时器，定时频率是800Hz，每次读取一组。</p>
+<p>增加了timer之后，发现FIFO仍然会存满，同时发现，在CALCULATE状态下，再按一下key，理论上应该是WAIT模式，但是角度数据还在更新，于是怀疑是不是I2C的WAIT并不是真的WAIT。</p>
+<p>原来是Kalman_Filter的calib_done没有输出连到Kalman_Ctrl上，wtm裂开</p>
+<p><strong>连好后，问题仍存在o(≧口≦)o</strong></p>
+<p>继续找bug，发现将I2C切换为Wait模式时，前一个连续读取的停止信号没有发送完就进入了等待状态，可能导致I2C从机一直以为没有停止，从而导致后续数据读取错误。</p>
+<p>修复这个bug后（如下图），上位机接收的误码率从100%降到了30%左右！！！说明之前的主要问题就是这个！</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220316170826188.png" alt></p>
+<h3 id="BUG2："><a href="#BUG2：" class="headerlink" title="BUG2："></a>BUG2：</h3><p>接下来观察传过来的数据：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220316225947129.png" alt="image-20220316225947129" style="zoom:50%;"></p>
+<p>发现其中还是有个别数据传输错误，例如把帧开头的AA、FF传成53、F7，不过这次有个好消息，就是没有掉数据或莫名多数据的情况发生（因为FIFO一直没有满）。</p>
+<p>同时，debug发现计算出的最优角度值也有问题，例如下图：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220316211540410.png" alt="image-20220316211540410"></p>
+<p>此时MPU是平放状态，但是放大一百倍后的数值仍然有-2295，那么原值就是-22.95°，这很离谱。暂时先不管，我们先看UART传输错误的问题。</p>
+<p>通过计算一行数据的校验和1（例如截图中的第一行，即29957行），把53、F7当作原来的AA和FF来计算checksum1，发现开头两个字节确实是由于误码造成的：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220316230343166.png" alt="image-20220316230343166"></p>
+<p>但是！发现checksum2还是有问题的，发现是少加了一次，但是修改后，上位机接收的checksum2还是有问题！应该也属于误码</p>
+<p>分析一下可能的原因：</p>
+<ol>
+<li><p>波特率产生不稳从而导致误码，因为是通过任意分频器产生的，有误差</p>
+</li>
+<li><p>波特率过大导致误码率增大</p>
+</li>
+</ol>
+<p>第一次尝试，增加任意分频器的精度（以及增加bps_en对baud_gen进行重置），稍微降低了一点误码率，但还是在25%左右，失败</p>
+<p>第二次尝试，降低波特率，首先降低一半，到57600</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220317104153894.png" alt="image-20220317104153894" style="zoom:50%;"></p>
+<p><strong>这次可喜的是，checksum1和checksum2传输都完全正确，且最开始的几十组数据都没有出现误码！！！</strong></p>
+<p>但是到了后面仍然出现错位（下图），查看一下FIFO的full信号，原来是FIFO又满了呀。</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220317104210898.png" alt="image-20220317104210898" style="zoom:50%;"></p>
+<p>重新计算一下需要的mpu timer频率，57600/11≈5236 Bytes，5236/13≈402帧，所以要降低timer的频率到400Hz</p>
+<p>误码率很不稳定，有时15%，有时99%。</p>
+<p>直接降到9600，9600/11/13=67………wtf？？？？为什么误码率又飙升到100%，麻了</p>
+<blockquote>
+<p>修复粗心bug：</p>
+<ol>
+<li><p>读取acc和gyro的数据量是14字节，不是7字节</p>
+</li>
+<li><p>acc_rdy和gyro_rdy产生的时间早了一个周期</p>
+</li>
+</ol>
+</blockquote>
+<p>现在重新分析原因：</p>
+<ol>
+<li>UART模块传输数据不稳定的原因</li>
+<li>UART中FIFO的写入和读出不一致的原因（时序导致的）</li>
+</ol>
+<h4 id="3-23更新！！！"><a href="#3-23更新！！！" class="headerlink" title="3.23更新！！！"></a>3.23更新！！！</h4><p>死活也没想到，还是因为我的代码写的有问题（つ﹏⊂），但是我之前是有单独验证这个模块的，只不过没有模拟实际的情况来写testbench，今天想着单独测试一下UART模块，为此甚至买了一个逻辑分析仪！然后想着还是<strong>模拟实际传输情况写一个testbench吧</strong>，结果就！发现了问题！</p>
+<p>主要问题出在波特率发生器的使能信号上：</p>
+<figure class="highlight verilog"><table><tr><td class="code"><pre><span class="line"><span class="keyword">assign</span>	bps_clk_en	=	((!fifo_empty_in) &amp; bps_en);	<span class="comment">//这是有bug的版本</span></span><br><span class="line"><span class="keyword">assign</span>	bps_clk_en	=	fifo_empty_in ? (state_current!=STATE_IDLE) : bps_en;	<span class="comment">//这是修改后的版本</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220323214334455.png" alt="image-20220323214334455"></p>
+<p>原来的写法导致了在读取FIFO中最后一个数据之后，由于<code>FIFO_EMPTY</code>立马变成了1，导致<code>bps_clk_en</code>变为0，进而产生不了波特率，一直卡在START状态，从而导致后续的数据传输出错。</p>
+<p>修改后的时序如下（主要区别在<code>bps_clk</code>、<code>bps_clk_en</code>两个信号）：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220323214935876.png" alt="image-20220323214935876"></p>
+<p>经测试，可以正常发送，误码率为0%！！！太不容易了/(ㄒoㄒ)/~~</p>
+<blockquote>
+<p>通过这个bug，得到一个教训，就是写testbench，不要觉得麻烦而随便写一个，尽量按照实际的数据产生流程来写，以便发现BUG。</p>
+</blockquote>
+<h3 id="BUG3："><a href="#BUG3：" class="headerlink" title="BUG3："></a>BUG3：</h3><p>解决掉数据传输的BUG后，还剩一个数据计算的BUG，这还算是一个正常的BUG。</p>
+<p>BUG3的现象是，ROLL和PITCH极不稳定，反复横跳，不过经过一段时间后，ROLL会稳定下来，PITCH则仍然反复横跳。</p>
+<p>测试计划：</p>
+<ol>
+<li>查看I2C读出的原始数据观察是否正常</li>
+</ol>
+<p>调试过程中还出现了一个小故障，FPGA开发板和插着MPU6050的面包板是通过杜邦线连接的，有时一动面包板就会导致I2C读不出数据，数码管显示卡住，估计是<strong>因为杜邦线的接触不良</strong>，毕竟很松动，于是改为直接插在开发板上，故障解决。</p>
+<blockquote>
+<p>PS：这个经验很重要！！！一定要要保证数据传输的正确性！！！</p>
+</blockquote>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220324120155237.png" alt="image-20220324120155237"></p>
+<p>然后惊奇地发现，ROLL数据变得正常了？！！不再反复横跳，能正确计算ROLL角度的实时变化。然后就只剩PITCH角度需要调试了。</p>
+<p>等等！！！麻了，遇到一个更诡异的现象，就是，经过一段时间之后，ROLL和PITCH的情况交换了，也就是，ROLL变得反复横跳，PITCH则是能正常测量。然后。。。再过一段时间，又会交换，绝了。算了，一步一步DEBUG吧。</p>
+<p>经过观察，MPU6050读出的原始数据没有问题。</p>
+<p>接下来进一步DEBUG。</p>
+<ol>
+<li>观察原始的，未经滤波的ROLL和PITCH</li>
+</ol>
+<p>在经过Kalman_Iter_Unit之前，roll、pitch、gyro_x_fp、gyro_y_fp都是正常的。所以问题出在迭代部分，这次我准备先写一个tb来对Iter模块进行仿真。</p>
+<p><strong>果然，tb的结果出错了</strong>，这次的情况是，开始的一段时间并没有异常，随着计算的轮数增加，PITCH越来越偏，开始反复横跳。</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220325122314295.png" alt="image-20220325122314295"></p>
+<p>按照数据流向观察计算过程，发现UPDATE模块计算的divident1和K1的值很奇怪，仔细一看，发现由于K_0和K_1晚K_done一个周期，而后续的angle_temp和bias_temp的计算都会用到新的K_0、和K_1的结果，但是这里采集的仍然是老的K_0和K_1（step的上升沿），所以导致了后续结果的错误。</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220325154052927.png" alt="image-20220325154052927"></p>
+<p>要解决这个问题就是把K_done延迟一个周期，修改后的结果如图：</p>
+<p><img src="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/image-20220325172044296.png" alt="image-20220325172044296"></p>
+<p>同时发现一个事实：每经过一轮更新，ROLL和PITCH的P矩阵的值都是一样的。因为P的初始值都相同，P的更新过程都是一样的。</p>
+<blockquote>
+<p>从这次的经验来看，好好写tb是多么重要！！！</p>
+</blockquote>
+<h2 id="完结撒花！！！"><a href="#完结撒花！！！" class="headerlink" title="完结撒花！！！"></a>完结撒花！！！</h2>]]></content>
+      <categories>
+        <category>个人项目</category>
+        <category>FPGA</category>
+      </categories>
+      <tags>
+        <tag>FPGA</tag>
+        <tag>MPU6050</tag>
+        <tag>姿态解算</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基于FPGA的MPU6050姿态解算（2）</title>
     <url>/2022/03/30/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%882%EF%BC%89/</url>
     <content><![CDATA[<h3 id="项目开源地址"><a href="#项目开源地址" class="headerlink" title="项目开源地址"></a>项目开源地址</h3><p><a href="https://github.com/Floral/Pose-Detection-of-MPU6050-Based-on-FPGA" target="_blank" rel="noopener">Floral/Pose-Detection-of-MPU6050-Based-on-FPGA: FPGA implementation of pose detection with Kalman filter (github.com)</a></p>
