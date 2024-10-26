@@ -5,16 +5,17 @@
     <url>/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/</url>
     <content><![CDATA[<p>前情提要：</p>
 <p>工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（</p>
-<p>然后找了找教程，发现<a href="https://zh-v2.d2l.ai/#" target="_blank" rel="noopener">《动手深度学习》</a>这个教程非常好，于是,<a href="https://docs.anaconda.com/miniconda/" target="_blank" rel="noopener">miniconda</a>，下载！python，启动！D2L，安装！</p>
-<p>由于miniconda下载的是最新版，所以python默认是3.12.7版本，但是在下载的时候遇到了如下报错。。。</p>
+<p>然后找了找教程，发现<a href="https://zh-v2.d2l.ai/#" target="_blank" rel="noopener">《动手深度学习》</a>这个教程非常好，于是，<a href="https://docs.anaconda.com/miniconda/" target="_blank" rel="noopener">miniconda</a>，下载！python，启动！Jupyter、D2L，安装！</p>
+<p>由于miniconda下载的是最新版，所以python默认是3.12.7版本，然后在安装D2L包的时候遇到了如下报错。。。</p>
+<a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xxxxxxxxx（一堆看不懂的东西）</span><br><span class="line"></span><br><span class="line">AttributeError: module <span class="string">'pkgutil'</span> has no attribute <span class="string">'ImpImporter'</span>. Did youean: <span class="string">'zipimporter'</span>?</span><br></pre></td></tr></table></figure>
 <p>遇上上网一顿搜，发现可能是D2L包中指定<code>numpy</code>的版本与python312不匹配的问题，需要我们自行下载源码然后修改numpy的版本。</p>
 <p>后续操作：</p>
 <ol>
 <li>到<a href="https://repo.huaweicloud.com/repository/pypi/simple/d2l/" target="_blank" rel="noopener">华为的镜像仓库</a>下载D2L的源码（我下的是<code>1.0.3</code>版本</li>
 </ol>
-<p>解压，然后在解压后的文件夹的目录下，</p>
-<p><img src="/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/image-20241026223341774.png" alt="image-20241026223341774"></p>
+<p>解压，然后进入到解压后的文件夹目录，如下，</p>
+<p><img src="/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/image-20241026223341774.png" alt="解压后的源码文件夹内容" style="zoom:50%;"></p>
 <ol>
 <li>修改<code>setup.py</code>方法中的requirements为如下：</li>
 </ol>
@@ -42,7 +43,7 @@
       </tags>
   </entry>
   <entry>
-    <title>NJU ICS2023 PA开发记录</title>
+    <title>NJU ICS2023 PA开发日记</title>
     <url>/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<p><strong>2024/08/22</strong></p>
 <p>从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了</p>
@@ -51,6 +52,7 @@
 <blockquote>
 <p>不过后面一个月要去外地培训了。。。还不知道弄</p>
 </blockquote>
+<a id="more"></a>
 <h1 id="1-PA1"><a href="#1-PA1" class="headerlink" title="1. PA1"></a>1. PA1</h1><h2 id="1-3-RTFSC"><a href="#1-3-RTFSC" class="headerlink" title="1.3 RTFSC"></a>1.3 RTFSC</h2><p><code>getopt_long()</code>函数的作用？</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SYNOPSIS</span><br><span class="line">       #include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring);</span><br><span class="line"></span><br><span class="line">       extern char *optarg;</span><br><span class="line">       extern int optind, opterr, optopt;</span><br><span class="line"></span><br><span class="line">       #include &lt;getopt.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt_long(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line"></span><br><span class="line">       int getopt_long_only(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line">                  </span><br><span class="line">DESCRIPTION</span><br><span class="line">       The  getopt()  function  parses  the command-line arguments.  Its arguments argc and argv are the argument count and array as passed to the main() function on program invocation.  An element of argv that starts</span><br><span class="line">       with &#39;-&#39; (and is not exactly &quot;-&quot; or &quot;--&quot;) is an option element.  The characters of this element (aside from the initial &#39;-&#39;) are option characters.  If getopt() is called  repeatedly,  it  returns  successively</span><br><span class="line">       each of the option characters from each of the option elements.</span><br><span class="line"></span><br><span class="line">       The  variable optind is the index of the next element to be processed in argv.  The system initializes this value to 1.  The caller can reset it to 1 to restart scanning of the same argv, or when scanning a new</span><br><span class="line">       argument vector.</span><br><span class="line"></span><br><span class="line">       If getopt() finds another option character, it returns that character, updating the external variable optind and a static variable nextchar so that the next call to getopt() can resume the scan with the follow‐</span><br><span class="line">       ing option character or argv-element.</span><br><span class="line"></span><br><span class="line">       If there are no more option characters, getopt() returns -1.  Then optind is the index in argv of the first argv-element that is not an option.</span><br></pre></td></tr></table></figure>
 <p>got，用来解析命令行参数的。</p>
@@ -69,8 +71,13 @@
 <blockquote>
 <p>可能这个RESET_VECTOR就相当于真实计算机启动的第一个地址？存放BIOS的位置？</p>
 </blockquote>
-<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="image-20240823232125339" style="zoom: 50%;"></p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="Welcome to riscv32-NEMU!" style="zoom: 80%;"></p>
 <p>成功运行！！！</p>
+<blockquote>
+<p><strong>2024.10.26记</strong></p>
+<p>果然。。。中途荒废了一个月再捡起来就需要勇气了hhh，</p>
+<p>荒废了两个月后，我终于又准备回来了！</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>随笔</category>

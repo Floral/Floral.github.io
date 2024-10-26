@@ -60,16 +60,16 @@
   };
 </script>
 
-  <meta name="description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄  1. PA11.3 RTFSCgetopt_long()函数的作用？ 1234567891011121314151617181920212223242">
+  <meta name="description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NJU ICS2023 PA开发记录">
+<meta property="og:title" content="NJU ICS2023 PA开发日记">
 <meta property="og:url" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="DOA&#39;s Blog">
-<meta property="og:description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄  1. PA11.3 RTFSCgetopt_long()函数的作用？ 1234567891011121314151617181920212223242">
+<meta property="og:description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png">
 <meta property="article:published_time" content="2024-08-22T13:59:20.000Z">
-<meta property="article:modified_time" content="2024-08-23T15:21:41.726Z">
+<meta property="article:modified_time" content="2024-10-26T15:10:19.221Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="NEMU">
 <meta property="article:tag" content="NJU">
@@ -91,7 +91,7 @@
   };
 </script>
 
-  <title>NJU ICS2023 PA开发记录 | DOA's Blog</title>
+  <title>NJU ICS2023 PA开发日记 | DOA's Blog</title>
   
 
 
@@ -305,7 +305,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            NJU ICS2023 PA开发记录
+            NJU ICS2023 PA开发日记
             
 
           
@@ -334,7 +334,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-08-23 23:21:41" itemprop="dateModified" datetime="2024-08-23T23:21:41+08:00">2024-08-23</time>
+                <time title="Modified: 2024-10-26 23:10:19" itemprop="dateModified" datetime="2024-10-26T23:10:19+08:00">2024-10-26</time>
               </span>
             
           
@@ -409,6 +409,7 @@
 <blockquote>
 <p>不过后面一个月要去外地培训了。。。还不知道弄</p>
 </blockquote>
+<a id="more"></a>
 <h1 id="1-PA1"><a href="#1-PA1" class="headerlink" title="1. PA1"></a>1. PA1</h1><h2 id="1-3-RTFSC"><a href="#1-3-RTFSC" class="headerlink" title="1.3 RTFSC"></a>1.3 RTFSC</h2><p><code>getopt_long()</code>函数的作用？</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">SYNOPSIS</span><br><span class="line">       #include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring);</span><br><span class="line"></span><br><span class="line">       extern char *optarg;</span><br><span class="line">       extern int optind, opterr, optopt;</span><br><span class="line"></span><br><span class="line">       #include &lt;getopt.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt_long(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line"></span><br><span class="line">       int getopt_long_only(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line">                  </span><br><span class="line">DESCRIPTION</span><br><span class="line">       The  getopt()  function  parses  the command-line arguments.  Its arguments argc and argv are the argument count and array as passed to the main() function on program invocation.  An element of argv that starts</span><br><span class="line">       with &#39;-&#39; (and is not exactly &quot;-&quot; or &quot;--&quot;) is an option element.  The characters of this element (aside from the initial &#39;-&#39;) are option characters.  If getopt() is called  repeatedly,  it  returns  successively</span><br><span class="line">       each of the option characters from each of the option elements.</span><br><span class="line"></span><br><span class="line">       The  variable optind is the index of the next element to be processed in argv.  The system initializes this value to 1.  The caller can reset it to 1 to restart scanning of the same argv, or when scanning a new</span><br><span class="line">       argument vector.</span><br><span class="line"></span><br><span class="line">       If getopt() finds another option character, it returns that character, updating the external variable optind and a static variable nextchar so that the next call to getopt() can resume the scan with the follow‐</span><br><span class="line">       ing option character or argv-element.</span><br><span class="line"></span><br><span class="line">       If there are no more option characters, getopt() returns -1.  Then optind is the index in argv of the first argv-element that is not an option.</span><br></pre></td></tr></table></figure>
 <p>got，用来解析命令行参数的。</p>
@@ -427,8 +428,13 @@
 <blockquote>
 <p>可能这个RESET_VECTOR就相当于真实计算机启动的第一个地址？存放BIOS的位置？</p>
 </blockquote>
-<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="image-20240823232125339" style="zoom: 50%;"></p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="Welcome to riscv32-NEMU!" style="zoom: 80%;"></p>
 <p>成功运行！！！</p>
+<blockquote>
+<p><strong>2024.10.26记</strong></p>
+<p>果然。。。中途荒废了一个月再捡起来就需要勇气了hhh，</p>
+<p>荒废了两个月后，我终于又准备回来了！</p>
+</blockquote>
 
     </div>
 

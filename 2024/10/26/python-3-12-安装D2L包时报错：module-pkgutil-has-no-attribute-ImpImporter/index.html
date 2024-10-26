@@ -60,16 +60,16 @@
   };
 </script>
 
-  <meta name="description" content="前情提要： 工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（ 然后找了找教程，发现《动手深度学习》这个教程非常好，于是,miniconda，下载！python，启动！D2L，安装！ 由于miniconda下载的是最新版，所以python默认是3.12.7版本，但是在下载的时候遇到了如下报错。。。 123xxxxxxxxx（一堆看不懂的东西）AttributeError:">
+  <meta name="description" content="前情提要： 工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（ 然后找了找教程，发现《动手深度学习》这个教程非常好，于是，miniconda，下载！python，启动！Jupyter、D2L，安装！ 由于miniconda下载的是最新版，所以python默认是3.12.7版本，然后在安装D2L包的时候遇到了如下报错。。。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python 3.12 安装D2L包时报错：module &#39;pkgutil&#39; has no attribute &#39;ImpImporter&#39;">
 <meta property="og:url" content="https://floral.github.io/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/index.html">
 <meta property="og:site_name" content="DOA&#39;s Blog">
-<meta property="og:description" content="前情提要： 工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（ 然后找了找教程，发现《动手深度学习》这个教程非常好，于是,miniconda，下载！python，启动！D2L，安装！ 由于miniconda下载的是最新版，所以python默认是3.12.7版本，但是在下载的时候遇到了如下报错。。。 123xxxxxxxxx（一堆看不懂的东西）AttributeError:">
+<meta property="og:description" content="前情提要： 工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（ 然后找了找教程，发现《动手深度学习》这个教程非常好，于是，miniconda，下载！python，启动！Jupyter、D2L，安装！ 由于miniconda下载的是最新版，所以python默认是3.12.7版本，然后在安装D2L包的时候遇到了如下报错。。。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://floral.github.io/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/image-20241026223341774.png">
 <meta property="article:published_time" content="2024-10-26T14:00:26.000Z">
-<meta property="article:modified_time" content="2024-10-26T14:56:13.094Z">
+<meta property="article:modified_time" content="2024-10-26T15:20:35.879Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="动手深度学习">
 <meta property="article:tag" content="python">
@@ -322,7 +322,7 @@
                 
               
 
-              <time title="Created: 2024-10-26 22:00:26 / Modified: 22:56:13" itemprop="dateCreated datePublished" datetime="2024-10-26T22:00:26+08:00">2024-10-26</time>
+              <time title="Created: 2024-10-26 22:00:26 / Modified: 23:20:35" itemprop="dateCreated datePublished" datetime="2024-10-26T22:00:26+08:00">2024-10-26</time>
             </span>
           
             
@@ -395,16 +395,17 @@
       
         <p>前情提要：</p>
 <p>工作后，原本对AI不屑一顾的我，终究还是捡起了AI（つ﹏⊂），真香.jpg（</p>
-<p>然后找了找教程，发现<a href="https://zh-v2.d2l.ai/#" target="_blank" rel="noopener">《动手深度学习》</a>这个教程非常好，于是,<a href="https://docs.anaconda.com/miniconda/" target="_blank" rel="noopener">miniconda</a>，下载！python，启动！D2L，安装！</p>
-<p>由于miniconda下载的是最新版，所以python默认是3.12.7版本，但是在下载的时候遇到了如下报错。。。</p>
+<p>然后找了找教程，发现<a href="https://zh-v2.d2l.ai/#" target="_blank" rel="noopener">《动手深度学习》</a>这个教程非常好，于是，<a href="https://docs.anaconda.com/miniconda/" target="_blank" rel="noopener">miniconda</a>，下载！python，启动！Jupyter、D2L，安装！</p>
+<p>由于miniconda下载的是最新版，所以python默认是3.12.7版本，然后在安装D2L包的时候遇到了如下报错。。。</p>
+<a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xxxxxxxxx（一堆看不懂的东西）</span><br><span class="line"></span><br><span class="line">AttributeError: module <span class="string">'pkgutil'</span> has no attribute <span class="string">'ImpImporter'</span>. Did youean: <span class="string">'zipimporter'</span>?</span><br></pre></td></tr></table></figure>
 <p>遇上上网一顿搜，发现可能是D2L包中指定<code>numpy</code>的版本与python312不匹配的问题，需要我们自行下载源码然后修改numpy的版本。</p>
 <p>后续操作：</p>
 <ol>
 <li>到<a href="https://repo.huaweicloud.com/repository/pypi/simple/d2l/" target="_blank" rel="noopener">华为的镜像仓库</a>下载D2L的源码（我下的是<code>1.0.3</code>版本</li>
 </ol>
-<p>解压，然后在解压后的文件夹的目录下，</p>
-<p><img src="/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/image-20241026223341774.png" alt="image-20241026223341774"></p>
+<p>解压，然后进入到解压后的文件夹目录，如下，</p>
+<p><img src="/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/image-20241026223341774.png" alt="解压后的源码文件夹内容" style="zoom:50%;"></p>
 <ol>
 <li>修改<code>setup.py</code>方法中的requirements为如下：</li>
 </ol>
@@ -451,8 +452,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/" rel="next" title="NJU ICS2023 PA开发记录">
-                  <i class="fa fa-chevron-left"></i> NJU ICS2023 PA开发记录
+                <a href="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/" rel="next" title="NJU ICS2023 PA开发日记">
+                  <i class="fa fa-chevron-left"></i> NJU ICS2023 PA开发日记
                 </a>
               
             </div>
