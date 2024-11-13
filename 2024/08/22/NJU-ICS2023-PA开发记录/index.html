@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.2">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.2" color="#222">
+  <meta name="google-site-verification" content="f28RDvMfr6kYbq8YABs3VRYBjYZjIprWEKrOV2GjPYQ">
+  <meta name="baidu-site-verification" content="iqJqx1fwGW">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.2">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NJU ICS2023 PA开发日记">
+<meta property="og:url" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="DOA&#39;s Blog">
+<meta property="og:description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png">
+<meta property="article:published_time" content="2024-08-22T21:59:20.000Z">
+<meta property="article:modified_time" content="2024-11-13T15:31:21.578Z">
+<meta property="article:author" content="DOA">
+<meta property="article:tag" content="NEMU">
+<meta property="article:tag" content="NJU">
+<meta property="article:tag" content="ICS2023">
+<meta property="article:tag" content="PA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png">
+  <link rel="canonical" href="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>NJU ICS2023 PA开发日记 | DOA's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DOA's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Dream Once Again</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>Sitemap</a>
+
+  </li>
+      
+    
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            NJU ICS2023 PA开发日记
+            
+
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2024-08-22 21:59:20" itemprop="dateCreated datePublished" datetime="2024-08-22T21:59:20+00:00">2024-08-22</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-11-13 15:31:21" itemprop="dateModified" datetime="2024-11-13T15:31:21+00:00">2024-11-13</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E7%AC%94/NJU-ICS2023-PA/" itemprop="url" rel="index">
+                    <span itemprop="name">NJU ICS2023 PA</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>2024/08/22</strong></p>
+<p>从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了</p>
+<p>希望能够坚持做完！！！(ง •_•)ง</p>
+<p>这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏</p>
+<blockquote>
+<p>不过后面一个月要去外地培训了。。。还不知道弄</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="1-PA1"><a href="#1-PA1" class="headerlink" title="1. PA1"></a>1. PA1</h1><h2 id="1-3-RTFSC"><a href="#1-3-RTFSC" class="headerlink" title="1.3 RTFSC"></a>1.3 RTFSC</h2><p><code>getopt_long()</code>函数的作用？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">SYNOPSIS</span><br><span class="line">       #include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring);</span><br><span class="line"></span><br><span class="line">       extern char *optarg;</span><br><span class="line">       extern int optind, opterr, optopt;</span><br><span class="line"></span><br><span class="line">       #include &lt;getopt.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt_long(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line"></span><br><span class="line">       int getopt_long_only(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line">                  </span><br><span class="line">DESCRIPTION</span><br><span class="line">       The  getopt()  function  parses  the command-line arguments.  Its arguments argc and argv are the argument count and array as passed to the main() function on program invocation.  An element of argv that starts</span><br><span class="line">       with &#39;-&#39; (and is not exactly &quot;-&quot; or &quot;--&quot;) is an option element.  The characters of this element (aside from the initial &#39;-&#39;) are option characters.  If getopt() is called  repeatedly,  it  returns  successively</span><br><span class="line">       each of the option characters from each of the option elements.</span><br><span class="line"></span><br><span class="line">       The  variable optind is the index of the next element to be processed in argv.  The system initializes this value to 1.  The caller can reset it to 1 to restart scanning of the same argv, or when scanning a new</span><br><span class="line">       argument vector.</span><br><span class="line"></span><br><span class="line">       If getopt() finds another option character, it returns that character, updating the external variable optind and a static variable nextchar so that the next call to getopt() can resume the scan with the follow‐</span><br><span class="line">       ing option character or argv-element.</span><br><span class="line"></span><br><span class="line">       If there are no more option characters, getopt() returns -1.  Then optind is the index in argv of the first argv-element that is not an option.</span><br></pre></td></tr></table></figure>
+<p>got，用来解析命令行参数的。</p>
+<h3 id="1-3-1-准备第一个客户程序"><a href="#1-3-1-准备第一个客户程序" class="headerlink" title="1.3.1 准备第一个客户程序"></a>1.3.1 准备第一个客户程序</h3><blockquote>
+<p><strong>2024/08/23</strong></p>
+</blockquote>
+<p>NEMU是一个用来执行客户程序的程序（模拟计算机），但是NEMU一开始并没有客户程序（OS或其他客户程序），需要有程序将客户程序读入计算机中，NEMU项目src中的monitor就是用来干这个事的（也包含调试的功能<code>sdb</code>）。</p>
+<p>monitor中调用<code>init_isa()</code>来进行ISA的一些初始化：</p>
+<ol>
+<li>将一个内置客户程序读入内存中</li>
+<li>初始化虚拟计算机系统（初始化寄存器，<code>restart()</code>函数）</li>
+</ol>
+<p>读入客户程序到内存中，读到什么位置？NEMU采用最简单的方式——约定一个位置，可由我们配置，定义在<code>nemu/include/memory/paddr.h</code>中，定义为RESET_VECTOR。</p>
+<p>NEMU默认提供128MB的内存，模拟内存定义在<code>src/memory/paddr.c</code>中，定义为<code>pmem</code></p>
+<p>RISC-V的默认物理内存地址是从<code>0x80000000</code>开始编址的</p>
+<blockquote>
+<p>可能这个RESET_VECTOR就相当于真实计算机启动的第一个地址？存放BIOS的位置？</p>
+</blockquote>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="Welcome to riscv32-NEMU!" style="zoom: 80%;"></p>
+<p>成功运行！！！</p>
+<blockquote>
+<p><strong>2024.10.26记</strong></p>
+<p>果然。。。中途荒废了一个月再捡起来就需要勇气了hhh，</p>
+<p>荒废了两个月后，我终于又准备回来了！</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/NEMU/" rel="tag"><i class="fa fa-tag"></i> NEMU</a>
+            
+              <a href="/tags/NJU/" rel="tag"><i class="fa fa-tag"></i> NJU</a>
+            
+              <a href="/tags/ICS2023/" rel="tag"><i class="fa fa-tag"></i> ICS2023</a>
+            
+              <a href="/tags/PA/" rel="tag"><i class="fa fa-tag"></i> PA</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2022/04/11/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%883%EF%BC%89/" rel="next" title="基于FPGA的MPU6050姿态解算（3）">
+                  <i class="fa fa-chevron-left"></i> 基于FPGA的MPU6050姿态解算（3）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2024/10/26/python-3-12-%E5%AE%89%E8%A3%85D2L%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99%EF%BC%9Amodule-pkgutil-has-no-attribute-ImpImporter/" rel="prev" title="python 3.12 安装D2L包时报错：module 'pkgutil' has no attribute 'ImpImporter'">
+                  python 3.12 安装D2L包时报错：module 'pkgutil' has no attribute 'ImpImporter' <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-PA1"><span class="nav-text">1. PA1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-RTFSC"><span class="nav-text">1.3 RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-准备第一个客户程序"><span class="nav-text">1.3.1 准备第一个客户程序</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.png"
+      alt="DOA">
+  <p class="site-author-name" itemprop="name">DOA</p>
+  <div class="site-description" itemprop="description">A student</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Floral" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;Floral" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DOA</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.4.2.js"></script>
+
+<script src="/js/motion.js?v=7.4.2.js"></script>
+
+
+<script src="/js/schemes/pisces.js?v=7.4.2.js"></script>
+
+
+<script src="/js/next-boot.js?v=7.4.2.js"></script>
+
+<script src="/js/bookmark.js?v=7.4.2.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+<script src="/js/local-search.js?v=7.4.2.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '9vM1bW0AWKyg18o2LVQFYrk0-gzGzoHsz',
+    appKey: 'SGvmQBHXCNz2DQQNXhXbM4XF',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname,
+    recordIP: true,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
