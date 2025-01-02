@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.2">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.2" color="#222">
+  <meta name="google-site-verification" content="f28RDvMfr6kYbq8YABs3VRYBjYZjIprWEKrOV2GjPYQ">
+  <meta name="baidu-site-verification" content="iqJqx1fwGW">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.2">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="记2020.10.28 今天心血来潮想把上学期末计划做的用STM32在LCD上播放Bad Apple，需要用到的东西包括：FatFs文件系统、LCD显示驱动，以及视频转二进制文件的工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stm32与PC机的大小端一致性问题">
+<meta property="og:url" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="DOA&#39;s Blog">
+<meta property="og:description" content="记2020.10.28 今天心血来潮想把上学期末计划做的用STM32在LCD上播放Bad Apple，需要用到的东西包括：FatFs文件系统、LCD显示驱动，以及视频转二进制文件的工具。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232739129.png">
+<meta property="og:image" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232802323.png">
+<meta property="og:image" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232815642.png">
+<meta property="og:image" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232828944.png">
+<meta property="article:published_time" content="2020-10-28T21:12:45.000Z">
+<meta property="article:modified_time" content="2025-01-02T13:41:03.831Z">
+<meta property="article:author" content="DOA">
+<meta property="article:tag" content="STM32">
+<meta property="article:tag" content="字节序">
+<meta property="article:tag" content="比特序">
+<meta property="article:tag" content="大小端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232739129.png">
+  <link rel="canonical" href="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>stm32与PC机的大小端一致性问题 | DOA's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DOA's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Dream Once Again</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>Sitemap</a>
+
+  </li>
+      
+    
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            stm32与PC机的大小端一致性问题
+            
+
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-10-28 21:12:45" itemprop="dateCreated datePublished" datetime="2020-10-28T21:12:45+00:00">2020-10-28</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-02 13:41:03" itemprop="dateModified" datetime="2025-01-02T13:41:03+00:00">2025-01-02</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A1%AC%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">硬件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A1%AC%E4%BB%B6/STM32/" itemprop="url" rel="index">
+                    <span itemprop="name">STM32</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>记2020.10.28</p>
+<p>今天心血来潮想把上学期末计划做的用STM32在LCD上播放Bad Apple，需要用到的东西包括：FatFs文件系统、LCD显示驱动，以及视频转二进制文件的工具。</p>
+<a id="more"></a>
+<p>FatFs及LCD驱动都是直接拿教程的源代码改的（毕竟我懒，and时间也有限……），视频转二进制的工具是我上学期末写的一个脚本（Github：<a href="https://github.com/Floral/MyGadgets），今天遇到的问题主要就是跟这个脚本及LCD显示的程序有关。" target="_blank" rel="noopener">https://github.com/Floral/MyGadgets），今天遇到的问题主要就是跟这个脚本及LCD显示的程序有关。</a></p>
+<p>这个脚本目前只支持黑白视频的转换（毕竟是是根据Bad Apple来写的嘛），并且我在今天发现了一个问题，就是python的二进制写入文件模式是以字节为单位的，即假设一个bool数组只有一个True，我原本想的是写入后文件只含有一位二进制，而实际是这个bool被扩展为了一个字节，最终的结果就是0x01（想想也是，毕竟所有的汇编语言的读写最小单位都是byte，而不是bit）。所以该脚本目前的版本中生成的结果bin文件中也是按照一个像素对应一个字节的，在嵌入式程序中，显示控制程序也很简单，一个byte用来决定一个像素的值。<strong>这种方案的实验结果很成功</strong>，让我开心了一小会儿，可惜快乐总是短暂的。</p>
+<p>由于这个视频只是一个黑白视频，所以一个像素所需要的位数并不要一个字节，一位就够了，可以节省大量空间。于是强迫症的我一下午的时间就花在了怎么按位写入。查阅资料后得到的结论是，并不能按位写入，只能通过转换的手段，一组一组地把八位转换为一个byte再写入。</p>
+<p>改好脚本后，本以为大功告成，上板子一实验，问题大了，画面纵向割裂，分成10列（整体是80×60像素），仔细观察，造成这一现象的原因是某些列被“镜像”了（如图），由程序中的显示流程大致可以判断，这个错误与生成的bin文件的大小端存储方式、STM32读取文件的大小端存储方式以及STM32的C语言中一个字节中访问LSB和MSB的先后有关。</p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232739129.png" alt="image-20201107232739129" style="zoom: 50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232802323.png" alt="image-20201107232802323" style="zoom:50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232815642.png" alt="image-20201107232815642" style="zoom:50%;"></p>
+<p><img src="/2020/10/28/stm32%E4%B8%8EPC%E6%9C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/image-20201107232828944.png" alt="image-20201107232828944" style="zoom:50%;"></p>
+<p>经过多次检查及修改测试，发现python脚本生成过程并没有问题，于是针对c语言程序进行排查，尝试了几种大小端读取的组合后，还是没有解决，甚至怀疑是不是STM32的程序中途错乱了（毕竟有跑飞的可能）。一晃时间就到了晚上九点多。。。一天其他啥事都没干，于是决定把这个问题暂时放下，先记录下这个现象，等待以后或许某一天再跑的时候能奇迹般地正常！或者有时间系统地测试一下问题。</p>
+<p>不过这次经历也提醒了我，<strong>在用不同平台或不同语言读写二进制文件的时候，需要格外注意大小端的字节序和一个字节中的比特序</strong>。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/STM32/" rel="tag"><i class="fa fa-tag"></i> STM32</a>
+            
+              <a href="/tags/%E5%AD%97%E8%8A%82%E5%BA%8F/" rel="tag"><i class="fa fa-tag"></i> 字节序</a>
+            
+              <a href="/tags/%E6%AF%94%E7%89%B9%E5%BA%8F/" rel="tag"><i class="fa fa-tag"></i> 比特序</a>
+            
+              <a href="/tags/%E5%A4%A7%E5%B0%8F%E7%AB%AF/" rel="tag"><i class="fa fa-tag"></i> 大小端</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/10/25/%E5%85%B3%E4%BA%8E%E5%B8%B8%E9%87%8F%E4%B8%8D%E5%8A%A0%E4%BD%8D%E6%95%B0%E9%99%90%E5%88%B6%E7%9A%84%E5%9D%91/" rel="next" title="关于常量不加位数限制的坑">
+                  <i class="fa fa-chevron-left"></i> 关于常量不加位数限制的坑
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/11/02/ORB-SLAM2%E7%A7%BB%E6%A4%8D%E7%BB%8F%E5%8E%86%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="ORB-SLAM2移植经历（一）">
+                  ORB-SLAM2移植经历（一） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.png"
+      alt="DOA">
+  <p class="site-author-name" itemprop="name">DOA</p>
+  <div class="site-description" itemprop="description">A student</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Floral" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;Floral" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DOA</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.4.2.js"></script>
+
+<script src="/js/motion.js?v=7.4.2.js"></script>
+
+
+<script src="/js/schemes/pisces.js?v=7.4.2.js"></script>
+
+
+<script src="/js/next-boot.js?v=7.4.2.js"></script>
+
+<script src="/js/bookmark.js?v=7.4.2.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+<script src="/js/local-search.js?v=7.4.2.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '9vM1bW0AWKyg18o2LVQFYrk0-gzGzoHsz',
+    appKey: 'SGvmQBHXCNz2DQQNXhXbM4XF',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname,
+    recordIP: true,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

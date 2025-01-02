@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.2">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.2" color="#222">
+  <meta name="google-site-verification" content="f28RDvMfr6kYbq8YABs3VRYBjYZjIprWEKrOV2GjPYQ">
+  <meta name="baidu-site-verification" content="iqJqx1fwGW">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.2">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在讲装载之前，我们首先要了解程序和进程的区别，我用一种不严谨的说法来一句话解释：硬盘中的程序被装载到内存中就变成了进程。  程序（狭义上是可执行文件）是一个静态概念，它是一些预先编译好的指令和数据的集合的一个文件；进程则是一个动态的概念，它是程序运行时的一个过程，或者讲，一个正在运行的程序。很多时候把动态库叫做运行时（Runtime）就有这种含义。 有一个很形象的比喻就是，程序是一个大厨做菜时的菜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《程序员的自我修养》 Ch6 可执行文件的装载与进程">
+<meta property="og:url" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/index.html">
+<meta property="og:site_name" content="DOA&#39;s Blog">
+<meta property="og:description" content="在讲装载之前，我们首先要了解程序和进程的区别，我用一种不严谨的说法来一句话解释：硬盘中的程序被装载到内存中就变成了进程。  程序（狭义上是可执行文件）是一个静态概念，它是一些预先编译好的指令和数据的集合的一个文件；进程则是一个动态的概念，它是程序运行时的一个过程，或者讲，一个正在运行的程序。很多时候把动态库叫做运行时（Runtime）就有这种含义。 有一个很形象的比喻就是，程序是一个大厨做菜时的菜">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.1-Linux%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6-2%20%E8%A6%86%E7%9B%96%E8%A3%85%E5%85%A5%E8%B0%83%E7%94%A8%E6%A0%91%E7%8A%B6%E5%9B%BE.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.3-%E9%A1%B5%E9%94%99%E8%AF%AF.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.4-ELF%E4%B8%8ELinux%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E7%A9%BA%E9%97%B4%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.5-ELF%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%AE%B5%E6%9C%AA%E5%90%88%E5%B9%B6%E6%83%85%E5%86%B5.png">
+<meta property="article:published_time" content="2021-03-30T21:35:18.000Z">
+<meta property="article:modified_time" content="2025-01-02T13:41:03.834Z">
+<meta property="article:author" content="DOA">
+<meta property="article:tag" content="《程序员的自我修养》">
+<meta property="article:tag" content="进程">
+<meta property="article:tag" content="可执行文件的装载">
+<meta property="article:tag" content="虚拟地址空间">
+<meta property="article:tag" content="Segment">
+<meta property="article:tag" content="页映射">
+<meta property="article:tag" content="链接视图">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.1-Linux%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83.png">
+  <link rel="canonical" href="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>《程序员的自我修养》 Ch6 可执行文件的装载与进程 | DOA's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DOA's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Dream Once Again</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>Sitemap</a>
+
+  </li>
+      
+    
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            《程序员的自我修养》 Ch6 可执行文件的装载与进程
+            
+
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-03-30 21:35:18" itemprop="dateCreated datePublished" datetime="2021-03-30T21:35:18+00:00">2021-03-30</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-02 13:41:03" itemprop="dateModified" datetime="2025-01-02T13:41:03+00:00">2025-01-02</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">《程序员的自我修养》</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在讲装载之前，我们首先要了解程序和进程的区别，我用一种不严谨的说法来一句话解释：硬盘中的程序被装载到内存中就变成了进程。</p>
+<blockquote>
+<p>程序（狭义上是可执行文件）是一个静态概念，它是一些预先编译好的指令和数据的集合的一个文件；进程则是一个动态的概念，它是程序运行时的一个过程，或者讲，一个正在运行的程序。很多时候把动态库叫做运行时（Runtime）就有这种含义。</p>
+<p>有一个很形象的比喻就是，程序是一个大厨做菜时的菜谱，计算机的CPU相当于这个大厨，相关的厨具就是计算机的其他硬件，整个做菜的过程就是一个进程。</p>
+</blockquote>
+<p>所谓装载，就是把存储在硬盘等介质内的程序（指令和数据），加载到内存中的某个位置，然后才能由CPU执行。这是由传统的冯·诺伊曼结构的所决定的（学过计组的都懂）。</p>
+<a id="more"></a>
+<h3 id="6-1-进程虚拟地址空间"><a href="#6-1-进程虚拟地址空间" class="headerlink" title="6.1 进程虚拟地址空间"></a>6.1 进程虚拟地址空间</h3><p>现代计算机系统的内存中，可以同时存在许多进程，为了防止这些进程在运行的过程中相互干扰，同时也可以防止恶意程序（病毒）对其他进程的破坏，操作系统（OS）中的每个进程都有自己独立的<strong>虚拟地址空间（Virtual Address Space）</strong>。虚拟地址空间的大小由CPU的地址总线的位数决定，32位的为4G，64位就有很多很多了（多到目前为止可以看作是无限的）。</p>
+<p>本书的讨论都是在32位的环境下。</p>
+<p>无论是Windows还是Linux下，一个进程的4G虚拟地址空间的主要分为两部分：操作系统部分和用户进程部分。为什么操作系统也要在用户进程的虚拟地址空间中占用一部分空间？我的想法是，因为要保证用户进程在操作系统的监控之下运行，因为不同进程间的虚拟地址空间是相互独立的，如果OS（OS是一个特殊的进程）独立于用户进程，那么OS就没法对该进程进行监控了，该用户进程也不能调用OS的系统调用了（以上来自于一个没有系统学过OS的人的“猜想”）。</p>
+<p>Linux默认占用1G的虚拟地址空间，Windows默认占用2G，不过可以通过修改<code>Boot.ini</code>文件来修改Windows占用的空间。</p>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.1-Linux%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83.png" alt="6.1-Linux进程虚拟空间分布" style="zoom: 33%;"></p>
+<center>图6-1 Linux进程虚拟空间分布</center>
+
+
+
+<h4 id="PAE"><a href="#PAE" class="headerlink" title="PAE"></a>PAE</h4><p>在32位时代，为了扩大可用的内存空间，有些厂商把CPU的地址总线位数进行了扩展（使之超过CPU数据总线的位数），例如：Intel 1995年的Pentium Pro CPU开始采用了36位的物理地址，但它本身是一个32位的CPU。</p>
+<p>那么如何利用这些高于32位地址空间的内存呢？Intel是通过修改页映射的方式来实现的，这种地址扩展方式就成为<strong>PAE（Physical Address Extension）</strong>，因为是物理上扩展了地址空间。</p>
+<blockquote>
+<p>一个常见的实现就是OS提供一个窗口映射的方法，把额外的内存映射到进程地址空间来。应用程序可以跟据需要来选择申请和映射，比如一个应用程序中的<code>0x10000000~0x20000000</code>这一段256MB的虚拟地址空间作为<strong>窗口</strong>，程序可以从高于4GB的物理空间中申请多个大小为256MB的物理空间，并依次编号，如：A、B、C。然后可以根据需要将窗口映射到不同的空间去，例如需要用到A块中的内容是，就把窗口对应的地址映射到A的实际物理地址，然后就可以通过访问窗口范围的地址来访问A块中的地址了，同理，需要用到B中的内容是，可以将窗口映射到B块。在Windows下，这种操作方式叫做<strong>AWE（Address Windowing Extensions）</strong>。</p>
+</blockquote>
+<h3 id="6-2-装载的方式"><a href="#6-2-装载的方式" class="headerlink" title="6.2 装载的方式"></a>6.2 装载的方式</h3><p>最简单的装载就是一次性把程序的所有内容都装载到内存中，可是内存空间是极为珍贵的，很多时候并不能满足程序的要求。同时，跟据程序运行的局部性原理，我们可以只把程序的一部分留在内存中，其他部分放在硬盘中，等用到的时候再装入内存，这就是<strong>动态装载</strong>的基本原理。</p>
+<p>动态装载的常用方法有两种：<strong>覆盖装入（Overlay）</strong>和<strong>页映射（Paging）</strong>。</p>
+<h4 id="覆盖装入"><a href="#覆盖装入" class="headerlink" title="覆盖装入"></a>覆盖装入</h4><p>覆盖装入在虚拟存储发明之前使用得比较广泛，现在几乎被淘汰了，因为它比较的使用很麻烦，需要由程序员自己写一个<strong>覆盖管理器（Overlay Manager）</strong>，来管理程序不同部分（模块）的装载。</p>
+<blockquote>
+<p>在多个模块的情况下，需要程序员手动将模块按照他们之间的调用关系组织成树状结构（如图）。</p>
+</blockquote>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6-2%20%E8%A6%86%E7%9B%96%E8%A3%85%E5%85%A5%E8%B0%83%E7%94%A8%E6%A0%91%E7%8A%B6%E5%9B%BE.png" alt="6-2 覆盖装入调用树状图" style="zoom:33%;"></p>
+<center> 6-2 覆盖装入调用树状图</center>
+
+<p>图中，同一高度代表同一内存地址，所以有重叠的模块是不能同时存在的。树中的子节点（模块）是依赖于父节点的，也就是说子节点存在于内存中的时候，父节点也要存在。</p>
+<p>这也就引出了这种方法所需要注意的两个问题：</p>
+<ol>
+<li>一个模块的调用路径（也就是从树根main模块，到这模块上的所有途经模块所构成的路径）都必须在内存中，才能保证程序的依赖关系</li>
+<li>跨树间的调用是被禁止的。因为跨树会导致模块的内存重叠冲突，不同的路径不能同时存在于内存中。</li>
+</ol>
+<h4 id="页映射"><a href="#页映射" class="headerlink" title="页映射"></a>页映射</h4><p>页映射是虚拟存储机制的一部分。它的原理就是把可执行文件和内存空间都分为许多大小一致的“页”（Intel IA32的页是4KB），当进程运行到某一部分的代码不存在于内存中时，就发生“缺页中断”，把需要的页加载到内存中。同时，如果内存的页都被占满了，这时我们需要选择一个页被替换掉，选择的方法有许多，例如：FIFO、LUR等页替换算法。</p>
+<p>在这种方法中，OS就充当着覆盖管理器的角色，更具体的说，是OS的存储管理器。</p>
+<h3 id="6-3-从操作系统的角度看可执行文件的装载"><a href="#6-3-从操作系统的角度看可执行文件的装载" class="headerlink" title="6.3 从操作系统的角度看可执行文件的装载"></a>6.3 从操作系统的角度看可执行文件的装载</h3><p>从操作系统的角度来看，可执行文件的装载主要包含两个大的操作：</p>
+<ol>
+<li>进程的建立</li>
+<li>页错误</li>
+</ol>
+<h4 id="6-3-1-进程的建立"><a href="#6-3-1-进程的建立" class="headerlink" title="6.3.1 进程的建立"></a>6.3.1 进程的建立</h4><p>创建一个进程分为三步：</p>
+<ol>
+<li>创建一个独立的虚拟地址空间</li>
+<li>读取可执行文件头，并建立虚拟空间与可执行文件的映射关系</li>
+<li>将CPU的指令寄存器设置成可执行文件的入口地址，启动运行</li>
+</ol>
+<blockquote>
+<p><strong>创建虚拟地址空间</strong> 一个虚拟空间由一组页映射函数<strong>将虚拟空间的各个页映射至相应的物理空间</strong>，那么创建一个虚拟空间实际上并不是创建空间，而是创建映射函数所需要的相应的数据结构。</p>
+<p><strong>读取可执行文件头，并建立虚拟空间与可执行文件的映射关系</strong> 第一步完成的是虚拟空间到物理空间的映射关系，而这一步完成的是虚拟空间与可执行文件之间的映射。是装载过程中最重要的一步。</p>
+<p>Linux中把虚拟进程空间中的一个连续的地址空间叫做<strong>虚拟内存区域（VMA，Virtual Memory Area）</strong>，Windows中叫做虚拟段（Virtual Section）。一般一个VMA一半对应一个段（一个或多个页）。</p>
+<p><a href="https://baike.baidu.com/item/VMA/9839255" target="_blank" rel="noopener">https://baike.baidu.com/item/VMA/9839255</a></p>
+<p><strong>将CPU的指令寄存器设置成可执行文件的入口地址，启动运行</strong> 这一步是最简单的一步，它将CPU的控制权由OS转交给进程，由此进程开始执行。</p>
+</blockquote>
+<h4 id="6-3-2-页错误"><a href="#6-3-2-页错误" class="headerlink" title="6.3.2 页错误"></a>6.3.2 页错误</h4><p>完成上面的步骤，程序其实还没有被装载到内存中，因为只是建立了映射关系，并没有真正映射。</p>
+<p>当CPU执行到程序的入口地址（以0x8048000这个虚拟地址为例），发现这个页并没有被加载到物理内存中（通过一个数据结构可得到这个信息），于是就产生一个“页错误（Page Fault）”，引发缺页中断，CPU的控制权转交给OS，由OS分配一个物理页，建立映射关系，将缺少的页加载到该物理页中，然后将CPU的控制权交还给进程，继续执行。</p>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.3-%E9%A1%B5%E9%94%99%E8%AF%AF.png" alt="6.3-页错误" style="zoom:33%;"></p>
+<center>图6-3 页错误发生后</center>
+
+
+
+<h3 id="6-4-进程虚存空间分布"><a href="#6-4-进程虚存空间分布" class="headerlink" title="6.4 进程虚存空间分布"></a>6.4 进程虚存空间分布</h3><h4 id="6-4-1-ELF文件链接视图和执行视图"><a href="#6-4-1-ELF文件链接视图和执行视图" class="headerlink" title="6.4.1 ELF文件链接视图和执行视图"></a>6.4.1 ELF文件链接视图和执行视图</h4><p>现代OS的装载过程实际采用的是页映射的方式，也就是以页为单位装载指令和数据的，所以存在一个页地址对齐的问题。也就是不同段（Section）映射到虚拟内存空间或实际物理空间的时候，占用的空间必须是页大小的整数倍（起始地址也是）。</p>
+<p>但是随着可执行文件中段的数量不断增多（特别是ELF，一个ELF往往有十几个段），就会产生内存碎片的问题，有许多段本身或者末尾实际仅仅使用了一个页的一小部分，造成了极大的浪费。</p>
+<p>解决的方案就是，尽可能合并这些段（合并后的称为Segment），然后<strong>将合并后的Segment作为一个整体映射到虚拟内存空间和实际物理空间，并且一个Segment对应一个VMA（Virtual Memory Area）</strong>。这里的Segment翻译过来其实也称为段，只不过是在装载过程中的段，在讨论装载的情况下，段这个字一般都指的是Segment。</p>
+<p>那按照什么来合并呢？总不能一股脑儿地把所有段都合并了吧，这样不利于程序内部的结构划分。</p>
+<p>ELF采用的方案是<strong>把具有相同权限（读、写、执行）的段合并成一个Segment</strong>，ELF中主要的段的权限组合不多，主要有3种：</p>
+<blockquote>
+<ul>
+<li>以代码段为代表的权限为可读可执行的段</li>
+<li>以数据段和BSS段为代表的权限为可读可写的段</li>
+<li>以只读数据段为代表的权限为只读的段</li>
+</ul>
+</blockquote>
+<p>ELF中描述Segment的结构叫做<strong>程序头（Program Header）</strong>，很容易与之前说过的段表（Section Header Table）弄混。</p>
+<p>我们用readelf查看如下程序的程序头，得到如下结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">doa@LAPTOP-DOA:~/Document$ readelf -l SectionMapping.elf</span><br><span class="line">Elf file <span class="built_in">type</span> is EXEC (Executable file)</span><br><span class="line">Entry point 0x401bc0</span><br><span class="line">There are 10 program headers, starting at offset 64</span><br><span class="line"></span><br><span class="line">Program Headers:</span><br><span class="line">  Type           Offset             VirtAddr           PhysAddr</span><br><span class="line">                 FileSiz            MemSiz              Flags  Align</span><br><span class="line">  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000</span><br><span class="line">                 0x0000000000000518 0x0000000000000518  R      0x1000</span><br><span class="line">  LOAD           0x0000000000001000 0x0000000000401000 0x0000000000401000</span><br><span class="line">                 0x00000000000935dd 0x00000000000935dd  R E    0x1000</span><br><span class="line">  LOAD           0x0000000000095000 0x0000000000495000 0x0000000000495000</span><br><span class="line">                 0x00000000000265f5 0x00000000000265f5  R      0x1000</span><br><span class="line">  LOAD           0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0</span><br><span class="line">                 0x0000000000005170 0x00000000000068c0  RW     0x1000</span><br><span class="line">  NOTE           0x0000000000000270 0x0000000000400270 0x0000000000400270</span><br><span class="line">                 0x0000000000000020 0x0000000000000020  R      0x8</span><br><span class="line">  NOTE           0x0000000000000290 0x0000000000400290 0x0000000000400290</span><br><span class="line">                 0x0000000000000044 0x0000000000000044  R      0x4</span><br><span class="line">  TLS            0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0</span><br><span class="line">                 0x0000000000000020 0x0000000000000060  R      0x8</span><br><span class="line">  GNU_PROPERTY   0x0000000000000270 0x0000000000400270 0x0000000000400270</span><br><span class="line">                 0x0000000000000020 0x0000000000000020  R      0x8</span><br><span class="line">  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000</span><br><span class="line">                 0x0000000000000000 0x0000000000000000  RW     0x10</span><br><span class="line">  GNU_RELRO      0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0</span><br><span class="line">                 0x0000000000002f40 0x0000000000002f40  R      0x1</span><br><span class="line"></span><br><span class="line"> Section to Segment mapping:</span><br><span class="line">  Segment Sections...</span><br><span class="line">   00     .note.gnu.property .note.gnu.build-id .note.ABI-tag .rela.plt</span><br><span class="line">   01     .init .plt .text __libc_freeres_fn .fini</span><br><span class="line">   02     .rodata .stapsdt.base .eh_frame .gcc_except_table</span><br><span class="line">   03     .tdata .init_array .fini_array .data.rel.ro .got .got.plt .data __libc_subfreeres __libc_IO_vtables __libc_atexit .bss __libc_freeres_ptrs</span><br><span class="line">   04     .note.gnu.property</span><br><span class="line">   05     .note.gnu.build-id .note.ABI-tag</span><br><span class="line">   06     .tdata .tbss</span><br><span class="line">   07     .note.gnu.property</span><br><span class="line">   08</span><br><span class="line">   09     .tdata .init_array .fini_array .data.rel.ro .got</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>所以总的来说，“Segment”和“Section”是从不同角度来划分同一个ELF文件，这个在ELF中被称为不同的<strong>视图（View）</strong>，从“Section”的角度来看ELF文件就是<strong>链接视图（Linking View）</strong>，从“Segment”的角度来看就是<strong>执行视图（Execution View）</strong>。</p>
+</blockquote>
+<h4 id="6-4-2-堆和栈"><a href="#6-4-2-堆和栈" class="headerlink" title="6.4.2 堆和栈"></a>6.4.2 堆和栈</h4><p>在OS中，VMA除了被用来映射可执行文件中的各个Segment，OS还通过使用VMA来对进程的地址空间进行管理。例如进程在运行时还需用到的<strong>堆（Heap）</strong>和<strong>栈（Stack）</strong>等空间，他们在虚拟内存空间中的表现形式也是VMA。</p>
+<p>在linux下，可以通过查看<code>/proc</code>来查看进程的虚拟空间分布：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">doa@LAPTOP-DOA:~/Document$ cat /proc/184/maps</span><br><span class="line">00400000-00401000 r--p 00000000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">00401000-00494000 r-xp 00001000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">00494000-00495000 r-xp 00094000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">00495000-004bb000 r--p 00095000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">004bb000-004bc000 r--p 000bb000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">004bd000-004c0000 r--p 000bc000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">004c0000-004c3000 rw-p 000bf000 00:00 963148                     /home/doa/Document/SectionMapping.elf</span><br><span class="line">004c3000-004c4000 rw-p 00000000 00:00 0</span><br><span class="line">006ed000-00710000 rw-p 00000000 00:00 0                          [heap]</span><br><span class="line">7fffe2ba2000-7fffe33a2000 rw-p 00000000 00:00 0                  [stack]</span><br><span class="line">7fffe33da000-7fffe33db000 r-xp 00000000 00:00 0                  [vdso]</span><br></pre></td></tr></table></figure>
+<p>其中最后两列分别指映像文件的节点号和路径。</p>
+<p>向堆和栈这种没有指定特定的映像文件的VMA通常称为<strong>匿名虚拟内存区域（Anonymous Virtual Memory Area）</strong>。每个线程都有自己的堆和栈，C语言中使用malloc()内存分配函数就是分配堆中的内存。<br>可以看到其中还有一个非常特殊的VMA叫做<code>[vsdo]</code>，实际上它是OS内核的一个模块，进程可以通过访问这个VMA来跟内核进行通信。</p>
+<blockquote>
+<p>进程虚拟地址空间的概念：操作系统通过给进程空间划分出一个个VMA来管理进程的虚拟空间；基本原则是将相同权限属性的，有相同映像文件的映射成一个VMA，一个进程基本上可以分为如下几种VMA区域：</p>
+<ul>
+<li>代码VMA，权限只读、可执行；有映像文件</li>
+<li>数据VMA，权限可读写、可执行；有映像文件</li>
+<li>堆VMA，权限可读写、可执行；无映像文件，匿名，可向上扩展</li>
+<li>栈VMA，权限可读写、不可知性；无映像文件，匿名，可向下扩展</li>
+</ul>
+</blockquote>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.4-ELF%E4%B8%8ELinux%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E7%A9%BA%E9%97%B4%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.png" alt="6.4-ELF与Linux进程虚拟空间映射关系" style="zoom:33%;"></p>
+<center> 图6-4 ELF与Linux进程虚拟空间映射关系</center>
+
+
+
+<h4 id="6-4-3-堆的最大申请数量"><a href="#6-4-3-堆的最大申请数量" class="headerlink" title="6.4.3 堆的最大申请数量"></a>6.4.3 堆的最大申请数量</h4><p>略</p>
+<h4 id="6-4-4-段地址对齐"><a href="#6-4-4-段地址对齐" class="headerlink" title="6.4.4 段地址对齐"></a>6.4.4 段地址对齐</h4><p>前面我们说到为了节省由于页对齐产生的内存碎片，而想出和并为Segment的方法。但这并不能满足人类贪婪的欲望，即使是只剩三个Segment了，还是有很大可能多浪费了两个页，为了节省这两个页，我们需要进一步“合并”Segment，<strong>但这种合并与之前的合并为Segment并不一样！！！合并为Segment是在虚拟地址空间和物理空间两个地方都进行合并，而将Segment合并仅仅是在物理空间合并，在虚拟地址空间中的操作是将两个Segment交接处所在的页映射两次。</strong>这么说可能有些抽象，上图：</p>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.5-ELF%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6%E6%83%85%E5%86%B5.png" alt="6.5-ELF文件合并情况" style="zoom:50%;"></p>
+<center>图6-5 ELF文件段合并情况</center>
+
+<p>至于为什么虚拟地址空间中不直接合并，我个人的猜想是因为OS层面访问的都是虚拟地址，OS需要区分不同的Segment以判断权限（因为内存权限的最小粒度是页），所以不同Segment在虚拟地址空间中不能在一个页中有交集，否则虚拟地址空间中的同一个页的权限会有冲突。</p>
+<p>如果按照正常的映射方式，3个段（SEG0、SEG1、SEG2）应该分别占用1、3、1个Page（物理内存中），总共占用5个，如下图：</p>
+<p><img src="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/6.6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%AE%B5%E6%9C%AA%E5%90%88%E5%B9%B6%E6%83%85%E5%86%B5.png" alt="6.6-可执行段未合并情况" style="zoom:50%;"></p>
+<center>图6-6 可执行文件段未合并情况</center>
+
+<h3 id="6-5-Linux内核装在ELF过程简介"><a href="#6-5-Linux内核装在ELF过程简介" class="headerlink" title="6.5 Linux内核装在ELF过程简介"></a>6.5 Linux内核装在ELF过程简介</h3><blockquote>
+<p>在用户层面，bash进程会调用fork()系统调用创建一个新的进程，然后新的进程调用execve()系统调用执行指定的ELF文件，是原先的bash进程继续返回等待各个启动的新进程结束，然后继续等待用户输入命令。</p>
+</blockquote>
+<p>剩下的用到再查（狗头</p>
+<h3 id="6-6-Windows-PE的装载"><a href="#6-6-Windows-PE的装载" class="headerlink" title="6.6 Windows PE的装载"></a>6.6 Windows PE的装载</h3><blockquote>
+<p>PE与ELF不一样，PE可执行文件的段的数量一般很少，这是因为链接器在产生可执行文件的时候就尽可能地把段合并，最后一般只剩下代码段、数据段、只读数据段和BSS等为数不多的几个段。</p>
+<p>PE中有一个很常见的术语叫做RVA（Relative Virtual Address），其实就是相当于文件中的偏移量。它是相对于PE文件的装载机地址的偏移地址。比如一个PE文件被装载到虚拟地址（VA）0x00400000，那么一个RVA为0x1000的地址就是0x00401000。</p>
+<p>每个PE文件在装载<strong>目标地址（Target Address）</strong>，这个地址就是<strong>基地址（Base Address）</strong>。因为PE文件可以被装载到任何地址，所以这个及地址不是固定的，每次装载时都会变化。</p>
+<p>装在一个PE可执行文件的过程：</p>
+<ul>
+<li>读取文件的第一个页，在这个页中包含了DOS头、PE文件头和段表</li>
+<li>检查进程虚拟地址空间中，目标地址是否可用，如果不可用，则选另外一个装在地址。这个问题对于可执行文件来说基本不存在，因为它往往是进程第一个装载的模块，所以目标地址不太可能被占用。这里主要是针对DLL文件的装载而言的，后面还有“Rebasing”这一节会具体介绍这个问题。</li>
+<li>使用段表中提供的信息，将PE文件中所有的段一一映射到地址空间中的相应位置。</li>
+<li>如果装载地址不是目标地址，则进行Rebasing。</li>
+<li>装载所有PE文件所需要的DLL文件</li>
+<li>对PE文件中的所有导入符号进行解析</li>
+<li>跟据PE头中指定的参数，建立初始化栈和堆。</li>
+<li>建立主线程并启动进程。</li>
+</ul>
+</blockquote>
+<p>PE文件中，与装载有关的主要信息都包含在PE扩展头（PE Optional Header）和段表中了。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" rel="tag"><i class="fa fa-tag"></i> 《程序员的自我修养》</a>
+            
+              <a href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 进程</a>
+            
+              <a href="/tags/%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD/" rel="tag"><i class="fa fa-tag"></i> 可执行文件的装载</a>
+            
+              <a href="/tags/%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4/" rel="tag"><i class="fa fa-tag"></i> 虚拟地址空间</a>
+            
+              <a href="/tags/Segment/" rel="tag"><i class="fa fa-tag"></i> Segment</a>
+            
+              <a href="/tags/%E9%A1%B5%E6%98%A0%E5%B0%84/" rel="tag"><i class="fa fa-tag"></i> 页映射</a>
+            
+              <a href="/tags/%E9%93%BE%E6%8E%A5%E8%A7%86%E5%9B%BE/" rel="tag"><i class="fa fa-tag"></i> 链接视图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/" rel="next" title="《程序员的自我修养》 Ch5 Windows PE/COFF">
+                  <i class="fa fa-chevron-left"></i> 《程序员的自我修养》 Ch5 Windows PE/COFF
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/04/09/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch7-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%EF%BC%88%E4%B8%8A%EF%BC%89/" rel="prev" title="《程序员的自我修养》 Ch7 动态链接（上）">
+                  《程序员的自我修养》 Ch7 动态链接（上） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-进程虚拟地址空间"><span class="nav-text">6.1 进程虚拟地址空间</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#PAE"><span class="nav-text">PAE</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-装载的方式"><span class="nav-text">6.2 装载的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#覆盖装入"><span class="nav-text">覆盖装入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#页映射"><span class="nav-text">页映射</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-从操作系统的角度看可执行文件的装载"><span class="nav-text">6.3 从操作系统的角度看可执行文件的装载</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-1-进程的建立"><span class="nav-text">6.3.1 进程的建立</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-2-页错误"><span class="nav-text">6.3.2 页错误</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-进程虚存空间分布"><span class="nav-text">6.4 进程虚存空间分布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-1-ELF文件链接视图和执行视图"><span class="nav-text">6.4.1 ELF文件链接视图和执行视图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-2-堆和栈"><span class="nav-text">6.4.2 堆和栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-3-堆的最大申请数量"><span class="nav-text">6.4.3 堆的最大申请数量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-4-段地址对齐"><span class="nav-text">6.4.4 段地址对齐</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-Linux内核装在ELF过程简介"><span class="nav-text">6.5 Linux内核装在ELF过程简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-Windows-PE的装载"><span class="nav-text">6.6 Windows PE的装载</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.png"
+      alt="DOA">
+  <p class="site-author-name" itemprop="name">DOA</p>
+  <div class="site-description" itemprop="description">A student</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Floral" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;Floral" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DOA</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.4.2.js"></script>
+
+<script src="/js/motion.js?v=7.4.2.js"></script>
+
+
+<script src="/js/schemes/pisces.js?v=7.4.2.js"></script>
+
+
+<script src="/js/next-boot.js?v=7.4.2.js"></script>
+
+<script src="/js/bookmark.js?v=7.4.2.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+<script src="/js/local-search.js?v=7.4.2.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '9vM1bW0AWKyg18o2LVQFYrk0-gzGzoHsz',
+    appKey: 'SGvmQBHXCNz2DQQNXhXbM4XF',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname,
+    recordIP: true,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

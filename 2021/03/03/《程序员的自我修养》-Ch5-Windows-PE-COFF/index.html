@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.2">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.2" color="#222">
+  <meta name="google-site-verification" content="f28RDvMfr6kYbq8YABs3VRYBjYZjIprWEKrOV2GjPYQ">
+  <meta name="baidu-site-verification" content="iqJqx1fwGW">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.2">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Windows下的可执行文件格式为PE（Portable Executable），与ELF格式同根同源，都是COFF（Common Object File Format）格式的一种扩展。所以它们之间基本结构相同，下文主要说明它两之间的差异。 我们可以用dumpbin查看obj文件的信息，输入&#x2F;ALL参数可以查看所有相关信息： dumpbin &#x2F;ALL SimpleSection.obj &gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《程序员的自我修养》 Ch5 Windows PE&#x2F;COFF">
+<meta property="og:url" content="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/index.html">
+<meta property="og:site_name" content="DOA&#39;s Blog">
+<meta property="og:description" content="Windows下的可执行文件格式为PE（Portable Executable），与ELF格式同根同源，都是COFF（Common Object File Format）格式的一种扩展。所以它们之间基本结构相同，下文主要说明它两之间的差异。 我们可以用dumpbin查看obj文件的信息，输入&#x2F;ALL参数可以查看所有相关信息： dumpbin &#x2F;ALL SimpleSection.obj &gt;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/5.2-COFF%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/5.6-PE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png">
+<meta property="article:published_time" content="2021-03-03T21:29:28.000Z">
+<meta property="article:modified_time" content="2025-01-02T13:41:03.833Z">
+<meta property="article:author" content="DOA">
+<meta property="article:tag" content="《程序员的自我修养》">
+<meta property="article:tag" content="COFF">
+<meta property="article:tag" content="PE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/5.2-COFF%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png">
+  <link rel="canonical" href="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>《程序员的自我修养》 Ch5 Windows PE/COFF | DOA's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DOA's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Dream Once Again</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>Sitemap</a>
+
+  </li>
+      
+    
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            《程序员的自我修养》 Ch5 Windows PE/COFF
+            
+
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-03-03 21:29:28" itemprop="dateCreated datePublished" datetime="2021-03-03T21:29:28+00:00">2021-03-03</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-02 13:41:03" itemprop="dateModified" datetime="2025-01-02T13:41:03+00:00">2025-01-02</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">《程序员的自我修养》</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Windows下的可执行文件格式为PE（Portable Executable），与ELF格式同根同源，都是COFF（Common Object File Format）格式的一种扩展。所以它们之间基本结构相同，下文主要说明它两之间的差异。</p>
+<p>我们可以用dumpbin查看obj文件的信息，输入<code>/ALL</code>参数可以查看所有相关信息：</p>
+<p><code>dumpbin /ALL SimpleSection.obj &gt; SimpleSection.txt</code></p>
+<a id="more"></a>
+<h3 id="PE的前身COFF文件"><a href="#PE的前身COFF文件" class="headerlink" title="PE的前身COFF文件"></a>PE的前身COFF文件</h3><p><img src="/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/5.2-COFF%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png" alt="5.2-COFF目标文件格式" style="zoom:33%;"></p>
+<center>图5-1 COFF目标文件格式</center>
+
+<p>COFF与之前介绍的ELF文件的一个主要不同就是，COFF的头文件包括两部分，一个是映像头（Image Header），类比ELF中的文件头，描述文件的总体结构和属性；第二个是段表（Section Table），而在ELF中，段表不是紧挨着文件头的。这个结构是一个数组结构，数组大小等于段的数量。</p>
+<blockquote>
+<p>映像（Image）：因为PE文件在装载时被直接映射到进程的虚拟空间中运行，它是进程的虚拟空间的映像。所以PE可执行文件也被称为<strong>映像文件（Image File）</strong></p>
+</blockquote>
+<p>COFF文件的映像头对应的数据结构是<code>_IMAGE_FILE_HEADER</code>，书上说定义在<code>VC\PlatformSDK\include\WinNT.h</code>中，不过这应该是在作者那个年代的VC版本，我在自己电脑上的Visual Studio 2019 community的目录找了一下，并没有找到。该文件在win10下的目录应该是<code>C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\</code>（版本号可能有所不同），前提是你安装了Windows SDK，文件名为<code>winnt.h</code>，数据结构定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_FILE_HEADER</span> &#123;</span></span><br><span class="line">    WORD Machine;</span><br><span class="line">    WORD NumberOfSections;</span><br><span class="line">    DWORD TimeDateStamp;</span><br><span class="line">    DWORD PointerToSymbolTable;</span><br><span class="line">    DWORD NumberOfSymbols;</span><br><span class="line">    WORD SizeOfOptionalHeader;</span><br><span class="line">    WORD Characteristics;</span><br><span class="line">&#125; IMAGE_FILE_HEADER,*PIMAGE_FILE_HEADER;</span><br></pre></td></tr></table></figure>
+<p>这些字段的含义看命名应该很容易理解，知道有这些东西就行，具体需要用到的时候再百度。</p>
+<p>同时，段表对应的数据结构定义为<code>_IMAGE_SECTION_HEADER</code>，也位于<code>winnt.h</code>文件中。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_SECTION_HEADER</span> &#123;</span></span><br><span class="line">    BYTE Name[IMAGE_SIZEOF_SHORT_NAME];</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">		DWORD PhysicalAddress;</span><br><span class="line">		DWORD VirtualSize;</span><br><span class="line">    &#125; Misc;</span><br><span class="line">    DWORD VirtualAddress;</span><br><span class="line">    DWORD SizeOfRawData;</span><br><span class="line">    DWORD PointerToRawData;</span><br><span class="line">    DWORD PointerToRelocations;</span><br><span class="line">    DWORD PointerToLinenumbers;</span><br><span class="line">    WORD NumberOfRelocations;</span><br><span class="line">    WORD NumberOfLinenumbers;</span><br><span class="line">    DWORD Characteristics;</span><br><span class="line">&#125; IMAGE_SECTION_HEADER,*PIMAGE_SECTION_HEADER;</span><br></pre></td></tr></table></figure>
+<p>字段含义就不说了，理由同上，不过有一个点需要说一下，就是<code>SizeOfRawData</code>字段指的是该段在文件中的大小，而<code>VirtualSize</code>则是该段被加载到内存后的实际大小，这两个大小可能会不一样，且往往是前者比后者小。例如，bss段的<code>SizeOfRawData</code>为0，而<code>VirtualSize</code>则为bss段所含数据的大小。</p>
+<h3 id="链接指示信息"><a href="#链接指示信息" class="headerlink" title="链接指示信息"></a>链接指示信息</h3><blockquote>
+<p>COFF中<code>.drectve</code>段的内容是编译器传递给链接器的指令（Directive），即编译器希望告诉连接器该怎样链接这个目标文件。</p>
+</blockquote>
+<h3 id="调试信息"><a href="#调试信息" class="headerlink" title="调试信息"></a>调试信息</h3><p>COFF中所有以<code>.debug</code>开头的段都包含着调试信息，例如<code>.debug$S</code>包含的是符号（Symbol）相关的调试信息；<code>.debug$P</code>包含的是预编译头文件（Precompile）相关的调试信息；<code>.debug$T</code>包含的是类型（Type）相关的调试信息。</p>
+<h3 id="符号表"><a href="#符号表" class="headerlink" title="符号表"></a>符号表</h3><p>dumpbin输出的最后一部分是COFF的符号表，总共有6列，从左到右依次是：符号编号、符号所表示的对象所占空间、符号所在位置、符号类型、符号可见范围、符号名（修饰后和修饰前）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">COFF SYMBOL TABLE</span><br><span class="line">000 010471B7 ABS    notype       Static       | @comp.id</span><br><span class="line">001 80000191 ABS    notype       Static       | @feat.00</span><br><span class="line">002 00000000 SECT1  notype       Static       | .drectve</span><br><span class="line">    Section length   18, #relocs    0, #linenums    0, checksum        0</span><br><span class="line">004 00000000 SECT2  notype       Static       | .debug$S</span><br><span class="line">    Section length   B8, #relocs    0, #linenums    0, checksum        0</span><br><span class="line">006 00000000 SECT3  notype       Static       | .data</span><br><span class="line">    Section length    C, #relocs    0, #linenums    0, checksum AC5AB941</span><br><span class="line">008 00000000 SECT3  notype       External     | _global_init_var</span><br><span class="line">009 00000004 UNDEF  notype       External     | _global_uninit_var</span><br><span class="line">00A 00000000 SECT4  notype       Static       | .text$mn</span><br><span class="line">    Section length   4E, #relocs    5, #linenums    0, checksum CC61DB94</span><br><span class="line">00C 00000000 UNDEF  notype ()    External     | _printf</span><br><span class="line">00D 00000000 SECT4  notype ()    External     | _func1</span><br><span class="line">00E 00000020 SECT4  notype ()    External     | _main</span><br><span class="line">00F 00000004 SECT3  notype       Static       | $SG6034</span><br><span class="line">010 00000008 SECT3  notype       Static       | ?static_var@?1??main@@9@9 (&#96;main&#39;::&#96;2&#39;::static_var)</span><br><span class="line">011 00000000 SECT5  notype       Static       | .bss</span><br><span class="line">    Section length    4, #relocs    0, #linenums    0, checksum        0</span><br><span class="line">013 00000000 SECT5  notype       Static       | ?static_var2@?1??main@@9@9 (&#96;main&#39;::&#96;2&#39;::static_var2)</span><br><span class="line">014 00000000 SECT6  notype       Static       | .chks64</span><br><span class="line">    Section length   30, #relocs    0, #linenums    0, checksum        0</span><br></pre></td></tr></table></figure>
+<p>第三列的ABS表示对象所占空间，SECTx表示对象定义在第x个段，UNDEF表示符号在本文件中未定义，被定义在其他文件。</p>
+<p>第四列的notype表示变量和其他符号类型，notype()则表示函数类型。</p>
+<p>第五列的Static表示符号是局部变量，仅在本目标文件内可见，External则是全局可见的，可被其他目标文件引用。</p>
+<h3 id="Windows下的ELF——PE"><a href="#Windows下的ELF——PE" class="headerlink" title="Windows下的ELF——PE"></a>Windows下的ELF——PE</h3><p><img src="/2021/03/03/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch5-Windows-PE-COFF/5.6-PE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png" alt="5.6-PE文件格式" style="zoom:33%;"></p>
+<center>图5-2 PE文件格式</center>
+
+<p>PE文件在COFF的格式基础上，又有一些变化：</p>
+<p>首先文件开头添加了DOS MZ可执行文件格式的文件头和桩代码（DOS MZ File Header and Stub）；第二，COFF的<code>IMAEG_FILE_HEADER</code>扩展为了<code>IMAGE_NT_HEADER</code>，其中添加了<code>IMAGE_OPTIONAL_HEADER32</code>部分。</p>
+<p>之所以要添加DOS MZ相关的头文件和桩代码，是为了使为Windows编写的程序能“兼容”原有的DOS系统，以至于在DOS系统下不会被执行而导致错误。</p>
+<p>其中<code>IMAGE_DOS_HEADER</code>的定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DOS_HEADER</span> &#123;</span>      <span class="comment">// DOS .EXE header</span></span><br><span class="line">    WORD   e_magic;                     <span class="comment">// Magic number</span></span><br><span class="line">    WORD   e_cblp;                      <span class="comment">// Bytes on last page of file</span></span><br><span class="line">    WORD   e_cp;                        <span class="comment">// Pages in file</span></span><br><span class="line">    WORD   e_crlc;                      <span class="comment">// Relocations</span></span><br><span class="line">    WORD   e_cparhdr;                   <span class="comment">// Size of header in paragraphs</span></span><br><span class="line">    WORD   e_minalloc;                  <span class="comment">// Minimum extra paragraphs needed</span></span><br><span class="line">    WORD   e_maxalloc;                  <span class="comment">// Maximum extra paragraphs needed</span></span><br><span class="line">    WORD   e_ss;                        <span class="comment">// Initial (relative) SS value</span></span><br><span class="line">    WORD   e_sp;                        <span class="comment">// Initial SP value</span></span><br><span class="line">    WORD   e_csum;                      <span class="comment">// Checksum</span></span><br><span class="line">    WORD   e_ip;                        <span class="comment">// Initial IP value</span></span><br><span class="line">    WORD   e_cs;                        <span class="comment">// Initial (relative) CS value</span></span><br><span class="line">    WORD   e_lfarlc;                    <span class="comment">// File address of relocation table</span></span><br><span class="line">    WORD   e_ovno;                      <span class="comment">// Overlay number</span></span><br><span class="line">    WORD   e_res[<span class="number">4</span>];                    <span class="comment">// Reserved words</span></span><br><span class="line">    WORD   e_oemid;                     <span class="comment">// OEM identifier (for e_oeminfo)</span></span><br><span class="line">    WORD   e_oeminfo;                   <span class="comment">// OEM information; e_oemid specific</span></span><br><span class="line">    WORD   e_res2[<span class="number">10</span>];                  <span class="comment">// Reserved words</span></span><br><span class="line">    LONG   e_lfanew;                    <span class="comment">// File address of new exe header</span></span><br><span class="line">&#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;</span><br></pre></td></tr></table></figure>
+<p>其中<code>e_magic</code>这个字段是“魔数”，简单来说就是用来区分不同文件类型的，详细可以看：<a href="https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97_(%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88)，PE的该字段包括“MZ”这两个字母的ASCII码。" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97_(%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88)，PE的该字段包括“MZ”这两个字母的ASCII码。</a></p>
+<p>其他字段中最重要的就是<code>e_cs</code>和<code>e_ip</code>这两个了，这两个字段的值指向程序的入口地址。</p>
+<p>在DOS系统下运行PE文件，会因为魔数而检测到PE文件是一个“MZ”格式的文件，然后开始读取<code>e_cs</code>和<code>e_ip</code>的值准备执行，但其本质还是PE文件，且PE文件中这两个字段指向的并不是真正的程序入口地址，而是指向<code>DOS Stub</code>的起始位置，<code>DOS Stub</code>是可以在DOS下运行的一小段代码，这段代码唯一的作用是向终端输出一行字符串：“This program cannot be run in DOS”，然后就退出程序，这样就防止了在DOS下执行PE可能导致的错误。</p>
+<p><code>IMAGE_OPTIONAL_HEADER32</code>字面上是可选的，但实际上对于PE来说，是必须的，因为其中包含了很多对于PE执行来说重要的信息，比如<code>DataDirectory</code>。但是我们不必熟知，用到的时候再查即可，具体结构就不展示了。</p>
+<h3 id="PE-数据目录"><a href="#PE-数据目录" class="headerlink" title="PE 数据目录"></a>PE 数据目录</h3><p>数据目录是一个数据结构——<code>_IMAGE_DATA_DIRECTORY</code>，定义为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</span><br></pre></td></tr></table></figure>
+<p>这个数据结构描述了PE文件中其他数据结构（如导入表、导出表、资源表、重定位表等）的虚拟地址和大小。</p>
+<p>上一节最后的可选头文件中就包含了一个数据目录的数组，每一个元素对应一个表，以让系统很方便的找到所要用的表。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" rel="tag"><i class="fa fa-tag"></i> 《程序员的自我修养》</a>
+            
+              <a href="/tags/COFF/" rel="tag"><i class="fa fa-tag"></i> COFF</a>
+            
+              <a href="/tags/PE/" rel="tag"><i class="fa fa-tag"></i> PE</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/02/05/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch4-%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5/" rel="next" title="《程序员的自我修养》 Ch4 静态链接">
+                  <i class="fa fa-chevron-left"></i> 《程序员的自我修养》 Ch4 静态链接
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/03/30/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch6-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B/" rel="prev" title="《程序员的自我修养》 Ch6 可执行文件的装载与进程">
+                  《程序员的自我修养》 Ch6 可执行文件的装载与进程 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#PE的前身COFF文件"><span class="nav-text">PE的前身COFF文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链接指示信息"><span class="nav-text">链接指示信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试信息"><span class="nav-text">调试信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号表"><span class="nav-text">符号表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows下的ELF——PE"><span class="nav-text">Windows下的ELF——PE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PE-数据目录"><span class="nav-text">PE 数据目录</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.png"
+      alt="DOA">
+  <p class="site-author-name" itemprop="name">DOA</p>
+  <div class="site-description" itemprop="description">A student</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Floral" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;Floral" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DOA</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.4.2.js"></script>
+
+<script src="/js/motion.js?v=7.4.2.js"></script>
+
+
+<script src="/js/schemes/pisces.js?v=7.4.2.js"></script>
+
+
+<script src="/js/next-boot.js?v=7.4.2.js"></script>
+
+<script src="/js/bookmark.js?v=7.4.2.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+<script src="/js/local-search.js?v=7.4.2.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '9vM1bW0AWKyg18o2LVQFYrk0-gzGzoHsz',
+    appKey: 'SGvmQBHXCNz2DQQNXhXbM4XF',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname,
+    recordIP: true,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

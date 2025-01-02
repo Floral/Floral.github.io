@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.2">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.2" color="#222">
+  <meta name="google-site-verification" content="f28RDvMfr6kYbq8YABs3VRYBjYZjIprWEKrOV2GjPYQ">
+  <meta name="baidu-site-verification" content="iqJqx1fwGW">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.2">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="本章开始，记录的方式将变得越来越简要（以节省时间，提升更新速度），起到一个要点记录的作用。  虽然这一章最终还是又臭又长。 ​                                                            ——来自写完后的我  本章主要讲的是Linux下共享库的管理、安装、查找机制以及符号版本机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《程序员的自我修养》 Ch8 Linux共享库的组织">
+<meta property="og:url" content="https://floral.github.io/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/index.html">
+<meta property="og:site_name" content="DOA&#39;s Blog">
+<meta property="og:description" content="本章开始，记录的方式将变得越来越简要（以节省时间，提升更新速度），起到一个要点记录的作用。  虽然这一章最终还是又臭又长。 ​                                                            ——来自写完后的我  本章主要讲的是Linux下共享库的管理、安装、查找机制以及符号版本机制。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-23T23:40:24.000Z">
+<meta property="article:modified_time" content="2025-01-02T13:41:03.840Z">
+<meta property="article:author" content="DOA">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="《程序员的自我修养》">
+<meta property="article:tag" content="共享库">
+<meta property="article:tag" content="符号版本">
+<meta property="article:tag" content="环境变量">
+<meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://floral.github.io/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>《程序员的自我修养》 Ch8 Linux共享库的组织 | DOA's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DOA's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Dream Once Again</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>Sitemap</a>
+
+  </li>
+      
+    
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://floral.github.io/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DOA">
+      <meta itemprop="description" content="A student">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DOA's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            《程序员的自我修养》 Ch8 Linux共享库的组织
+            
+
+          
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-11-23 23:40:24" itemprop="dateCreated datePublished" datetime="2021-11-23T23:40:24+00:00">2021-11-23</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-02 13:41:03" itemprop="dateModified" datetime="2025-01-02T13:41:03+00:00">2025-01-02</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">《程序员的自我修养》</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/23/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B-Ch8-Linux%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本章开始，记录的方式将变得越来越简要（以节省时间，提升更新速度），起到一个要点记录的作用。</p>
+<blockquote>
+<p>虽然这一章最终还是又臭又长。</p>
+<p>​                                                            ——来自写完后的我</p>
+</blockquote>
+<p>本章主要讲的是Linux下共享库的管理、安装、查找机制以及符号版本机制。</p>
+<a id="more"></a>
+<h3 id="8-1-共享库版本"><a href="#8-1-共享库版本" class="headerlink" title="8.1 共享库版本"></a>8.1 共享库版本</h3><p>产生共享库需要组织的根本原因就是，不同版本的共享库的<strong>ABI（Application Binary Interface）</strong>不一样。API是源代码层面的接口，而ABI是二进制层面的接口，ABI就是API经过编译器编译后之后形成的二进制文件中的接口，由于不同版本的代码经过编译后的二进制库文件的不同，可能会改变某些ABI，进而导致不同版本的库不兼容，所以必须对不同版本的库进行管理。</p>
+<blockquote>
+<p>按照书上的话说，ABI包括一些诸如：函数调用的堆栈结构、符号命名、参数规则、数据结构的内存分布等方面的规则。</p>
+</blockquote>
+<p>库函数的更新分为可兼容和不可兼容两种：</p>
+<p><strong>兼容更新：</strong>在原先版本的共享库的基础上添加一些东西，并不改变原有的接口。</p>
+<p><strong>不兼容更新：</strong>改变了原先版本的共享库的某些接口。</p>
+<p>C语言的库函数不同更改的兼容性如下：</p>
+<p>编译器和系统库的不同（甚至版本不同）都可能会影响ABI。</p>
+<blockquote>
+<p>C++的ABI兼容问题很严重，因为C++对其ABI并没有作出规定，所以不同的编译器甚至同一个编译器的不同版本对C++的一些特性都有着不同的方案，而且互不兼容，比如虚函数表、模板实例化、多重继承等。</p>
+</blockquote>
+<p>代码、编译器、操作系统等因素的影响，不同的环境下，同一份源代码编译后的ABI也可能不同。</p>
+<h4 id="8-1-2-共享库版本命名"><a href="#8-1-2-共享库版本命名" class="headerlink" title="8.1.2 共享库版本命名"></a>8.1.2 共享库版本命名</h4><p>Linux的共享库命名规则如下：</p>
+<p><code>libname.so.x.y.z</code></p>
+<p>其中，<code>so</code>是共共享库后缀，<code>x</code>是主版本号，<code>y</code>是次版本号，<code>z</code>是发布版本号。</p>
+<p>主版本号是重大升级，不同主版本之间是不兼容的</p>
+<p>次版本号是增量升级，只增加了一些新的接口符号，在主版本号相同的前提下，高次版本向低次版本兼容。</p>
+<p>发布版本号是一些错误的修正、性能的改进等，在主版本号和次版本号相同的情况下，不同发布版本之间完全兼容。</p>
+<blockquote>
+<p>Linux下也有一些不符合上述规则的特例，比如Glibc，它包含了许多部分，其中的c语言库采用的方式是：<code>libc-x.y.z.so</code>，还有动态链接器<code>ld-x.y.z.so</code>，Glibc还有其他的部分也是这样。</p>
+</blockquote>
+<h4 id="8-1-3-SO-NAME"><a href="#8-1-3-SO-NAME" class="headerlink" title="8.1.3 SO-NAME"></a>8.1.3 SO-NAME</h4><p>因为不同版本的共享库不一定兼容，所以每个程序中必须包含其所依赖的库的版本信息。</p>
+<p>因为不同的主版本是肯定不兼容的，所以系统主要通过主版本号来区分链接的版本，这个机制称为SO-NAME，也就是创建一个指向共享库的<strong>软链接</strong>，其名字只保留共享库的主版本号，例如：“/lib/libfoo.so.2.6.1”的SO-NAME就是“/lib/libfoo.so.2”。</p>
+<blockquote>
+<p>由于某些历史原因，动态链接器的SO-NAME也与众不同，比如<code>ld-2.6.1.so</code>的SO-NAME是<code>ld-linux.so</code>。</p>
+</blockquote>
+<p>如果一个OS里有多个主版本号相同，次同版号不同的库，SO-NAME软链接会指向次版本号最新的库。</p>
+<p>没有SO-NAME机制前，编译生成ELF文件时需要将所依赖的库的全名（比如<code>libfoo.2.6.1</code>）保存到<code>.dynamic</code>中，如果在新的OS环境中没有这个版本的库，就无法正常运行。</p>
+<p>有了SO-NAME机制后，就可以将所依赖的库的SO-NAME保存到<code>.dynamic</code>段中，之后运行的时候，动态链接器就可以根据SO-NAME来链接到符合条件的最新的库了。</p>
+<p>由于次版本号是高版本兼容低版本的，更新库的时候也可以直接删掉旧的次版本号的库了，大大节省了空间。</p>
+<p>如果是主版本升级，那么OS中会保存有多个SO-NAME。</p>
+<blockquote>
+<p>Linux中的<code>ldconfig</code>工具，可以遍历所有默认的共享库目录（<code>lib</code>、<code>/usr/lib</code>），来更新所有SO-NAME的软链接的，使其指向最新的版本库。</p>
+</blockquote>
+<p><strong>链接名</strong></p>
+<p>GCC编译器可以用<code>-l</code>参数使用某个共享库，具体请用看GCC的帮助或百度，这里不再赘述。</p>
+<h3 id="8-2符号版本"><a href="#8-2符号版本" class="headerlink" title="8.2符号版本"></a>8.2符号版本</h3><p>虽然SO-NAME是指向了本机器上最新的此版本号的库，但是存在这种情况：在其他机器上编译的软件依赖的库的次版本号（2.7.1）比运行该软件的环境中库的次版本号高（2.6.1），虽然SO-NAME一样，但是如果直接运行该软件的话，仍然有可能报错，因为该软件可能用到了高次版本库更新的符号。这个问题称作<strong>“次版本号交会问题”</strong></p>
+<p>有些OS会直接向用户发出警告但继续运行，有些OS则是直接禁止运行该软件。</p>
+<p>为了更细致的控制符号的版本依赖问题，出现了一种<strong>基于符号的版本机制（Symbol Versioning）</strong>。思想就是给每个符号打上版本标记，比如“VERS_1.1”、“VERS_1.2”。</p>
+<h4 id="8-2-2-Solaris中的符号版本机制"><a href="#8-2-2-Solaris中的符号版本机制" class="headerlink" title="8.2.2 Solaris中的符号版本机制"></a>8.2.2 Solaris中的符号版本机制</h4><p>符号的版本标记也可以看作一种集合，Solaris中程序员可以通过<strong>符号版本脚本</strong>来指定符号所属的集合，集合与几何之间也存在继承和以来的关系。</p>
+<p>一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">SUNW_1.2 &#123;</span><br><span class="line">	global:</span><br><span class="line">	swap;</span><br><span class="line">&#125;SUNW_1.1;</span><br><span class="line"></span><br><span class="line">SUNW_1.1 &#123;</span><br><span class="line">	global:</span><br><span class="line">	pop;</span><br><span class="line">	push;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">SUNWprivate &#123;</span><br><span class="line">	global:</span><br><span class="line">	__pop;</span><br><span class="line">	__push;</span><br><span class="line">	local:</span><br><span class="line">	*;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个脚本中定义了3个集合：”SUNW_1.2“、”SUNW_1.1“和”SUNWprivate“，第一个集合有一个全局符号<code>swap</code>，同时继承了SUNW_1.1集合中的所有符号，SUNW_1.1中包含了<code>pop</code>和<code>push</code>两个全局符号，SUNWprivate中则声明了<code>__pop</code>和<code>__push</code>这两个全局符号，同时将其他所有的符号（除了这3个集合中声明过的全局符号）都声明为局部符号。</p>
+<p>这种方法又被称为<strong>范围机制（Scoping）</strong>。</p>
+<h4 id="8-2-3-Linux中的符号版本"><a href="#8-2-3-Linux中的符号版本" class="headerlink" title="8.2.3 Linux中的符号版本"></a>8.2.3 Linux中的符号版本</h4><p>Linux下用符号版本机制用的并不广泛，主要是用共享库符号版本机制的是Glibc中的共享库。</p>
+<p>GCC对Solaris的符号版本机制有扩展，可以在C/C++的源代码中嵌入汇编指令，一个例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span>(<span class="string">".symver add, add@VERS_1.1"</span>);	<span class="comment">// 把add添加到VERS_1.1的集合中，同时命名为add</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个机制允许在不同的符号版本中存在相同的符号命名，类似于符号重载，一个例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span>(<span class="string">".symver old_printf, printf@VERS_1.1"</span>);</span><br><span class="line"><span class="keyword">asm</span>(<span class="string">".symver new_printf, printf@VERS_1.2"</span>);	<span class="comment">//外部的程序可以根据符号版本的不同来访问不同版本的printf</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">old_printf</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>书中有一个Linux符号版本机制的实验，可以看看。</p>
+<h3 id="8-3-共享库系统路径"><a href="#8-3-共享库系统路径" class="headerlink" title="8.3 共享库系统路径"></a>8.3 共享库系统路径</h3><p>Linux一般都遵守FHS（File Hierarchy Standard），它规定了系统中的系统文件该如何存放、组织。</p>
+<p>FHS中规定的共享库的存放目录如下：</p>
+<ul>
+<li>/lib：最关键的和最基础的共享库，如动态链接器，C语言运行库、数学库，这些是系统工具/运行的基础</li>
+<li>/usr/lib：非系统运行时所需要的关键性的共享库，主要是开发时用到的库</li>
+<li>/usr/local/lib：主要是第三方应用的库，例如python的解释器</li>
+</ul>
+<h3 id="8-4-共享库查找过程"><a href="#8-4-共享库查找过程" class="headerlink" title="8.4 共享库查找过程"></a>8.4 共享库查找过程</h3><p>一个动态连接的模块所依赖的共享库的路径保存在<code>.dynamic</code>段里面，由<code>DT_NEED</code>类型的项表示。如果保存的是绝对路径，就直接按照这个去找；如果是相对路径，那么动态链接器就会在<code>/lib</code>、<code>/usr/lib</code>和<code>/etc/ld.so.conf</code>配置文件中指定的目录去查找共享库。</p>
+<p>我的wsl中的<code>/etc/ld.so.conf</code>文件内容是：<code>include /etc/ld.so.conf.d/*.conf</code>，也就是说包含了<code>/etc/ld.so.conf.d/</code>目录下所有后缀名为<code>conf</code>的配置文件的内容，具体可以进一步查看这些文件中包含的目录。</p>
+<p>Linux中有一个<code>ldconfig</code>程序，可以搜索这些目录中的库，然后更新相应的SO-NAME（需要该库指定了它自己的SO-NAME），并且存放到一个缓存中，就可以加速共享库的查找过程。每当修改了<code>ld.so.conf</code>包含的内容或者手动安装了库，都应该运行一下这个程序（用包管理器安装的一般会自动帮你运行。</p>
+<h3 id="8-5-环境变量"><a href="#8-5-环境变量" class="headerlink" title="8.5 环境变量"></a>8.5 环境变量</h3><p>环境变量，简单来说就是可以类比为变成中的变量，只不过这个变量的作用域是整个计算机系统。</p>
+<p>同时，环境变量主要用来指示系统中一些“环境”的安装位置，比如各种编程语言的编译环境（例如Python、C++），或者是系统查找动态链接库的目录（比如<code>LD_LIBRARY_PATH</code>、<code>LD_PRELOAD</code>）。</p>
+<blockquote>
+<p>PS：由于加载的全局符号会覆盖后加载的同名全局符号，<code>LD_PRELOAD</code>可以用来修改某些库的某些函数，经常被用在调试或测试中。</p>
+<p>书中还提到了一个<code>LD_DEBUG</code>环境变量，可以用来开启动态链接器的调试功能。</p>
+</blockquote>
+<h3 id="8-6-共享库的创建和安装"><a href="#8-6-共享库的创建和安装" class="headerlink" title="8.6 共享库的创建和安装"></a>8.6 共享库的创建和安装</h3><h4 id="8-6-1-共享库的创建"><a href="#8-6-1-共享库的创建" class="headerlink" title="8.6.1 共享库的创建"></a>8.6.1 共享库的创建</h4><p>创建很简单，就是之前讲过的生成动态链接库的过程，一个典型的命令是：</p>
+<p><code>$gcc -shared -Wl,-soname,my_soname -o library_name source_files library_files</code></p>
+<p>即，产生一个名为<code>library_name</code>的共享库，它的so-name是<code>my_soname</code>，它的源文件包括<code>source_files</code>，它依赖<code>library_files</code>这些库文件。</p>
+<blockquote>
+<p><code>-Wl</code>参数用来把参数传递给链接器，这里就是传递soname参数，如果不指定soname，那么<code>ldconfig</code>命令就不会查找和更新这个库的soname了。</p>
+</blockquote>
+<h4 id="8-6-2-清除符号信息"><a href="#8-6-2-清除符号信息" class="headerlink" title="8.6.2 清除符号信息"></a>8.6.2 清除符号信息</h4><p>普通编译的共享库或可执行文件里面带有符号信息和调试信息，对于最终发布的版本来说，这些信息没什么用，所以可以用<code>strip</code>工具来清除掉这些信息（或者向链接器传递<code>-s</code>和<code>-S</code>参数使得生成的时候就不产生这些信息）。</p>
+<blockquote>
+<p><code>-s</code>是清除所有符号信息，<code>-S</code>是清除调试符号信息。</p>
+</blockquote>
+<h4 id="8-6-3-共享库的安装"><a href="#8-6-3-共享库的安装" class="headerlink" title="8.6.3 共享库的安装"></a>8.6.3 共享库的安装</h4><p>方法一：把共享库放在某个标准的系统共享库目录下，比如：/lib、/usr/lib等，然后运行ldconfig就行。（此方法需要root权限</p>
+<p>方法二：手动建立SO-NAME（<code>ldconfig -n shared_library_directory</code>），然后编译的时候告诉编译器和程序该去哪查找共享库（比如设置<code>LD_LIBRARY_PATH</code>环境变量）。</p>
+<h4 id="8-6-4-共享库构造和析构函数"><a href="#8-6-4-共享库构造和析构函数" class="headerlink" title="8.6.4 共享库构造和析构函数"></a>8.6.4 共享库构造和析构函数</h4><p>关于构造函数和析构函数的概念，在第四章的笔记中提到过。</p>
+<p>GCC对C/C++语言进行了扩展，可以使用<code>__attribute__((constructor))</code>和<code>__attribute__((deconstructor))</code>来分别生命构造和析构函数。</p>
+<p>还有可以指定优先级，例如：<code>__attribute__((constructor(5)))</code></p>
+<p>具体用法请使用的时候再搜索</p>
+<h4 id="8-6-5-共享库脚本"><a href="#8-6-5-共享库脚本" class="headerlink" title="8.6.5 共享库脚本"></a>8.6.5 共享库脚本</h4><p>链接脚本有时候也可以看作一个共享库，需要符合一定的格式。比如<code>libfoo.so</code>文件的内容就是一句脚本：<code>GROUP(/lib/libc.so.6 /lib/libm.so.2)</code>，这个共享库相当于是把<code>libc</code>和<code>libm</code>这两个库组合成一个了。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+            
+              <a href="/tags/%E3%80%8A%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB%E3%80%8B/" rel="tag"><i class="fa fa-tag"></i> 《程序员的自我修养》</a>
+            
+              <a href="/tags/%E5%85%B1%E4%BA%AB%E5%BA%93/" rel="tag"><i class="fa fa-tag"></i> 共享库</a>
+            
+              <a href="/tags/%E7%AC%A6%E5%8F%B7%E7%89%88%E6%9C%AC/" rel="tag"><i class="fa fa-tag"></i> 符号版本</a>
+            
+              <a href="/tags/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" rel="tag"><i class="fa fa-tag"></i> 环境变量</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/10/09/DELL-R730%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E5%8F%8AEDA%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85/" rel="next" title="DELL R730服务器系统安装及EDA软件安装">
+                  <i class="fa fa-chevron-left"></i> DELL R730服务器系统安装及EDA软件安装
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2022/03/25/%E5%9F%BA%E4%BA%8EFPGA%E7%9A%84MPU6050%E5%A7%BF%E6%80%81%E8%A7%A3%E7%AE%97%EF%BC%881%EF%BC%89/" rel="prev" title="基于FPGA的MPU6050姿态解算（1）">
+                  基于FPGA的MPU6050姿态解算（1） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-共享库版本"><span class="nav-text">8.1 共享库版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-共享库版本命名"><span class="nav-text">8.1.2 共享库版本命名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-3-SO-NAME"><span class="nav-text">8.1.3 SO-NAME</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2符号版本"><span class="nav-text">8.2符号版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-2-2-Solaris中的符号版本机制"><span class="nav-text">8.2.2 Solaris中的符号版本机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-2-3-Linux中的符号版本"><span class="nav-text">8.2.3 Linux中的符号版本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-共享库系统路径"><span class="nav-text">8.3 共享库系统路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-共享库查找过程"><span class="nav-text">8.4 共享库查找过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-5-环境变量"><span class="nav-text">8.5 环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-6-共享库的创建和安装"><span class="nav-text">8.6 共享库的创建和安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-6-1-共享库的创建"><span class="nav-text">8.6.1 共享库的创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-6-2-清除符号信息"><span class="nav-text">8.6.2 清除符号信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-6-3-共享库的安装"><span class="nav-text">8.6.3 共享库的安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-6-4-共享库构造和析构函数"><span class="nav-text">8.6.4 共享库构造和析构函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-6-5-共享库脚本"><span class="nav-text">8.6.5 共享库脚本</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.png"
+      alt="DOA">
+  <p class="site-author-name" itemprop="name">DOA</p>
+  <div class="site-description" itemprop="description">A student</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Floral" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;Floral" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:qw.liang@outlook.com" title="E-Mail &amp;rarr; mailto:qw.liang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://www.zhihu.com/people/doa.c" title="Zhihu &amp;rarr; https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;doa.c" rel="noopener" target="_blank"><i class="fa fa-fw fa-address-card"></i>Zhihu</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://space.bilibili.com/37433152" title="Bilibili &amp;rarr; https:&#x2F;&#x2F;space.bilibili.com&#x2F;37433152" rel="noopener" target="_blank"><i class="fa fa-fw fa-btc"></i>Bilibili</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DOA</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.4.2.js"></script>
+
+<script src="/js/motion.js?v=7.4.2.js"></script>
+
+
+<script src="/js/schemes/pisces.js?v=7.4.2.js"></script>
+
+
+<script src="/js/next-boot.js?v=7.4.2.js"></script>
+
+<script src="/js/bookmark.js?v=7.4.2.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+<script src="/js/local-search.js?v=7.4.2.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '9vM1bW0AWKyg18o2LVQFYrk0-gzGzoHsz',
+    appKey: 'SGvmQBHXCNz2DQQNXhXbM4XF',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname,
+    recordIP: true,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
