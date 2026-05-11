@@ -68,8 +68,16 @@
 <meta property="og:description" content="2024&#x2F;08&#x2F;22 从今天开始，正式准备启动这个“项目”啦！（其实已经看过一段时间前面的基础介绍了 希望能够坚持做完！！！(ง •_•)ง 这里主要记录一下做PA过程中遇到的问题和思考（以及内心戏  不过后面一个月要去外地培训了。。。还不知道弄">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241215223855685.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241217232430933.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241218224222172.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241224234747535.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002014939.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002317465.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105.png">
 <meta property="article:published_time" content="2024-08-22T13:59:20.000Z">
-<meta property="article:modified_time" content="2024-10-26T15:10:19.221Z">
+<meta property="article:modified_time" content="2026-04-26T13:06:05.503Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="NEMU">
 <meta property="article:tag" content="NJU">
@@ -334,7 +342,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-26 23:10:19" itemprop="dateModified" datetime="2024-10-26T23:10:19+08:00">2024-10-26</time>
+                <time title="Modified: 2026-04-26 21:06:05" itemprop="dateModified" datetime="2026-04-26T21:06:05+08:00">2026-04-26</time>
               </span>
             
           
@@ -411,9 +419,12 @@
 </blockquote>
 <a id="more"></a>
 <h1 id="1-PA1"><a href="#1-PA1" class="headerlink" title="1. PA1"></a>1. PA1</h1><h2 id="1-3-RTFSC"><a href="#1-3-RTFSC" class="headerlink" title="1.3 RTFSC"></a>1.3 RTFSC</h2><p><code>getopt_long()</code>函数的作用？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">SYNOPSIS</span><br><span class="line">       #include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring);</span><br><span class="line"></span><br><span class="line">       extern char *optarg;</span><br><span class="line">       extern int optind, opterr, optopt;</span><br><span class="line"></span><br><span class="line">       #include &lt;getopt.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt_long(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line"></span><br><span class="line">       int getopt_long_only(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line">                  </span><br><span class="line">DESCRIPTION</span><br><span class="line">       The  getopt()  function  parses  the command-line arguments.  Its arguments argc and argv are the argument count and array as passed to the main() function on program invocation.  An element of argv that starts</span><br><span class="line">       with &#39;-&#39; (and is not exactly &quot;-&quot; or &quot;--&quot;) is an option element.  The characters of this element (aside from the initial &#39;-&#39;) are option characters.  If getopt() is called  repeatedly,  it  returns  successively</span><br><span class="line">       each of the option characters from each of the option elements.</span><br><span class="line"></span><br><span class="line">       The  variable optind is the index of the next element to be processed in argv.  The system initializes this value to 1.  The caller can reset it to 1 to restart scanning of the same argv, or when scanning a new</span><br><span class="line">       argument vector.</span><br><span class="line"></span><br><span class="line">       If getopt() finds another option character, it returns that character, updating the external variable optind and a static variable nextchar so that the next call to getopt() can resume the scan with the follow‐</span><br><span class="line">       ing option character or argv-element.</span><br><span class="line"></span><br><span class="line">       If there are no more option characters, getopt() returns -1.  Then optind is the index in argv of the first argv-element that is not an option.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">SYNOPSIS</span><br><span class="line">       #include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring);</span><br><span class="line"></span><br><span class="line">       extern char *optarg;</span><br><span class="line">       extern int optind, opterr, optopt;</span><br><span class="line"></span><br><span class="line">       #include &lt;getopt.h&gt;</span><br><span class="line"></span><br><span class="line">       int getopt_long(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line"></span><br><span class="line">       int getopt_long_only(int argc, char * const argv[],</span><br><span class="line">                  const char *optstring,</span><br><span class="line">                  const struct option *longopts, int *longindex);</span><br><span class="line">                  </span><br><span class="line">DESCRIPTION</span><br><span class="line">       The  getopt()  function  parses  the command-line arguments.  Its arguments argc and argv are the argument count and array as passed to the main() function on program invocation.  An element of argv that starts</span><br><span class="line">       with &#39;-&#39; (and is not exactly &quot;-&quot; or &quot;--&quot;) is an option element.  The characters of this element (aside from the initial &#39;-&#39;) are option characters.  If getopt() is called  repeatedly,  it  returns  successively</span><br><span class="line">       each of the option characters from each of the option elements.</span><br><span class="line"></span><br><span class="line">       The  variable optind is the index of the next element to be processed in argv.  The system initializes this value to 1.  The caller can reset it to 1 to restart scanning of the same argv, or when scanning a new argument vector.</span><br><span class="line"></span><br><span class="line">       If getopt() finds another option character, it returns that character, updating the external variable optind and a static variable nextchar so that the next call to getopt() can resume the scan with the following option character or argv-element.</span><br><span class="line"></span><br><span class="line">       If there are no more option characters, getopt() returns -1.  Then optind is the index in argv of the first argv-element that is not an option.</span><br><span class="line">       optstring is a string containing the legitimate option characters.  If such a character is followed by a colon, the option requires an argument, so getopt() places a pointer to the following text in the same argv-element, or the text of the following argy-element, in optarg.  Two colons mean an option takes an optional arg;  if there is text in the current argv-element (i.e., in the same word as the option name itself, for example, &quot;-oarg&quot;), then it is returned in optarg, othenwise optarg is set to zero.  This is a GNU extension.  If optstring contains W followed by a senicolon, then -W foo is treated as the long option --foo.  (The -W option is reserved by POSIX.2 for implementation extensions.)  This behavior is a GNU extension, not available with libraries before glibc 2. </span><br><span class="line">       By default, getopt() permutes the contents of argy as it scans, so that eventually all the nonoptions are at the end.  Two other modes are also implemented.  If the first character of optstring is &#39;+&#39; or the environment variable POSIXLY_CORRECT is set, then option processing stops as soon as a nonoption argument is encountered.  If the first character of optstring is &#39;-&#39;, then each nonoption argv-element is handled as if it were the argument of an option with character code 1.  (This is used by prograns that were written to expect options and other argy-elenents in any order and that care about the ordering of the two.)  The special argument &quot;--&quot; forces an end of option-scanning regardless of the scanning mode.l</span><br></pre></td></tr></table></figure>
 <p>got，用来解析命令行参数的。</p>
 <h3 id="1-3-1-准备第一个客户程序"><a href="#1-3-1-准备第一个客户程序" class="headerlink" title="1.3.1 准备第一个客户程序"></a>1.3.1 准备第一个客户程序</h3><blockquote>
+<p><strong>为什么全部都是函数?</strong></p>
+<p>阅读<code>init_monitor()</code>函数的代码, 你会发现里面全部都是函数调用. 按道理, 把相应的函数体在<code>init_monitor()</code>中展开也不影响代码的正确性. 相比之下, 在这里使用函数有什么好处呢?</p>
+<p>这样有利于抽象内部设计，使得设计更加层次分明</p>
 <p><strong>2024/08/23</strong></p>
 </blockquote>
 <p>NEMU是一个用来执行客户程序的程序（模拟计算机），但是NEMU一开始并没有客户程序（OS或其他客户程序），需要有程序将客户程序读入计算机中，NEMU项目src中的monitor就是用来干这个事的（也包含调试的功能<code>sdb</code>）。</p>
@@ -424,17 +435,307 @@
 </ol>
 <p>读入客户程序到内存中，读到什么位置？NEMU采用最简单的方式——约定一个位置，可由我们配置，定义在<code>nemu/include/memory/paddr.h</code>中，定义为RESET_VECTOR。</p>
 <p>NEMU默认提供128MB的内存，模拟内存定义在<code>src/memory/paddr.c</code>中，定义为<code>pmem</code></p>
-<p>RISC-V的默认物理内存地址是从<code>0x80000000</code>开始编址的</p>
 <blockquote>
-<p>可能这个RESET_VECTOR就相当于真实计算机启动的第一个地址？存放BIOS的位置？</p>
+<p>RISC-V32（以及MIPS32）的默认物理内存地址是从<code>0x80000000</code>开始编址的， 将来CPU访问内存时, 会将CPU将要访问的内存地址映射到<code>pmem</code>中的相应偏移位置，这是通过<code>nemu/src/memory/paddr.c</code>中的<code>guest_to_host()</code>函数实现的。</p>
 </blockquote>
+<p><strong>可能这个RESET_VECTOR就相当于真实计算机启动的第一个地址？存放BIOS的位置？</strong></p>
 <p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20240823232125339.png" alt="Welcome to riscv32-NEMU!" style="zoom: 80%;"></p>
 <p>成功运行！！！</p>
 <blockquote>
 <p><strong>2024.10.26记</strong></p>
 <p>果然。。。中途荒废了一个月再捡起来就需要勇气了hhh，</p>
 <p>荒废了两个月后，我终于又准备回来了！</p>
+<p><strong>2024.12.15记</strong></p>
+<p>真的回来了（</p>
+<p><strong>2024/12/15</strong></p>
 </blockquote>
+<p>NEMU最开始默认的客户程序定义在init.c函数中，如下：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241215223855685.png" alt="image-20241215223855685"></p>
+<p>其中的img就是4条指令+一个数据。也可以在运行NEMU的时候添加一个参数，指定外部的镜像文件加载。</p>
+<h3 id="1-3-2-运行第一个客户程序"><a href="#1-3-2-运行第一个客户程序" class="headerlink" title="1.3.2 运行第一个客户程序"></a>1.3.2 运行第一个客户程序</h3><blockquote>
+<h5 id="究竟要执行多久"><a href="#究竟要执行多久" class="headerlink" title="究竟要执行多久?"></a>究竟要执行多久?</h5><p>在<code>cmd_c()</code>函数中, 调用<code>cpu_exec()</code>的时候传入了参数<code>-1</code>, 你知道这是什么意思吗?</p>
+<p><strong>A：</strong>将-1转换成uint64_t的最大值，即执行0xFFFFFFFFFFFFFFFF这么多条指令（如不是指令自行退出的话）</p>
+<h5 id="潜在的威胁-建议二周目思考"><a href="#潜在的威胁-建议二周目思考" class="headerlink" title="潜在的威胁 (建议二周目思考)"></a>潜在的威胁 (建议二周目思考)</h5><p>“调用<code>cpu_exec()</code>的时候传入了参数<code>-1</code>“, 这一做法属于未定义行为吗? 请查阅C99手册确认你的想法。</p>
+<p><strong>A：</strong>好的，那就二周目再思考（</p>
+</blockquote>
+<p>进入<code>sdb_mainloop()</code>函数后，会通过<code>cmd_table</code>结构体中的<strong>函数指针</strong>（<code>handler</code>）来调用不同的函数，输入<code>c</code>就可以运行内置的img。但是再次输入<code>c</code>的话会提示需要重新运行NEMU才能。。。</p>
+<p><code>sdb_mainloop()</code>函数中的<code>strtok()</code>函数是用来分割字符串的，类似python的split函数，可以指定分割标志。</p>
+<p>有意思的是其中的<code>nemu_trap</code>指令，它是为了在NEMU中让客户程序指示执行的结束而加入的, NEMU在ISA手册中选择了一些用于调试的指令, 并将<code>nemu_trap</code>的特殊含义赋予它们。例如在riscv32的手册中, NEMU选择了<code>ebreak</code>指令来充当<code>nemu_trap</code>. 为了表示客户程序是否成功结束, <code>nemu_trap</code>指令还会接收一个表示结束状态的参数。</p>
+<p><strong>RTFM：</strong></p>
+<p>RISC-V的基础指令格式有如下4种：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241217232430933.png" alt="image-20241217232430933"></p>
+<p>RISC-V种，<code>EBREAK</code>指令可以用<code>SYSTEM</code>指令实现，如下：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241218224222172.png" alt="image-20241218224222172"></p>
+<p><code>ECALL</code>和<code>EBREAK</code>的功能都是在<code>SYSTEM</code>这个opcode下实现的，<code>ECALL</code>的<code>funct12</code>是0，<code>EBREAK</code>的<code>funct12</code>是1。</p>
+<p>其中，<code>EBREAK</code>是用于将控制权返回给调试环境。</p>
+<p>NEMU中，<code>EBREAK</code>指令的实现是将<code>nemu_state.state</code>置为NEMU_END，将<code>nemu_state.halt_pc</code>置为当前PC，将<code>nemu_state.halt_ret</code>置为10。</p>
+<blockquote>
+<p>Note：</p>
+<p>什么是trap？</p>
+<p>问了一下GPT：</p>
+<p><strong>Trap</strong> 是指在程序执行过程中，处理器遇到某些事件时，将控制权从当前程序转移到操作系统或异常处理程序的一种机制。<br>它可以由程序主动触发（如系统调用），也可以由硬件自动触发（如异常或中断）。</p>
+<p>STFW：<a href="https://zhuanlan.zhihu.com/p/460874372" target="_blank" rel="noopener">操作系统小结（三）- Trap机制 - 知乎</a></p>
+<p>so，基本上就是用来切换执行的代码流的（个人理解）。</p>
+<h5 id="谁来指示程序的结束"><a href="#谁来指示程序的结束" class="headerlink" title="谁来指示程序的结束?"></a>谁来指示程序的结束?</h5><p>在程序设计课上老师告诉你, 当程序执行到<code>main()</code>函数返回处的时候, 程序就退出了, 你对此深信不疑. 但你是否怀疑过, 凭什么程序执行到<code>main()</code>函数的返回处就结束了? 如果有人告诉你, 程序设计课上老师的说法是错的, 你有办法来证明/反驳吗? 如果你对此感兴趣, 请在互联网上搜索相关内容。</p>
+<p><strong>STFW：</strong>在程序终止前，可能会存在一些清理操作，例如关闭打开的文件、释放分配的内存等。这些清理操作可以在主函数的最后部分执行，调用<code>atexit()</code>函数即可。</p>
+<h5 id="有始有终-建议二周目思考"><a href="#有始有终-建议二周目思考" class="headerlink" title="有始有终 (建议二周目思考)"></a>有始有终 (建议二周目思考)</h5><p>对于GNU/Linux上的一个程序, 怎么样才算开始? 怎么样才算是结束? 对于在NEMU中运行的程序, 问题的答案又是什么呢?</p>
+<p>与此相关的问题还有: NEMU中为什么要有<code>nemu_trap</code>? 为什么要有monitor?</p>
+<p>对于下面的问题，<strong>一周目的回答：</strong>为了暂停/终止当前程序的执行，将CPU的控制权交给其他程序（OS/monitor），monitor是用来调试的（吧。。</p>
+</blockquote>
+<p>代码中有一些值得注意（学习），直接摘抄过来：</p>
+<blockquote>
+<p>三个对调试有用的宏(在<code>nemu/include/debug.h</code>中定义)</p>
+<ul>
+<li><code>Log()</code>是<code>printf()</code>的升级版, 专门用来输出调试信息, 同时还会输出使用<code>Log()</code>所在的源文件, 行号和函数. 当输出的调试信息过多的时候, 可以很方便地定位到代码中的相关位置</li>
+<li><code>Assert()</code>是<code>assert()</code>的升级版, 当测试条件为假时, 在assertion fail之前可以输出一些信息</li>
+<li><code>panic()</code>用于输出信息并结束程序, 相当于无条件的assertion fail</li>
+</ul>
+<p>内存通过在<code>nemu/src/memory/paddr.c</code>中定义的大数组<code>pmem</code>来模拟. 在客户程序运行的过程中, 总是使用<code>vaddr_read()</code>和<code>vaddr_write()</code> (在<code>nemu/src/memory/vaddr.c</code>中定义)来访问模拟的内存. vaddr, paddr分别代表虚拟地址和物理地址. </p>
+<h5 id="优美地退出"><a href="#优美地退出" class="headerlink" title="优美地退出"></a>优美地退出</h5><p>为了测试大家是否已经理解框架代码, 我们给大家设置一个练习: 如果在运行NEMU之后直接键入<code>q</code>退出, 你会发现终端输出了一些错误信息. 请分析这个错误信息是什么原因造成的, 然后尝试在NEMU中修复它.</p>
+</blockquote>
+<p>终于有一个练习了！</p>
+<p>在NEMU中直接输入<code>q</code>和输入<code>c</code>之后再输入<code>q</code>的结果确实不一样！如下：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241224234747535.png" alt="image-20241224234747535"></p>
+<p>输入<code>c</code>之后再输入<code>q</code>能够优雅地退出，并没有报错，而直接输入则会报错。通过<code>echo $?</code>查看程序的返回值，发现直接退出的返回值是2，而正常的是0，所以问题出在返回值上。</p>
+<p>PS：在menu里开启debug配置后，输入<code>make gdb</code>，可以调试NEMU</p>
+<p>一个疑惑是，进入gdb调试后，发现直接退出返回的值是1，并不是2！这是为什么呢？值得思考，怀疑是make程序进行了再次返回，于是直接在命令行运行NEMU而不是通过make命令，得到以下结果：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002014939.png" alt="image-20241225002014939" style="zoom:50%;"></p>
+<p>猜想正确。（还可以深究一下为什么make会在返回值1的基础上返回2？</p>
+<p>不过，程序会报错的原因找到了，就是因为返回值不为0，而控制返回值的函数在<code>/src/utils/state.c</code>中的函数<code>is_exit_status_bad()</code>：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002317465.png" alt="image-20241225002317465"></p>
+<p>说明退出时不满足这个条件，返回去看<code>sdb_mainloop()</code>函数中的调用逻辑，运行<code>c</code>命令的话，会执行img程序，会使得<code>nemu_state</code>满足good表达式中的前一个条件，而直接输入<code>q</code>则直接返回-1，不会修改<code>nemu_state</code>的状态，于是不满足good的条件，所以为0，返回1，于是修改调用的<code>cmd_q()</code>函数，设置<code>nemu_state</code>的状态为<code>NEMU_QUIT</code>，即可实现“优雅地退出”。</p>
+<blockquote>
+<p>事实上, TRM的实现已经都蕴含在上述的介绍中了.</p>
+<ul>
+<li>存储器是个在<code>nemu/src/memory/paddr.c</code>中定义的大数组</li>
+<li>PC和通用寄存器都在<code>nemu/src/isa/$ISA/include/isa-def.h</code>中的结构体中定义</li>
+<li>加法器在… 嗯, 这部分框架代码有点复杂, 不过它并不影响我们对TRM的理解, 我们还是在PA2里面再介绍它吧</li>
+<li>TRM的工作方式通过<code>cpu_exec()</code>和<code>exec_once()</code>体现</li>
+</ul>
+</blockquote>
+<h2 id="1-4-基础设施"><a href="#1-4-基础设施" class="headerlink" title="1.4 基础设施"></a>1.4 基础设施</h2><blockquote>
+<p><strong>免责声明</strong>（不是</p>
+<p>后续内容有很多是直接摘抄自<a href="https://nju-projectn.github.io/ics-pa-gitbook/ics2023/1.5.html" target="_blank" rel="noopener">NEMU的官方文档</a>，每次都说明的话出来太麻烦且不啰嗦</p>
+<p>所以，在这里声明，如有雷同，就是我“抄”过来的（保命</p>
+</blockquote>
+<h3 id="1-4-1-简易调试器"><a href="#1-4-1-简易调试器" class="headerlink" title="1.4.1. 简易调试器"></a>1.4.1. 简易调试器</h3><p>目标是实现sdb的以下一些功能：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>格式</th>
+<th>使用举例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>帮助(1)</td>
+<td><code>help</code></td>
+<td><code>help</code></td>
+<td>打印命令的帮助信息</td>
+</tr>
+<tr>
+<td>继续运行(1)</td>
+<td><code>c</code></td>
+<td><code>c</code></td>
+<td>继续运行被暂停的程序</td>
+</tr>
+<tr>
+<td>退出(1)</td>
+<td><code>q</code></td>
+<td><code>q</code></td>
+<td>退出NEMU</td>
+</tr>
+<tr>
+<td>单步执行</td>
+<td><code>si [N]</code></td>
+<td><code>si 10</code></td>
+<td>让程序单步执行<code>N</code>条指令后暂停执行, 当<code>N</code>没有给出时, 缺省为<code>1</code></td>
+</tr>
+<tr>
+<td>打印程序状态</td>
+<td><code>info SUBCMD</code></td>
+<td><code>info r</code> <code>info w</code></td>
+<td>打印寄存器状态 打印监视点信息</td>
+</tr>
+<tr>
+<td>扫描内存(2)</td>
+<td><code>x N EXPR</code></td>
+<td><code>x 10 $esp</code></td>
+<td>求出表达式<code>EXPR</code>的值, 将结果作为起始内存 地址, 以十六进制形式输出连续的<code>N</code>个4字节</td>
+</tr>
+<tr>
+<td>表达式求值</td>
+<td><code>p EXPR</code></td>
+<td><code>p $eax + 1</code></td>
+<td>求出表达式<code>EXPR</code>的值, <code>EXPR</code>支持的 运算请见<a href="https://nju-projectn.github.io/ics-pa-gitbook/ics2023/1.6.html" target="_blank" rel="noopener">调试中的表达式求值</a>小节</td>
+</tr>
+<tr>
+<td>设置监视点</td>
+<td><code>w EXPR</code></td>
+<td><code>w *0x2000</code></td>
+<td>当表达式<code>EXPR</code>的值发生变化时, 暂停程序执行</td>
+</tr>
+<tr>
+<td>删除监视点</td>
+<td><code>d N</code></td>
+<td><code>d 2</code></td>
+<td>删除序号为<code>N</code>的监视点</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>CPU_state的定义在相应isa的<code>include/isa-def.h</code>中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">word_t</span> gpr[MUXDEF(CONFIG_RVE, <span class="number">16</span>, <span class="number">32</span>)];  </span><br><span class="line">    <span class="keyword">vaddr_t</span> pc;</span><br><span class="line">&#125; MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);</span><br></pre></td></tr></table></figure>
+<p>其中gpr就是<code>general purpose register</code>的意思，pc是程序指针。</p>
+<p><strong>解析命令</strong></p>
+<p>这里有两个函数很好用：</p>
+<ul>
+<li>strtok()：分割字符串</li>
+<li>sscanf()：输入是字符串，从中获取格式化输入</li>
+</ul>
+<p>具体用法可以STFW or RTFM</p>
+<p><strong>单步执行</strong></p>
+<p>略。</p>
+<blockquote>
+<p>PS：并不是我懒，是我相信你可以的！</p>
+</blockquote>
+<p><strong>打印寄存器</strong></p>
+<p>同上</p>
+<p><strong>扫描内存</strong></p>
+<p>这里读取的是物理内存（pmem）。riscv32的物理地址是从<code>0x80000000</code>开始的，NEMU框架已经提供了一个<code>paddr_read()</code>函数来读取对应的地址数据。</p>
+<h3 id="1-4-2-表达式求值"><a href="#1-4-2-表达式求值" class="headerlink" title="1.4.2. 表达式求值"></a>1.4.2. 表达式求值</h3><p>！！！前排提示！！！</p>
+<p>大的要来了！这一小节应该会有难度。</p>
+<blockquote>
+<p>在这里使用如下方法来解决表达式求值的问题:</p>
+<ol>
+<li>首先识别出表达式中的单元</li>
+<li>根据表达式的归纳定义进行递归求值</li>
+</ol>
+</blockquote>
+<p><strong>词法分析</strong></p>
+<p>词法分析就是识别出表达式中的单元，它们正式的称呼叫token。例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;5 + 4 * 3 &#x2F; 2 - 1&quot;</span><br></pre></td></tr></table></figure>
+<p>其中，数字<code>5</code>等，符号<code>+</code>，<code>*</code>等都是token（除了空格）。</p>
+<p>秘密武器：正则表达式</p>
+<p>先只考虑一种简单的情况：算术表达式，即待求值表达式中只允许出现以下的token类型:</p>
+<ul>
+<li>十进制整数</li>
+<li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code></li>
+<li><code>(</code>, <code>)</code></li>
+<li>空格串(一个或多个空格)</li>
+</ul>
+<blockquote>
+<p><code>sdb/expr.c</code>中，下面这个代码：</p>
+<p><code>static Token tokens[32] __attribute__((used)) = {};</code></p>
+<p>中的<code>__attribute__((used))</code>是告诉编译器：即使这个 <code>tokens</code> 数组在程序中好像没被用到，也不要优化掉它，这个是GCC / Clang 编译器的扩展语法。</p>
+<p><strong>为什么要加这个？</strong></p>
+<p>因为NEMU中有很多变量都是用来被 monitor/debug/<strong>反射访问</strong>的。</p>
+<p><strong>什么是反射访问？</strong></p>
+<p>就是<strong>程序在运行时，根据名字动态查找、访问内部变量或者函数</strong>，而不是硬编码在源代码里。</p>
+<p>C 语言本身<strong>没有内建反射机制</strong>，但可以通过 <strong>手动建表</strong> + <strong>符号查找</strong>来“模拟反射”。</p>
+<p>一个反射访问的例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* name;</span><br><span class="line">    <span class="keyword">void</span>* addr;</span><br><span class="line">&#125; VarEntry;</span><br><span class="line"></span><br><span class="line">VarEntry variables[] = &#123;</span><br><span class="line">    &#123;<span class="string">"x"</span>, &amp;x&#125;,</span><br><span class="line">    &#123;<span class="string">"y"</span>, &amp;y&#125;,</span><br><span class="line">    &#123;<span class="string">"z"</span>, &amp;z&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">lookup</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(variables)/<span class="keyword">sizeof</span>(variables[<span class="number">0</span>]); ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">strcmp</span>(variables[i].name, name) == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> variables[i].addr;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就可以通过变量名字”x”去查找变量<code>x</code>的实际地址了。</p>
+<p><strong>为什么要有这样的机制？</strong></p>
+<p>为了实现变量的动态访问，特别是NEMU中，例如，<code>sdb_mainloop()</code>函数中处理用户输入，来选择调用不同的函数。或许后面会遇到的，根据用户输入的寄存器名来访问相应的寄存器值。</p>
+<p>所以加了 <code>__attribute__((used))</code> 的静态变量，实际上是<strong>要被反射访问的</strong>。编译器表面上看不到调用，但是运行时需要靠查表、字符串匹配去访问！</p>
+<p><strong>小技巧</strong></p>
+<p>又学到一个小技巧：<code>Log(&quot;... %.*s&quot;, substr_len, substr_start)</code>。底层对应的printf函数。</p>
+<p>这里面的<code>%.*s</code>其实对应的是最后的两个参数：<code>substr_len, substr_start</code>，分别表示要打印的字符数和字符串起始地址。这样就可以不用管<code>\0</code>字符在哪里了。</p>
+</blockquote>
+<h1 id="2-PA2"><a href="#2-PA2" class="headerlink" title="2. PA2"></a>2. PA2</h1><h2 id="2-4-基础设施2"><a href="#2-4-基础设施2" class="headerlink" title="2.4. 基础设施2"></a>2.4. 基础设施2</h2><blockquote>
+<p><strong>消失的符号</strong></p>
+<p>我们在<code>am-kernels/tests/cpu-tests/tests/add.c</code>中定义了宏<code>NR_DATA</code>, 同时也在<code>add()</code>函数中定义了局部变量<code>c</code>和形参<code>a</code>, <code>b</code>, 但你会发现在符号表中找不到和它们对应的表项, 为什么会这样? 思考一下, 什么才算是一个符号(symbol)?</p>
+<p>A：因为被编译器给优化了</p>
+</blockquote>
+<h3 id="2-4-1-函数调用的踪迹"><a href="#2-4-1-函数调用的踪迹" class="headerlink" title="2.4.1. 函数调用的踪迹"></a>2.4.1. 函数调用的踪迹</h3><p>需要解析ELF文件，首先可以看一下ELF的格式，使用：<code>man 5 elf</code>。</p>
+<p>我们要在初始化ftrace时从ELF文件中读出符号表和字符串表，供后续使用。</p>
+<p>ELF文件中包括许多的section，其中我们需要用到的section有如下3个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.shstrtab</span><br><span class="line">     This section holds section names.  This section is of type</span><br><span class="line">              SHT_STRTAB.  No attribute types are used.</span><br><span class="line"></span><br><span class="line">.strtab</span><br><span class="line">     This section holds strings, most commonly the strings that</span><br><span class="line">     represent the names associated with symbol table entries.</span><br><span class="line">     If the file has a loadable segment that includes the symbol</span><br><span class="line">     string table, the section&#39;s attributes will include the</span><br><span class="line">     SHF_ALLOC bit.  Otherwise, the bit will be off.  This</span><br><span class="line">     section is of type SHT_STRTAB.</span><br><span class="line">.symtab</span><br><span class="line">     This section holds a symbol table.  If the file has a</span><br><span class="line">     loadable segment that includes the symbol table, the</span><br><span class="line">     section&#39;s attributes will include the SHF_ALLOC bit.</span><br><span class="line">     Otherwise, the bit will be off.  This section is of type</span><br><span class="line">     SHT_SYMTAB.</span><br><span class="line">     An object file&#39;s symbol table holds information needed to locate</span><br><span class="line">     and relocate a program&#39;s symbolic definitions and references.  A</span><br><span class="line">     symbol table index is a subscript into this array.</span><br></pre></td></tr></table></figure>
+<p><code>.shstrtab</code>保存的是section name；<code>.strtab</code>保存的是符号表中需要用到的字符串，也就是字符串表；<code>.symtab</code>保存的是符号相关的信息，就是我们说的符号表。</p>
+<p>实现ftrace的思路如下：</p>
+<ol>
+<li>提前通过符号表和字符串表解析出来各个函数对应的地址（和范围）</li>
+<li>在执行<code>jal</code>和<code>jalr</code>指令的时候，判断跳转的地址是否在第1步中解析出来的函数中。<ol>
+<li>如果是，则打印信息</li>
+<li>如果不是，则不打印</li>
+</ol>
+</li>
+</ol>
+<p>ELF文件的最开始是一个ELF Header结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span>    <span class="keyword">char</span> e_ident[<span class="number">16</span>];</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_type;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_machine;</span><br><span class="line">    <span class="keyword">uint32_t</span>    e_version;</span><br><span class="line">    Elf64_Addr  e_entry;</span><br><span class="line">    Elf64_Off   e_phoff;</span><br><span class="line">    Elf64_Off   e_shoff;      <span class="comment">// &lt;- 节表偏移</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    e_flags;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_ehsize;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_phentsize;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_phnum;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_shentsize;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_shnum;</span><br><span class="line">    <span class="keyword">uint16_t</span>    e_shstrndx;   <span class="comment">// &lt;- shstr在节表中的下标</span></span><br><span class="line">&#125; Elf64_Ehdr;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>e_shoff</code>表示的是section header table（sht）在文件中的字节偏移，可以通过它直接定位到sht。<br>然后，<code>e_shstrndx</code>是sht中字符串表的下标，可以通过它定位到字符串表。<br>最后，我们需要找到符号表，找到符号表才能找到相应的函数符号。</p>
+<blockquote>
+<p>其中<code>e_shnum</code>是sht数组的大小，即多少项。<code>e_shentsize</code>是每一项的大小。这两个是用来辅助解析sht的。</p>
+</blockquote>
+<p>我们还需要知道的是，符号表每一项的结构体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span>      st_name;</span><br><span class="line">    Elf32_Addr    st_value;</span><br><span class="line">    <span class="keyword">uint32_t</span>      st_size;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_info;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_other;</span><br><span class="line">    <span class="keyword">uint16_t</span>      st_shndx;</span><br><span class="line">&#125; Elf32_Sym;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span>      st_name;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_info;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_other;</span><br><span class="line">    <span class="keyword">uint16_t</span>      st_shndx;</span><br><span class="line">    Elf64_Addr    st_value;</span><br><span class="line">    <span class="keyword">uint64_t</span>      st_size;</span><br><span class="line">&#125; Elf64_Sym;</span><br></pre></td></tr></table></figure>
+<p>其中<code>st_info</code>指示的是这个符号的类型，如果是它的值是<code>STT_FUNC</code>，那么就表示这个符号是一个函数名。</p>
+<blockquote>
+<p>一个小坑需要注意，<code>st_info</code>这个成员不只是符号的类型，还有binding信息，所以还需要通过一个宏<code>ELF32_ST_TYPE(info)</code>来将<code>st_info</code>转换成TYPE类型再和<code>STT_FUNC</code>对比判断。</p>
+</blockquote>
+<p>RISC-V架构中，函数的调用和返回都是通过<code>jal</code>或<code>jalr</code>指令来实现的，前者是直接跳转指令，后者是间接跳转指令。</p>
+<p>一个典型的ELF文件的大致内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">+---------------------------+</span><br><span class="line">| ELF Header (Elf32_Ehdr)   |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Program Header Table (可选)|</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 1 (.text)         |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 2 (.data)         |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 3 (.shstrtab)     |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section ...               |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section Header Table      |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section ...               |</span><br><span class="line">+---------------------------+</span><br></pre></td></tr></table></figure>
+<p>实现初版的ftrace后，运行得到的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">0x8000000c: call [_trm_init@0x80000258]</span><br><span class="line">0x80000268:   call [main@0x800001cc]</span><br><span class="line">0x800001ec:     call [f0@0x80000010]</span><br><span class="line">0x8000016c:       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:         call [f1@0x8000005c]</span><br><span class="line">0x8000016c:           call [f2@0x800000a4]</span><br><span class="line">0x800000f0:             call [f1@0x8000005c]</span><br><span class="line">0x8000016c:               call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                 call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]</span><br><span class="line">0x80000100:                   ret [f2]</span><br><span class="line">0x80000184:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]</span><br><span class="line">0x80000100:                   ret [f2]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>不匹配的函数调用和返回​</strong><br>如果你仔细观察上文recursion的示例输出, 你会发现一些有趣的现象. 具体地, 注释(1)处的ret的函数是和对应的call匹配的, 也就是说, call调用了f2, 而与之对应的ret也是从f2返回; 但注释(2)所指示的一组call和ret的情况却有所不同, call调用了f1, 但却从f0返回; 注释(3)所指示的一组call和ret也出现了类似的现象, call调用了f1, 但却从f3返回。</p>
+<p>A：尾调用优化，在函数结尾简单地调用另一个函数的话，会触发编译器的尾调用优化。这里的简单是指仅仅调用另一个函数，而不会在调用后对返回值进行处理，例如f2中的“+9”。所以我们可以观察到，不匹配的call和ret是固定组合：</p>
+<ol>
+<li>call f1, ret f3</li>
+<li>call f1, ret f0</li>
+<li>call f0, ret f3 (这个是最外面一层call ret对)</li>
+</ol>
+</blockquote>
+<p>还有一个“奇怪的”点，你可以观察到，最开始的第一个call f0函数后，call的是f2，而不是代码中的f3。实际上这也是尾调用优化的一个影响，实现尾调用的话，不需要保存返回地址到ra寄存器，而我们实现的ftrace是按照是否保存返回地址到ra判断是否是call指令的，因此，要实现真正的ftrace，还需要对jal/jalr指令进行判断，不能仅仅看是否保存地址到ra。</p>
+<blockquote>
+<p>关于尾调用优化（TCO）的解释，推荐一个视频：</p>
+<p><a href="https://www.bilibili.com/video/BV1Pb421Y7uP" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Pb421Y7uP</a></p>
+<h5 id="冗余的符号表"><a href="#冗余的符号表" class="headerlink" title="冗余的符号表"></a>冗余的符号表</h5><p>在Linux下编写一个Hello World程序, 然后使用<code>strip</code>命令丢弃可执行文件中的符号表:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -o hello hello.c</span><br><span class="line">strip -s hello</span><br></pre></td></tr></table></figure>
+<p>用<code>readelf</code>查看hello的信息, 你会发现符号表被丢弃了, 此时的hello程序能成功运行吗?</p>
+<p>目标文件中也有符号表, 我们同样可以丢弃它:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -c hello.c</span><br><span class="line">strip -s hello.o</span><br></pre></td></tr></table></figure>
+<p>用<code>readelf</code>查看hello.o的信息, 你会发现符号表被丢弃了. 尝试对hello.o进行链接:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o hello hello.o</span><br></pre></td></tr></table></figure>
+<p>你发现了什么问题? 尝试对比上述两种情况, 并分析其中的原因.</p>
+</blockquote>
+<p>strip掉可执行文件中的符号表依然可以执行，但是strip掉目标文件中的符号表后再链接就会报错：</p>
+<blockquote>
+<p>/usr/bin/ld: error in test.o(.eh_frame); no .eh_frame_hdr table will be created<br>/usr/bin/ld: /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o: in function <code>_start&#39;:
+(.text+0x24): undefined reference to</code>main’<br>collect2: error: ld returned 1 exit status</p>
+</blockquote>
+<p>这是因为符号表就是用于在链接的时候定位地址</p>
+<h3 id="2-4-2-输入输出"><a href="#2-4-2-输入输出" class="headerlink" title="2.4.2. 输入输出"></a>2.4.2. 输入输出</h3><p>设备初始化的流程：</p>
+<p>NEMU(init_monitor)—&gt;NEMU device(init_device)—&gt; NEMU device(各种device init)—&gt;NEMU device IO(add_mmio_map)</p>
+<blockquote>
+<p>如果是make ARCH=riscv32-nemu，那么暂时还没有用到IOE层，AM(ioe_init)—&gt;AM层外设init</p>
+</blockquote>
+<p>设备访问的流程：</p>
+<p>对于RISC-V来说，就是直接写地址，然后在paddr.c中会进行地址的判断，判断是否是往MMIO的地址写入，如果是，则调用</p>
+<p>vaddr_write—&gt;paddr_write—&gt;mmio_write—&gt;map_write—&gt;host_write(往mmio map的space中写入数据)—&gt;调用设备的callback函数，以serial为例，那就是调用serial_io_handler函数—&gt;serial_putc</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">hello.c</span><br><span class="line">  <span class="built_in">printf</span></span><br><span class="line">    ↓</span><br><span class="line">  putch</span><br><span class="line">    ↓</span><br><span class="line">  outb(SERIAL_PORT)</span><br><span class="line">    ↓   （store 指令）</span><br><span class="line">NEMU CPU 模拟</span><br><span class="line">    ↓</span><br><span class="line">MMIO 命中 serial</span><br><span class="line">    ↓</span><br><span class="line">serial_io_handler</span><br><span class="line">    ↓</span><br><span class="line">serial_putc</span><br><span class="line">    ↓</span><br><span class="line">putc(<span class="built_in">stderr</span>)   ← Linux</span><br></pre></td></tr></table></figure>
+<p><strong>跑分的bug</strong></p>
+<p>实现完RTC的IOE后，运行PA中的3个benchmark，</p>
+<p>出现了如下的bug：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Dhrystone Benchmark, Version C, Version 2.2</span><br><span class="line">Trying 500000 runs through Dhrystone.</span><br><span class="line">Finished <span class="keyword">in</span> 0 ms</span><br><span class="line">==================================================</span><br><span class="line">Dhrystone PASS         -1 Marks</span><br><span class="line">                   vs. 100000 Marks (i7-7700K @ 4.20GHz)</span><br><span class="line">[src/cpu/cpu-exec.c:125 cpu_exec] nemu: HIT GOOD TRAP at pc = 0x80000d2c</span><br><span class="line">[src/cpu/cpu-exec.c:92 statistic] host time spent = 8,835,660 us</span><br><span class="line">[src/cpu/cpu-exec.c:93 statistic] total guest instructions = 219,508,565</span><br><span class="line">[src/cpu/cpu-exec.c:94 statistic] simulation frequency = 24,843,482 inst/s</span><br></pre></td></tr></table></figure>
+<p>跑分为-1！</p>
+<p>原因是要先读取高位rtc才会刷新！</p>
+<p>在utils.h中添加dtrace的函数声明如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ----------- dtrace ------------</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">IOMap</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trace_device_read</span><span class="params">(<span class="keyword">paddr_t</span> addr, <span class="keyword">int</span> len, struct IOMap *<span class="built_in">map</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trace_device_write</span><span class="params">(<span class="keyword">paddr_t</span> addr, <span class="keyword">int</span> len, <span class="keyword">word_t</span> data, struct IOMap *<span class="built_in">map</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>其中，前向声明struct IOMap是必须的，因为这个结构体在map.h中，但是如果直接include “device/map.h”的话，会造成循环引用，从而导致以下错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ CC src/device/device.c</span><br><span class="line">In file included from /home/doa/Documents/OS/ics2023/nemu/include/device/map.h:19,</span><br><span class="line">                 from /home/doa/Documents/OS/ics2023/nemu/include/utils.h:20,</span><br><span class="line">                 from /home/doa/Documents/OS/ics2023/nemu/include/debug.h:21,</span><br><span class="line">                 from /home/doa/Documents/OS/ics2023/nemu/include/common.h:47,</span><br><span class="line">                 from src/device/device.c:16:</span><br><span class="line">/home/doa/Documents/OS/ics2023/nemu/include/cpu/difftest.h: In <span class="keyword">function</span> ‘difftest_check_reg’:</span><br><span class="line">/home/doa/Documents/OS/ics2023/nemu/include/cpu/difftest.h:46:5: error: implicit declaration of <span class="keyword">function</span> ‘Log’ [-Werror=implicit-function-declaration]</span><br><span class="line">   46 |     Log(<span class="string">"%s is different after executing instruction at pc = "</span> FMT_WORD</span><br><span class="line">      |     ^~~</span><br><span class="line">cc1: all warnings being treated as errors</span><br></pre></td></tr></table></figure>
+<p>同时，需要将map中的结构体定义改为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">IOMap</span>&#123;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line">  <span class="comment">// we treat ioaddr_t as paddr_t here</span></span><br><span class="line">  <span class="keyword">paddr_t</span> low;</span><br><span class="line">  <span class="keyword">paddr_t</span> high;</span><br><span class="line">  <span class="keyword">void</span> *space;</span><br><span class="line">  <span class="keyword">io_callback_t</span> callback;</span><br><span class="line">&#125; IOMap;</span><br></pre></td></tr></table></figure>
+<p>即，在struct后面也加一个IOMap名称。这样才能使用前向声明，否则也会报错。</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109.png" alt="image-20260426210557109"></p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105.png" alt="image-20260426210444105"></p>
+<h1 id="参考blog"><a href="#参考blog" class="headerlink" title="参考blog"></a>参考blog</h1><p><a href="https://www.cnblogs.com/nosae/p/17066439.html#实现iringbuf" target="_blank" rel="noopener">nju pa2 - NOSAE - 博客园</a></p>
+<p><a href="https://www.yizishun.com/?p=158" target="_blank" rel="noopener">NJU PA2日记，我的实现经历和感悟（已完结） – YZS</a></p>
 
     </div>
 
@@ -529,7 +830,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-PA1"><span class="nav-text">1. PA1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-RTFSC"><span class="nav-text">1.3 RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-准备第一个客户程序"><span class="nav-text">1.3.1 准备第一个客户程序</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-PA1"><span class="nav-text">1. PA1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-RTFSC"><span class="nav-text">1.3 RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-准备第一个客户程序"><span class="nav-text">1.3.1 准备第一个客户程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-运行第一个客户程序"><span class="nav-text">1.3.2 运行第一个客户程序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#究竟要执行多久"><span class="nav-text">究竟要执行多久?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#潜在的威胁-建议二周目思考"><span class="nav-text">潜在的威胁 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#谁来指示程序的结束"><span class="nav-text">谁来指示程序的结束?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#有始有终-建议二周目思考"><span class="nav-text">有始有终 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优美地退出"><span class="nav-text">优美地退出</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-基础设施"><span class="nav-text">1.4 基础设施</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-简易调试器"><span class="nav-text">1.4.1. 简易调试器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-表达式求值"><span class="nav-text">1.4.2. 表达式求值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-PA2"><span class="nav-text">2. PA2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-基础设施2"><span class="nav-text">2.4. 基础设施2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-函数调用的踪迹"><span class="nav-text">2.4.1. 函数调用的踪迹</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#冗余的符号表"><span class="nav-text">冗余的符号表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-输入输出"><span class="nav-text">2.4.2. 输入输出</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考blog"><span class="nav-text">参考blog</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
@@ -548,7 +849,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -561,7 +862,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -574,7 +875,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">74</span>
+        <span class="site-state-item-count">80</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
@@ -646,7 +947,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
