@@ -74,10 +74,11 @@
 <meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241224234747535.png">
 <meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002014939.png">
 <meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241225002317465.png">
-<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109.png">
-<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/pa-concept-1781426867627.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109-1781426867627.png">
+<meta property="og:image" content="https://floral.github.io/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105-1781426867627.png">
 <meta property="article:published_time" content="2024-08-22T13:59:20.000Z">
-<meta property="article:modified_time" content="2026-04-26T13:06:05.503Z">
+<meta property="article:modified_time" content="2026-06-14T08:50:38.945Z">
 <meta property="article:author" content="DOA">
 <meta property="article:tag" content="NEMU">
 <meta property="article:tag" content="NJU">
@@ -342,7 +343,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2026-04-26 21:06:05" itemprop="dateModified" datetime="2026-04-26T21:06:05+08:00">2026-04-26</time>
+                <time title="Modified: 2026-06-14 16:50:38" itemprop="dateModified" datetime="2026-06-14T16:50:38+08:00">2026-06-14</time>
               </span>
             
           
@@ -464,7 +465,7 @@
 <p><strong>RTFM：</strong></p>
 <p>RISC-V的基础指令格式有如下4种：</p>
 <p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241217232430933.png" alt="image-20241217232430933"></p>
-<p>RISC-V种，<code>EBREAK</code>指令可以用<code>SYSTEM</code>指令实现，如下：</p>
+<p>RISC-V中，<code>EBREAK</code>指令可以用<code>SYSTEM</code>指令实现，如下：</p>
 <p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20241218224222172.png" alt="image-20241218224222172"></p>
 <p><code>ECALL</code>和<code>EBREAK</code>的功能都是在<code>SYSTEM</code>这个opcode下实现的，<code>ECALL</code>的<code>funct12</code>是0，<code>EBREAK</code>的<code>funct12</code>是1。</p>
 <p>其中，<code>EBREAK</code>是用于将控制权返回给调试环境。</p>
@@ -646,12 +647,176 @@
 <p>又学到一个小技巧：<code>Log(&quot;... %.*s&quot;, substr_len, substr_start)</code>。底层对应的printf函数。</p>
 <p>这里面的<code>%.*s</code>其实对应的是最后的两个参数：<code>substr_len, substr_start</code>，分别表示要打印的字符数和字符串起始地址。这样就可以不用管<code>\0</code>字符在哪里了。</p>
 </blockquote>
-<h1 id="2-PA2"><a href="#2-PA2" class="headerlink" title="2. PA2"></a>2. PA2</h1><h2 id="2-4-基础设施2"><a href="#2-4-基础设施2" class="headerlink" title="2.4. 基础设施2"></a>2.4. 基础设施2</h2><blockquote>
-<p><strong>消失的符号</strong></p>
-<p>我们在<code>am-kernels/tests/cpu-tests/tests/add.c</code>中定义了宏<code>NR_DATA</code>, 同时也在<code>add()</code>函数中定义了局部变量<code>c</code>和形参<code>a</code>, <code>b</code>, 但你会发现在符号表中找不到和它们对应的表项, 为什么会这样? 思考一下, 什么才算是一个符号(symbol)?</p>
-<p>A：因为被编译器给优化了</p>
+<h1 id="2-PA2"><a href="#2-PA2" class="headerlink" title="2. PA2"></a>2. PA2</h1><h2 id="2-1-不停计算的机器"><a href="#2-1-不停计算的机器" class="headerlink" title="2.1. 不停计算的机器"></a>2.1. 不停计算的机器</h2><p>最简单的图灵计算机的工作方式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">  从PC指示的存储器位置取出指令;</span><br><span class="line">  执行指令;</span><br><span class="line">  更新PC;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然根据不同CPU的流水线设计不同而有区别，对于大部分指令来说，执行它们都可以抽象成取指-译码-执行的指令周期。</p>
+<p>具体可以看一下我之前的一篇CPU简单介绍：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/278434972" target="_blank" rel="noopener">《自己动手写CPU》读后感 - 知乎</a></p>
+<h2 id="2-2-RTFSC"><a href="#2-2-RTFSC" class="headerlink" title="2.2. RTFSC"></a>2.2. RTFSC</h2><h3 id="RTFSC-2"><a href="#RTFSC-2" class="headerlink" title="RTFSC(2)"></a>RTFSC(2)</h3><p>这里没有啥需要我再次解释的，直接看官方文档就行<a href="https://nju-projectn.github.io/ics-pa-gitbook/ics2024/2.2.html" target="_blank" rel="noopener">RTFSC(2) · GitBook</a>。</p>
+<blockquote>
+<p>PS：我发现2023版本的文档挂了。。。也不知道为啥</p>
 </blockquote>
-<h3 id="2-4-1-函数调用的踪迹"><a href="#2-4-1-函数调用的踪迹" class="headerlink" title="2.4.1. 函数调用的踪迹"></a>2.4.1. 函数调用的踪迹</h3><p>需要解析ELF文件，首先可以看一下ELF的格式，使用：<code>man 5 elf</code>。</p>
+<p>需要注意一下的概念就是snpc和dnpc了，前者是<code>static next PC</code>，后者是<code>dynamic next PC</code>的意思，static就是当前PC的地址上紧挨着的下一条指令的地址，是当前PC加上固定长度后的值。后者是逻辑上下一条需要执行的指令地址，因为程序执行的过程中可能会有许多分支，比如使用<code>if</code>或者函数调用的情况，这两个概念在CPU设计中算是很重要的。</p>
+<blockquote>
+<p><strong>立即数背后的故事</strong></p>
+<p><strong>Q:</strong> Motorola 68k系列的处理器都是大端架构的. 现在问题来了, 考虑以下两种情况:</p>
+<ul>
+<li>假设我们需要将NEMU运行在Motorola 68k的机器上(把NEMU的源代码编译成Motorola 68k的机器码)</li>
+<li>假设我们需要把Motorola 68k作为一个新的ISA加入到NEMU中</li>
+</ul>
+<p>在这两种情况下, 你需要注意些什么问题? 为什么会产生这些问题? 怎么解决它们?</p>
+</blockquote>
+<p><strong>A:</strong> 这两个问题的根本是要弄清楚Host ISA和Guest ISA。Host ISA是运行NEMU的机器的ISA，Guest ISA是被模拟的ISA。</p>
+<p>第一种情况，Host ISA就是Motorola 68K，需要注意的是实现NEMU模拟器本身的代码中，所有使用指针直接访问地址的地方，例如<code>(uint8_t *)</code>，在这个地址基础上使用加法访问其他地址操作的时候，需要注意大小端是否正确，因为编译器编译到目标机器上肯定都是根据目标机器的大小端来生成的。</p>
+<p>第二种情况，Guest ISA是Motorola 68K，Host ISA根据各自运行的机器而定，目前大部分都应该是x86吧，那么就是小端机器。Guest程序会被编译成Motorola 68K的大端形式，然后我们在NEMU中取指和译码的时候就需要注意大小端问题。</p>
+<blockquote>
+<p><strong>立即数背后的故事(2)</strong></p>
+<p><strong>Q:</strong> mips32和riscv32的指令长度只有32位, 因此它们不能像x86那样, 把C代码中的32位常数直接编码到一条指令中. 思考一下, mips32和riscv32应该如何解决这个问题?</p>
+</blockquote>
+<p><strong>A:</strong> 一条指令不行，那就两条指令撒。实际也是这么做的，以RISCV32为例，32位常数一般是用LUI和ADDI指令实现的，LUI先复制高20bit的数，ADDI加上剩余的低12bit数即可。</p>
+<blockquote>
+<p><strong>为什么执行了未实现指令会出现上述报错信息</strong></p>
+<p><strong>Q:</strong> RTFSC, 理解执行未实现指令的时候, NEMU具体会怎么做。</p>
+</blockquote>
+<p><strong>A:</strong> 可以先理解一下<code>decode.h</code>里面的这三个宏定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// --- pattern matching wrappers for decode ---</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INSTPAT(pattern, ...) do &#123; \</span></span><br><span class="line">  <span class="keyword">uint64_t</span> key, mask, shift; \</span><br><span class="line">  pattern_decode(pattern, STRLEN(pattern), &amp;key, &amp;mask, &amp;shift); \</span><br><span class="line">  <span class="keyword">if</span> ((((<span class="keyword">uint64_t</span>)INSTPAT_INST(s) &gt;&gt; shift) &amp; mask) == key) &#123; \</span><br><span class="line">    INSTPAT_MATCH(s, ##__VA_ARGS__); \</span><br><span class="line">    <span class="keyword">goto</span> *(__instpat_end); \</span><br><span class="line">  &#125; \</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INSTPAT_START(name) &#123; const void ** __instpat_end = &amp;&amp;concat(__instpat_end_, name);</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INSTPAT_END(name)   concat(__instpat_end_, name): ; &#125;</span></span><br></pre></td></tr></table></figure>
+<p>这里主要就是运用了标签和goto这两个概念：<a href="https://www.runoob.com/cprogramming/c-goto-statement.html" target="_blank" rel="noopener">C goto 语句 | 菜鸟教程</a><br>虽然现代C/C+++并不建议使用这两个东西，但是在这里，这种方式非常好的实现了一个解析指令的wrapper。</p>
+<p>然后看<code>inst.c</code>文件中的<code>decode_exec</code>函数，其中的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INSTPAT_START();</span><br><span class="line">INSTPAT(xxx);</span><br><span class="line">INSTPAT(xxx);</span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">INSTPAT_END();</span><br></pre></td></tr></table></figure>
+<p>展开之后的结构就是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">void</span> **__instpat_end = &amp;&amp;__instpat_end_;</span><br><span class="line"><span class="keyword">if</span> (match(xxx)) &#123;</span><br><span class="line">    exec_xxx();</span><br><span class="line">    <span class="keyword">goto</span> <span class="built_in">end</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (match(xxx)) &#123;</span><br><span class="line">    exec_xxx();</span><br><span class="line">    <span class="keyword">goto</span> <span class="built_in">end</span>;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">__instpat_end_: ;</span><br></pre></td></tr></table></figure>
+<p>关于START和END这两个宏的原理，可以去了解一下GNU的<code>labels-as-values</code>这个概念：<a href="https://blog.csdn.net/u012028275/article/details/118642577" target="_blank" rel="noopener">【GNU笔记】【C扩展系列】标签作为值_labels as values-CSDN博客</a></p>
+<p>跑的有些远了，前面是让想让我们理解代码逻辑，然后回到问题本身：理解执行未实现指令的时候, NEMU具体会怎么做？</p>
+<p>按照代码逻辑，最后一个INSTPAT定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSTPAT(<span class="string">"??????? ????? ????? ??? ????? ????? ??"</span>, inv    , N, INV(s-&gt;pc));</span><br></pre></td></tr></table></figure>
+<p>而INV宏定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INV(thispc) invalid_inst(thispc)</span></span><br></pre></td></tr></table></figure>
+<p>所以最终会转到<code>invalid_inst</code>这个函数里，会报出invalid instruction的错误提示。</p>
+<p>需要注意的是，这条INSTPAT一定要放在最后，否则会导致正常指令不能被解析匹配，因为前面的解析都是if逻辑。</p>
+<blockquote>
+<p><strong>指令名对照</strong></p>
+<p><strong>Q:</strong> AT&amp;T格式反汇编结果中的少量指令, 与手册中列出的指令名称不符, 如x86的<code>cltd</code>, mips32和riscv32则有不少伪指令(pseudo instruction). 除了STFW之外, 你有办法在手册中找到对应的指令吗? 如果有的话, 为什么这个办法是有效的呢?</p>
+</blockquote>
+<p><strong>A:</strong> 指令集官方文档里一般有相关的pseudo code/pseudo instruction表格，可以搜索相关关键词。或者可以查看编译器的官方文档。没有的话，只能看指令本身的编码来反查指令名了，比如通过opcode。</p>
+<h2 id="2-3-程序-运行时环境与AM"><a href="#2-3-程序-运行时环境与AM" class="headerlink" title="2.3. 程序, 运行时环境与AM"></a>2.3. 程序, 运行时环境与AM</h2><h3 id="2-3-1-运行时环境"><a href="#2-3-1-运行时环境" class="headerlink" title="2.3.1. 运行时环境"></a>2.3.1. 运行时环境</h3><p>直接引用原文档：</p>
+<blockquote>
+<p>“应用程序的运行都需要<a href="http://en.wikipedia.org/wiki/Runtime_system" target="_blank" rel="noopener">运行时环境</a>的支持, 包括加载, 销毁程序, 以及提供程序运行时的各种动态链接库(你经常使用的库函数就是运行时环境提供的)等. 为了让客户程序在NEMU中运行, 现在轮到你来提供相应的运行时环境的支持了.</p>
+<p>根据KISS法则, 我们先来考虑最简单的运行时环境是什么样的. 换句话说, 为了运行最简单的程序, 我们需要提供什么呢? 其实答案已经在PA1中了: 只要把程序放在正确的内存位置, 然后让PC指向第一条指令, 计算机就会自动执行这个程序, 永不停止.</p>
+<p>不过, 虽然计算机可以永不停止地执行指令, 但一般的程序都是会结束的, 所以运行时环境需要向程序提供一种结束运行的方法. 聪明的你已经能想到, 我们在PA1中提到的那条人工添加的<code>nemu_trap</code>指令, 就是让程序来结束运行的.</p>
+<p>所以, 只要有内存, 有结束运行的方式, 加上实现正确的指令, 就可以支撑最简单程序的运行了. 而这, 也可以算是最简单的运行时环境了.”</p>
+</blockquote>
+<h3 id="2-3-2-将运行时环境封装成库函数"><a href="#2-3-2-将运行时环境封装成库函数" class="headerlink" title="2.3.2. 将运行时环境封装成库函数"></a>2.3.2. 将运行时环境封装成库函数</h3><p>依旧直接引用，原文已经足够好：</p>
+<blockquote>
+<p>我们刚才讨论的运行时环境是直接位于计算机硬件之上的, 因此运行时环境的具体实现, 也是和架构相关的. 我们以”ISA-平台”的二元组来表示一个架构, 例如<code>mips32-nemu</code>. 以程序结束为例, NEMU中是使用特殊的<code>nemu_trap</code>指令, 而不同ISA的<code>nemu_trap</code>指令的格式肯定不同; 但如果我们自己用verilog设计了一个riscv32 CPU, 这个<code>riscv32-mycpu</code>的架构, 有可能是通过一条<code>mycpu_trap</code>指令来结束程序, 它和<code>nemu_trap</code>指令可能是不一样的. 而结束运行是程序共有的需求, 为了让<code>n</code>个程序运行在<code>m</code>个架构上, 难道我们要维护<code>n*m</code>份代码? 有没有更好的方法呢?</p>
+<p>对于同一个程序, 如果能把<code>m</code>个版本不同的部分都转换成相同的代码, 我们就只需要维护一个版本就可以了. 而实现这个目标的杀手锏, 就是你在程序设计课上学过的抽象! 我们只需要定义一个结束程序的API, 比如<code>void halt()</code>, 它对不同架构上程序的不同结束方式进行了抽象: 程序只要调用<code>halt()</code>就可以结束运行, 而不需要关心自己运行在哪一个架构上. 经过抽象之后, 之前<code>m</code>个版本的程序, 现在都统一通过<code>halt()</code>来结束运行, 我们就只需要维护这一个通过<code>halt()</code>来结束运行的版本就可以了. 然后, 不同的架构分别实现自己的<code>halt()</code>, 就可以支撑<code>n</code>个程序的运行! 这样以后, 我们就可以把程序和架构解耦了: 我们只需要维护<code>n+m</code>份代码(<code>n</code>个程序和<code>m</code>个架构相关的<code>halt()</code>), 而不是之前的<code>n*m</code>.</p>
+<p>这个例子也展示了运行时环境的一种普遍的存在方式: 库. 通过库, 运行程序所需要的公共要素被抽象成API, 不同的架构只需要实现这些API, 也就相当于实现了支撑程序运行的运行时环境, 这提升了程序开发的效率: 需要的时候只要调用这些API, 就能使用运行时环境提供的相应功能.</p>
+</blockquote>
+<p>抽象和封装最主要的作用就是<strong>把软件和硬件解耦</strong>了，不需要为每个硬件编写不同的程序，方便程序的移植和分发。</p>
+<h3 id="2-3-3-AM-裸机-bare-metal-运行时环境"><a href="#2-3-3-AM-裸机-bare-metal-运行时环境" class="headerlink" title="2.3.3.  AM - 裸机(bare-metal)运行时环境"></a>2.3.3.  AM - 裸机(bare-metal)运行时环境</h3><blockquote>
+<p>AM(Abstract machine)项目就是这样诞生的. 作为一个向程序提供运行时环境的库, AM根据程序的需求把库划分成以下模块</p>
+<p>AM = TRM + IOE + CTE + VME + MPE<br>TRM(Turing Machine) - 图灵机, 最简单的运行时环境, 为程序提供基本的计算能力<br>IOE(I/O Extension) - 输入输出扩展, 为程序提供输出输入的能力<br>CTE(Context Extension) - 上下文扩展, 为程序提供上下文管理的能力<br>VME(Virtual Memory Extension) - 虚存扩展, 为程序提供虚存管理的能力<br>MPE(Multi-Processor Extension) - 多处理器扩展, 为程序提供多处理器通信的能力 (MPE超出了ICS课程的范围, 在PA中不会涉及)<br>AM给我们展示了程序与计算机的关系: 利用计算机硬件的功能实现AM, 为程序的运行提供它们所需要的运行时环境. 感谢AM项目的诞生, 让NEMU和程序的界线更加泾渭分明, 同时使得PA的流程更加明确:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;(在NEMU中)实现硬件功能 -&gt; (在AM中)提供运行时环境 -&gt; (在APP层)运行程序</span><br><span class="line">&gt;(在NEMU中)实现更强大的硬件功能 -&gt; (在AM中)提供更丰富的运行时环境 -&gt; (在APP层)运行更复杂的程序</span><br></pre></td></tr></table></figure>
+<p><strong>为什么要有AM? (建议二周目思考)</strong></p>
+<p><strong>Q:</strong> 操作系统也有自己的运行时环境. AM和操作系统提供的运行时环境有什么不同呢? 为什么会有这些不同?</p>
+</blockquote>
+<p><strong>A:</strong> 还在单周目的我斗胆提前”猜想”一下，操作系统提供的运行时环境与OS软件本身设计的特性有关，而AM提供的运行时环境是与硬件的特性有关，抽象的层级不同。</p>
+<h3 id="2-3-4-RTFSC-3"><a href="#2-3-4-RTFSC-3" class="headerlink" title="2.3.4. RTFSC(3)"></a>2.3.4. RTFSC(3)</h3><blockquote>
+<p>整个AM项目分为两大部分:</p>
+<ul>
+<li><code>abstract-machine/am/</code> - 不同架构的AM API实现, 目前我们只需要关注NEMU相关的内容即可. 此外, <code>abstract-machine/am/include/am.h</code>列出了AM中的所有API, 我们会在后续逐一介绍它们.</li>
+<li><code>abstract-machine/klib/</code> - 一些架构无关的库函数, 方便应用程序的开发</li>
+</ul>
+<p>阅读<code>abstract-machine/am/src/platform/nemu/trm.c</code>中的代码, 你会发现只需要实现很少的API就可以支撑起程序在TRM上运行了:</p>
+<ul>
+<li><code>Area heap</code>结构用于指示堆区的起始和末尾</li>
+<li><code>void putch(char ch)</code>用于输出一个字符</li>
+<li><code>void halt(int code)</code>用于结束程序的运行</li>
+<li><code>void _trm_init()</code>用于进行TRM相关的初始化工作</li>
+</ul>
+</blockquote>
+<h3 id="2-3-5-实现常用的库函数"><a href="#2-3-5-实现常用的库函数" class="headerlink" title="2.3.5. 实现常用的库函数"></a>2.3.5. 实现常用的库函数</h3><blockquote>
+<p>一种好的做法是把运行时环境分成两部分: 一部分是架构相关的运行时环境, 也就是我们之前介绍的AM; 另一部分是架构无关的运行时环境, 类似<code>memcpy()</code>这种常用的函数应该归入这部分, <code>abstract-machine/klib/</code>用于收录这些架构无关的库函数. <code>klib</code>是<code>kernel library</code>的意思, 用于提供一些兼容libc的基础功能。</p>
+</blockquote>
+<p>实现<code>string.c</code>文件中的字符串处理函数，难度不大，大家自行搜索相关文档然后按照描述完成。</p>
+<p>需要注意，<strong>未定义行为</strong>这个概念。这里有个关于编译器利用未定义行为进行优化的文章：</p>
+<p><a href="https://homes.cs.washington.edu/~akcheung/papers/apsys12.pdf" target="_blank" rel="noopener">homes.cs.washington.edu/~akcheung/papers/apsys12.pdf</a></p>
+<blockquote>
+<p><strong>stdarg是如何实现的?</strong></p>
+<p><code>stdarg.h</code>中包含一些获取函数调用参数的宏, 它们可以看做是调用约定中关于参数传递方式的抽象. 不同ISA的ABI规范会定义不同的函数参数传递方式, 如果让你来实现这些宏, 你会如何实现?</p>
+</blockquote>
+<p><code>stdarg.h</code>里最重要的就是这三个宏了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> va_start(v,l)	__builtin_va_start(v,l)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> va_arg(v,l)		__builtin_va_arg(v,l)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> va_end(v)		__builtin_va_end(v)</span></span><br></pre></td></tr></table></figure>
+<p>其中<code>va_start</code>是负责初始化 <code>va_list</code>，让输入参数<code>v</code>指向第一个可变参数，<code>l</code>是指向最后一个固定参数。</p>
+<p><code>va_arg</code>的功能是读取当前参数，并移动到下一个参数。</p>
+<p><code>va_end</code>的功能是结束变参访问，释放相关资源。</p>
+<p>至于<code>__builtin_</code>开头的这些函数，是GCC的内置函数，得去看编译器源码，我们暂时先当作黑盒吧，他们就是编译器把不同ISA的<strong>ABI（Application Binary Interface）</strong>包装出来的一层抽象。</p>
+<h3 id="2-3-6-重新认识计算机-计算机是个抽象层"><a href="#2-3-6-重新认识计算机-计算机是个抽象层" class="headerlink" title="2.3.6. 重新认识计算机: 计算机是个抽象层"></a>2.3.6. 重新认识计算机: 计算机是个抽象层</h3><blockquote>
+<p>我们先来讨论在TRM上运行的程序, 我们对这些程序的需求进行分类, 来看看我们的计算机系统是如何支撑这些需求的.</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">TRM</th>
+<th style="text-align:center">计算</th>
+<th style="text-align:center">内存申请</th>
+<th style="text-align:center">结束运行</th>
+<th style="text-align:center">打印信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">运行环境</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">malloc()/free()</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">printf()</td>
+</tr>
+<tr>
+<td style="text-align:center">AM API</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">heap</td>
+<td style="text-align:center">halt()</td>
+<td style="text-align:center">putch()</td>
+</tr>
+<tr>
+<td style="text-align:center">ISA接口</td>
+<td style="text-align:center">指令</td>
+<td style="text-align:center">物理内存地址空间</td>
+<td style="text-align:center">nemu_trap指令</td>
+<td style="text-align:center">I/O方式</td>
+</tr>
+<tr>
+<td style="text-align:center">硬件模块</td>
+<td style="text-align:center">处理器</td>
+<td style="text-align:center">物理内存</td>
+<td style="text-align:center">Monitor</td>
+<td style="text-align:center">串口</td>
+</tr>
+<tr>
+<td style="text-align:center">电路实现</td>
+<td style="text-align:center">cpu_exec()</td>
+<td style="text-align:center">pmem[]</td>
+<td style="text-align:center">nemu_state</td>
+<td style="text-align:center">serial_io_handler()</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>“程序在计算机上运行”的宏观视角: 计算机是个抽象层</strong></p>
+<p>每一层抽象都有它存在的理由:</p>
+<ul>
+<li>概念相同的一个硬件模块有着不同的实现方式, 比如处理器既可以通过NEMU中简单的解释方式来实现, 也可以通过类似QEMU中高性能的二进制翻译方式来实现, 甚至可以通过verilog等硬件描述语言来实现一个真实的处理器.</li>
+<li>ISA是硬件向软件提供的可以操作硬件的接口</li>
+<li>AM的API对不同ISA(如x86/mips32/riscv32)的接口进行了抽象, 为上层的程序屏蔽ISA相关的细节</li>
+<li>运行时环境可以通过对AM的API进行进一步的封装, 向程序提供更方便的功能</li>
+</ul>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/pa-concept-1781426867627.png" alt="pa-concept"></p>
+</blockquote>
+<h2 id="2-4-基础设施2"><a href="#2-4-基础设施2" class="headerlink" title="2.4. 基础设施2"></a>2.4. 基础设施2</h2><h3 id="2-4-1-bug诊断的利器-踪迹"><a href="#2-4-1-bug诊断的利器-踪迹" class="headerlink" title="2.4.1. bug诊断的利器 - 踪迹"></a>2.4.1. bug诊断的利器 - 踪迹</h3><blockquote>
+<p>在软件工程领域, 记录程序执行过程的信息称为<a href="https://en.wikipedia.org/wiki/Tracing_(software" target="_blank" rel="noopener">踪迹(trace)</a>). 有了踪迹信息, 我们就可以判断程序的执行过程是否符合预期, 从而进行bug的诊断.</p>
+</blockquote>
+<h4 id="2-4-1-2-指令环形缓冲区-iringbuf"><a href="#2-4-1-2-指令环形缓冲区-iringbuf" class="headerlink" title="2.4.1.2. 指令环形缓冲区 - iringbuf"></a>2.4.1.2. 指令环形缓冲区 - iringbuf</h4><p>这个实现一个环形缓冲buf就行，so easy。</p>
+<h4 id="2-4-1-4-函数调用的踪迹"><a href="#2-4-1-4-函数调用的踪迹" class="headerlink" title="2.4.1.4. 函数调用的踪迹"></a>2.4.1.4. 函数调用的踪迹</h4><p>需要解析ELF文件，首先可以看一下ELF的格式，使用：<code>man 5 elf</code>。</p>
 <p>我们要在初始化ftrace时从ELF文件中读出符号表和字符串表，供后续使用。</p>
 <p>ELF文件中包括许多的section，其中我们需要用到的section有如下3个：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.shstrtab</span><br><span class="line">     This section holds section names.  This section is of type</span><br><span class="line">              SHT_STRTAB.  No attribute types are used.</span><br><span class="line"></span><br><span class="line">.strtab</span><br><span class="line">     This section holds strings, most commonly the strings that</span><br><span class="line">     represent the names associated with symbol table entries.</span><br><span class="line">     If the file has a loadable segment that includes the symbol</span><br><span class="line">     string table, the section&#39;s attributes will include the</span><br><span class="line">     SHF_ALLOC bit.  Otherwise, the bit will be off.  This</span><br><span class="line">     section is of type SHT_STRTAB.</span><br><span class="line">.symtab</span><br><span class="line">     This section holds a symbol table.  If the file has a</span><br><span class="line">     loadable segment that includes the symbol table, the</span><br><span class="line">     section&#39;s attributes will include the SHF_ALLOC bit.</span><br><span class="line">     Otherwise, the bit will be off.  This section is of type</span><br><span class="line">     SHT_SYMTAB.</span><br><span class="line">     An object file&#39;s symbol table holds information needed to locate</span><br><span class="line">     and relocate a program&#39;s symbolic definitions and references.  A</span><br><span class="line">     symbol table index is a subscript into this array.</span><br></pre></td></tr></table></figure>
@@ -681,17 +846,39 @@
 <p>一个典型的ELF文件的大致内容如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">+---------------------------+</span><br><span class="line">| ELF Header (Elf32_Ehdr)   |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Program Header Table (可选)|</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 1 (.text)         |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 2 (.data)         |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section 3 (.shstrtab)     |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section ...               |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section Header Table      |</span><br><span class="line">+---------------------------+</span><br><span class="line">| Section ...               |</span><br><span class="line">+---------------------------+</span><br></pre></td></tr></table></figure>
 <p>实现初版的ftrace后，运行得到的结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">0x8000000c: call [_trm_init@0x80000258]</span><br><span class="line">0x80000268:   call [main@0x800001cc]</span><br><span class="line">0x800001ec:     call [f0@0x80000010]</span><br><span class="line">0x8000016c:       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:         call [f1@0x8000005c]</span><br><span class="line">0x8000016c:           call [f2@0x800000a4]</span><br><span class="line">0x800000f0:             call [f1@0x8000005c]</span><br><span class="line">0x8000016c:               call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                 call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]</span><br><span class="line">0x80000100:                   ret [f2]</span><br><span class="line">0x80000184:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]</span><br><span class="line">0x80000100:                   ret [f2]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">0x8000000c: call [_trm_init@0x80000258]</span><br><span class="line">0x80000268:   call [main@0x800001cc]</span><br><span class="line">0x800001ec:     call [f0@0x80000010]</span><br><span class="line">0x8000016c:       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:         call [f1@0x8000005c]</span><br><span class="line">0x8000016c:           call [f2@0x800000a4]</span><br><span class="line">0x800000f0:             call [f1@0x8000005c]</span><br><span class="line">0x8000016c:               call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                 call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]		# 注释(2)</span><br><span class="line">0x80000100:                       ret [f2]			# 注释(1)</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]			# 注释(3)</span><br><span class="line">0x80000100:                   ret [f2]</span><br><span class="line">0x80000184:                   call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                     call [f1@0x8000005c]</span><br><span class="line">0x8000016c:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x80000184:                       call [f2@0x800000a4]</span><br><span class="line">0x800000f0:                         call [f1@0x8000005c]</span><br><span class="line">0x80000058:                         ret [f0]</span><br><span class="line">0x80000100:                       ret [f2]</span><br><span class="line">0x800001ac:                     ret [f3]</span><br><span class="line">0x80000100:                   ret [f2]</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p><strong>不匹配的函数调用和返回​</strong><br>如果你仔细观察上文recursion的示例输出, 你会发现一些有趣的现象. 具体地, 注释(1)处的ret的函数是和对应的call匹配的, 也就是说, call调用了f2, 而与之对应的ret也是从f2返回; 但注释(2)所指示的一组call和ret的情况却有所不同, call调用了f1, 但却从f0返回; 注释(3)所指示的一组call和ret也出现了类似的现象, call调用了f1, 但却从f3返回。</p>
-<p>A：尾调用优化，在函数结尾简单地调用另一个函数的话，会触发编译器的尾调用优化。这里的简单是指仅仅调用另一个函数，而不会在调用后对返回值进行处理，例如f2中的“+9”。所以我们可以观察到，不匹配的call和ret是固定组合：</p>
+<p><strong>消失的符号</strong></p>
+<p>我们在<code>am-kernels/tests/cpu-tests/tests/add.c</code>中定义了宏<code>NR_DATA</code>, 同时也在<code>add()</code>函数中定义了局部变量<code>c</code>和形参<code>a</code>, <code>b</code>, 但你会发现在符号表中找不到和它们对应的表项, 为什么会这样？思考一下, 什么才算是一个符号(symbol)？</p>
+</blockquote>
+<p><strong>A：</strong></p>
+<ol>
+<li><p>宏定义根本不是一个符号，他在预处理阶段就被展开了，所以编译器根本不知道它的存在。</p>
+</li>
+<li><p>局部变量由于没有被外部调用，只是一个临时的变量，不一定需要用符号来表示存在，汇编语言中可以直接用寄存器来表示。</p>
+</li>
+<li><p>什么才算一个符号？</p>
+<p>从链接的角度：<strong>符号是一个能够被其他位置引用、需要在目标文件之间建立关联关系的名字。</strong>比如全局变量，或者函数。</p>
+</li>
+</ol>
+<blockquote>
+<h5 id="寻找”Hello-World-”"><a href="#寻找”Hello-World-”" class="headerlink" title="寻找”Hello World!”"></a>寻找”Hello World!”</h5><p>在Linux下编写一个Hello World程序, 编译后通过上述方法找到ELF文件的字符串表, 你发现”Hello World!”字符串在字符串表中的什么位置? 为什么会这样?</p>
+</blockquote>
+<p><strong>A：</strong>如果<code>hello world</code>程序是下面这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么这个<code>Hello world</code>是在<code>.rodata section</code>里面，因为<code>.strtab</code>保存的是符号表中需要用到的字符串，而链接器不需要通过符号找到这个字符串。即使你定义了一个全局指针指向这个字符串，那么在字符串表里的也是这个指针的名字，而不是<code>Hello world</code>本身。</p>
+<blockquote>
+<p><strong>不匹配的函数调用和返回​</strong><br>Q：如果你仔细观察上文recursion的示例输出, 你会发现一些有趣的现象. 具体地, 注释(1)处的ret的函数是和对应的call匹配的, 也就是说, call调用了f2, 而与之对应的ret也是从f2返回; 但注释(2)所指示的一组call和ret的情况却有所不同, call调用了f1, 但却从f0返回; 注释(3)所指示的一组call和ret也出现了类似的现象, call调用了f1, 但却从f3返回。</p>
+<p>尝试结合反汇编结果, 分析为什么会出现这一现象.</p>
+</blockquote>
+<p><strong>A：</strong>尾调用优化，在函数结尾简单地调用另一个函数的话，会触发编译器的尾调用优化。这里的“简单”是指仅仅调用另一个函数，而不会在调用后对返回值进行处理，例如f2函数中的“+9”。所以我们可以观察到，不匹配的call和ret是固定组合：</p>
 <ol>
 <li>call f1, ret f3</li>
 <li>call f1, ret f0</li>
 <li>call f0, ret f3 (这个是最外面一层call ret对)</li>
 </ol>
-</blockquote>
-<p>还有一个“奇怪的”点，你可以观察到，最开始的第一个call f0函数后，call的是f2，而不是代码中的f3。实际上这也是尾调用优化的一个影响，实现尾调用的话，不需要保存返回地址到ra寄存器，而我们实现的ftrace是按照是否保存返回地址到ra判断是否是call指令的，因此，要实现真正的ftrace，还需要对jal/jalr指令进行判断，不能仅仅看是否保存地址到ra。</p>
+<p>还有一个“奇怪的”点，你可以观察到，最开始的第一个call f0函数后，call的是f2，而不是代码中的f3。实际上这也是尾调用优化的一个影响，实现尾调用的话，不需要保存返回地址到ra寄存器，而我们实现的ftrace是按照是否保存返回地址到ra判断是否是call指令的，因此，要实现真正的ftrace，还需要对jal/jalr指令进行判断，不能仅仅看是否保存地址到ra。所以目前实现的ftrace仅仅是简单版本。</p>
+<p>通过看反汇编结果，可以发现f0和f1中调用其他两个函数的语句都是<code>jr</code>，即最简单的无条件跳转，并没有保存返回地址，所以从这两个函数出发去调用其他函数之后，会产生没有匹配的ret的情况。而f2和f3中的调用都是<code>jalr</code>指令，会保存返回地址，所以ftrace能够匹配。</p>
 <blockquote>
 <p>关于尾调用优化（TCO）的解释，推荐一个视频：</p>
 <p><a href="https://www.bilibili.com/video/BV1Pb421Y7uP" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Pb421Y7uP</a></p>
@@ -705,26 +892,110 @@
 <p>你发现了什么问题? 尝试对比上述两种情况, 并分析其中的原因.</p>
 </blockquote>
 <p>strip掉可执行文件中的符号表依然可以执行，但是strip掉目标文件中的符号表后再链接就会报错：</p>
-<blockquote>
-<p>/usr/bin/ld: error in test.o(.eh_frame); no .eh_frame_hdr table will be created<br>/usr/bin/ld: /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o: in function <code>_start&#39;:
-(.text+0x24): undefined reference to</code>main’<br>collect2: error: ld returned 1 exit status</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ld: error <span class="keyword">in</span> test.o(.eh_frame); no .eh_frame_hdr table will be created</span><br><span class="line">/usr/bin/ld: /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o: <span class="keyword">in</span> <span class="keyword">function</span> `_start<span class="string">':</span></span><br><span class="line"><span class="string">(.text+0x24): undefined reference to `main'</span></span><br><span class="line">collect2: error: ld returned 1 <span class="built_in">exit</span> status</span><br></pre></td></tr></table></figure>
+<p>这是因为符号表只是用于在链接的时候定位地址。</p>
+<h3 id="2-4-2-AM作为基础设施"><a href="#2-4-2-AM作为基础设施" class="headerlink" title="2.4.2.  AM作为基础设施"></a>2.4.2.  AM作为基础设施</h3><blockquote>
+<p><strong>如何生成native的可执行文件</strong></p>
+<p>Q: 阅读相关Makefile, 尝试理解<code>abstract-machine</code>是如何生成<code>native</code>的可执行文件的。</p>
 </blockquote>
-<p>这是因为符号表就是用于在链接的时候定位地址</p>
-<h3 id="2-4-2-输入输出"><a href="#2-4-2-输入输出" class="headerlink" title="2.4.2. 输入输出"></a>2.4.2. 输入输出</h3><p>设备初始化的流程：</p>
+<p>A: 以cpu-tests下的makefile为例，当我们在cpu-tests文件夹下输入<code>make ARCH=native run</code>命令之后，make程序里会有一个变量<code>ARCH</code>被赋值为<code>native</code>，make程序会为每个子测试代码创建单独的临时Makefile文件：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">Makefile.%: tests/%.c latest</span></span><br><span class="line">	@/bin/echo -e <span class="string">"NAME = <span class="variable">$*</span>\nSRCS = <span class="variable">$&lt;</span>\ninclude $$&#123;AM_HOME&#125;/Makefile"</span> &gt; <span class="variable">$@</span></span><br><span class="line">	@if make -s -f <span class="variable">$@</span> ARCH=<span class="variable">$(ARCH)</span> <span class="variable">$(MAKECMDGOALS)</span>; then \</span><br></pre></td></tr></table></figure>
+<p>然后用子进程去运行这些临时Makefile文件单独编译运行每个test，我们在命令行输入的<code>ARCH=native</code>，就会传给这些子进程，由于include了AM的Makefile，在其中，会用到ARCH这个变量来选择AM的scripts目录下不同平台的编译脚本来编译。</p>
+<blockquote>
+<p><strong>奇怪的错误码</strong></p>
+<p>Q: 为什么错误码是<code>1</code>呢? 你知道<code>make</code>程序是如何得到这个错误码的吗?</p>
+</blockquote>
+<p>A：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ make ARCH=native ALL=string run</span><br><span class="line"><span class="comment"># Building string-run [native]</span></span><br><span class="line">+ CC tests/string.c</span><br><span class="line"><span class="comment"># Building am-archive [native]</span></span><br><span class="line"><span class="comment"># Building klib-archive [native]</span></span><br><span class="line"><span class="comment"># Creating image [native]</span></span><br><span class="line">+ LD -&gt; build/string-native</span><br><span class="line">Exit code = 01h</span><br><span class="line">make[1]: *** [/home/doa/Documents/OS/ics2023/abstract-machine/scripts/native.mk:25: run] Error 1</span><br><span class="line"><span class="built_in">test</span> list [1 item(s)]: string</span><br><span class="line">[        string] ***FAIL***</span><br></pre></td></tr></table></figure>
+<p>check函数中如果check失败的话会调用halt。native情况下，最终会调用linux的系统函数<code>exit(code)</code>，程序中传递的code为1，所以最终make就会检测到这个退出码并打印出来（如上面第9行），同时这里会指出是哪一行make命令执行出错，ctrl+左键可以跳转到那里去看。</p>
+<p>PS：如果是嵌套的make，被调用的make中有出错的recipe指令，make子进程本身就会以错误码2退出（可以在ARCH=riscv32-nemu的情况下查看确认）。</p>
+<blockquote>
+<p><strong>这是如何实现的?</strong></p>
+<p>Q：为什么定义宏<code>__NATIVE_USE_KLIB__</code>之后就可以把<code>native</code>上的这些库函数链接到klib? 这具体是如何发生的? 尝试根据你在课堂上学习的链接相关的知识解释这一现象.</p>
+</blockquote>
+<p>A：<code>klib.h</code>头函数中，可以定义<code>__NATIVE_USE_KLIB__</code>这个宏，然后即使在native的情况下，也会定义klib中实现的函数了，然后在native.mk中会通过<code>-Wl,--whole-archive $(LINKAGE)  -Wl,-no-whole-archive</code>这个参数传递给链接器，强制链接klib中实现的一些库函数，后续就不会再链接linux本身的stdio/stdlib中的函数了。</p>
+<blockquote>
+<p><strong>捕捉死循环(有点难度)</strong></p>
+<p>Q：NEMU除了作为模拟器之外, 还具有简单的调试功能, 可以设置断点, 查看程序状态. 如果让你为NEMU添加如下功能</p>
+<blockquote>
+<p>当用户程序陷入死循环时, 让用户程序暂停下来, 并输出相应的提示信息</p>
+</blockquote>
+<p>你觉得应该如何实现? 如果你感到疑惑, 在互联网上搜索相关信息.</p>
+</blockquote>
+<p>A：</p>
+<p>这个方案有很多，但是没有一个绝对准确判定是否进入死循环的方法。因为很难区分是真的死循环还是一个超大循环。具体可以自行了解~</p>
+<h2 id="2-5-输入输出"><a href="#2-5-输入输出" class="headerlink" title="2.5. 输入输出"></a>2.5. 输入输出</h2><h3 id="2-5-1-设备与CPU"><a href="#2-5-1-设备与CPU" class="headerlink" title="2.5.1. 设备与CPU"></a>2.5.1. 设备与CPU</h3><blockquote>
+<p>在程序看来, 访问设备 = 读出数据 + 写入数据 + 控制状态.</p>
+</blockquote>
+<p>访问设备有两种方式：</p>
+<ol>
+<li>端口I/O</li>
+<li>内存映射I/O</li>
+</ol>
+<p>前者使用专门的I/O指令来实现对设备（外设）的读写，每个设备有专门的端口号，但是这种方式的缺点就是可以访问的设备地址空间是有限的，这是由指令可访问的范围决定的。x86 CPU就支持这种方式（当然，它也支持内存映射）</p>
+<p>后者直接将设备的寄存器映射到某些内存地址，访问这些内存地址就相当于访问设备内部的寄存器。这种方式非常方便。</p>
+<blockquote>
+<p><strong>理解volatile关键字</strong></p>
+<p>也许你从来都没听说过C语言中有<code>volatile</code>这个关键字, 但它从C语言诞生开始就一直存在. <code>volatile</code>关键字的作用十分特别, 它的作用是避免编译器对相应代码进行优化. 你应该动手体会一下<code>volatile</code>的作用, 在GNU/Linux下编写以下代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> _end;  <span class="comment">// _end是什么?</span></span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *p = &amp;_end;</span><br><span class="line">*p = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span>(*p != <span class="number">0xff</span>);</span><br><span class="line">*p = <span class="number">0x33</span>;</span><br><span class="line">*p = <span class="number">0x34</span>;</span><br><span class="line">*p = <span class="number">0x86</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后使用<code>-O2</code>编译代码. 尝试去掉代码中的<code>volatile</code>关键字, 重新使用<code>-O2</code>编译, 并对比去掉<code>volatile</code>前后反汇编结果的不同.</p>
+<p>Q：你或许会感到疑惑, 代码优化不是一件好事情吗? 为什么会有<code>volatile</code>这种奇葩的存在? 思考一下, 如果代码中<code>p</code>指向的地址最终被映射到一个设备寄存器, 去掉<code>volatile</code>可能会带来什么问题?</p>
+</blockquote>
+<p><code>volatile</code>一般是用在访问CPU外部设备寄存器的地方，它会告诉编译器：</p>
+<p>“这个变量可能会以你无法感知的方式被改变。每次读写都必须<strong>严格按代码顺序、逐条执行</strong>，不能省略、不能合并、不能重排。”</p>
+<p>没有 <code>volatile</code> 时，编译器会基于“内存只由当前代码修改”的假设进行优化。对于上述代码来说，直接被优化成一个死循环，因为<code>*p = 0;</code>，编译器以为没有其他地方会修改这个值，就不会去重新读取这个地址的值，所以while永远不会跳出。</p>
+<blockquote>
+<p><strong>通过内存进行数据交互的输入输出</strong></p>
+<p>我们知道<code>S = &lt;R, M&gt;</code>, 上文介绍的端口I/O和内存映射I/O都是通过寄存器<code>R</code>来进行数据交互的. 很自然地, 我们可以考虑, 有没有通过内存<code>M</code>来进行数据交互的输入输出方式呢?</p>
+<p>其实是有的, 这种方式叫<a href="http://en.wikipedia.org/wiki/Direct_memory_access" target="_blank" rel="noopener">DMA</a>. 为了提高性能, 一些复杂的设备一般都会带有DMA的功能. 不过在NEMU中的设备都比较简单, 关于DMA的细节我们就不展开介绍了.</p>
+</blockquote>
+<p><strong>DMA(Direct Memory Access) 的本质</strong>：数据传输<strong>不经过</strong> <code>R</code>，直接在 <code>M</code> 和设备之间建立通道。</p>
+<h3 id="2-5-2-NEMU中的输入输出"><a href="#2-5-2-NEMU中的输入输出" class="headerlink" title="2.5.2. NEMU中的输入输出"></a>2.5.2. NEMU中的输入输出</h3><p>RISCV32格式的NEMU中使用的是MMIO来实现设备的访问，在<code>src/device/device.c</code>中有相关初始化设备的<code>init_device()</code>函数。</p>
+<p>NEMU项目中的设备地址定义在<code>autoconf.h</code>中，可以通过<code>make menuconfig</code>来修改定义的地址。</p>
+<blockquote>
+<p><code>cpu_exec()</code>在执行每条指令之后就会调用<code>device_update()</code>函数, 这个函数首先会检查距离上次设备更新是否已经超过一定时间, 若是, 则会尝试刷新屏幕, 并进一步检查是否有按键按下/释放, 以及是否点击了窗口的<code>X</code>按钮; 否则则直接返回, 避免检查过于频繁, 因为上述事件发生的频率是很低的.</p>
+<p><strong>运行hello world</strong></p>
+</blockquote>
+<p>设备初始化的流程：</p>
 <p>NEMU(init_monitor)—&gt;NEMU device(init_device)—&gt; NEMU device(各种device init)—&gt;NEMU device IO(add_mmio_map)</p>
 <blockquote>
-<p>如果是make ARCH=riscv32-nemu，那么暂时还没有用到IOE层，AM(ioe_init)—&gt;AM层外设init</p>
+<p>这个hello的例子中，暂时还没有用到IOE层：AM(ioe_init)—&gt;AM层外设init</p>
 </blockquote>
 <p>设备访问的流程：</p>
 <p>对于RISC-V来说，就是直接写地址，然后在paddr.c中会进行地址的判断，判断是否是往MMIO的地址写入，如果是，则调用</p>
 <p>vaddr_write—&gt;paddr_write—&gt;mmio_write—&gt;map_write—&gt;host_write(往mmio map的space中写入数据)—&gt;调用设备的callback函数，以serial为例，那就是调用serial_io_handler函数—&gt;serial_putc</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">hello.c</span><br><span class="line">  <span class="built_in">printf</span></span><br><span class="line">    ↓</span><br><span class="line">  putch</span><br><span class="line">    ↓</span><br><span class="line">  outb(SERIAL_PORT)</span><br><span class="line">    ↓   （store 指令）</span><br><span class="line">NEMU CPU 模拟</span><br><span class="line">    ↓</span><br><span class="line">MMIO 命中 serial</span><br><span class="line">    ↓</span><br><span class="line">serial_io_handler</span><br><span class="line">    ↓</span><br><span class="line">serial_putc</span><br><span class="line">    ↓</span><br><span class="line">putc(<span class="built_in">stderr</span>)   ← Linux</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">hello.c</span><br><span class="line">  <span class="built_in">printf</span>（测试例子中没有调用这个，直接调用putch）</span><br><span class="line">    ↓</span><br><span class="line">  putch</span><br><span class="line">    ↓</span><br><span class="line">  outb(SERIAL_PORT)</span><br><span class="line">    ↓   （store 指令）</span><br><span class="line">NEMU CPU 模拟</span><br><span class="line">    ↓</span><br><span class="line">MMIO 命中 serial</span><br><span class="line">    ↓</span><br><span class="line">serial_io_handler</span><br><span class="line">    ↓</span><br><span class="line">serial_putc</span><br><span class="line">    ↓</span><br><span class="line">putc(<span class="built_in">stderr</span>)   ← Linux</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>理解mainargs</strong></p>
+<p>Q：请你通过RTFSC理解这个参数是如何从<code>make</code>命令中传递到<code>hello</code>程序中的, <code>$ISA-nemu</code>和<code>native</code>采用了不同的传递方法, 都值得你去了解一下.</p>
+</blockquote>
+<p>A：</p>
+<p>如果make的时候用<code>$ISA-nemu</code>架构编译，他的传递方式如下：</p>
+<p>在<code>nemu.mk</code>这个文件中，我们在命令行中输入的<code>mainargs</code>参数被定义为一个宏<code>MAINARGS</code>：</p>
+<p><code>CFLAGS += -DMAINARGS=\&quot;$(mainargs)\&quot;</code></p>
+<p>然后在<code>trm.c</code>中被引用到，<code>_trm_init()</code>函数来调用<code>main()</code>函数，传递<code>mainargs</code>参数。</p>
+<p>那么<code>_trm_init()</code>函数是怎么被用到的呢？</p>
+<p>如果是<code>native</code>架构下编译运行，那么它的传递方式如下：</p>
+<p>在<code>platform.c</code>的代码中的<code>init_platform</code>函数，会通过环境变量来获取<code>mainargs</code>参数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *args = getenv(<span class="string">"mainargs"</span>);</span><br><span class="line">halt(main(args ? args : <span class="string">""</span>)); <span class="comment">// call main here!</span></span><br></pre></td></tr></table></figure>
+<p>为什么能通过环境变量获取到mainargs？因为我们运行的时候是通过make的命令行参数指定的mainargs：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make ARCH=native run mainargs=xxx</span><br></pre></td></tr></table></figure>
+<p>make中的recipe指令会自动继承运行make指定时的命令行变量到环境变量中（ARCH和mainargs都算命令行变量）。</p>
+<blockquote>
+<p><strong>RTC - 实时时钟</strong></p>
+<p>RTC泛指流逝速率与真实时间一致的时钟, 用户可根据RTC进行一段时间的测量. 按照这个定义, 上述两个AM抽象寄存器都属于RTC, 不过它们的侧重点有所不同: <code>AM_TIMER_RTC</code>强调读出的时间与现实时间完全一致, <code>AM_TIMER_UPTIME</code>则侧重系统启动后经过的时间, 即从0开始计数.</p>
+<p>虽然NEMU中的设备寄存器的名称也叫RTC, 但为了支持<code>AM_TIMER_UPTIME</code>的功能, 它不必实现成<code>AM_TIMER_RTC</code>.</p>
+<p><strong>实现IOE</strong></p>
+<p>在<code>abstract-machine/am/src/platform/nemu/ioe/timer.c</code>中实现<code>AM_TIMER_UPTIME</code>的功能. 在<code>abstract-machine/am/src/platform/nemu/include/nemu.h</code>和 <code>abstract-machine/am/src/$ISA/$ISA.h</code>中有一些输入输出相关的代码供你使用.</p>
+<p>实现后, 在<code>$ISA-nemu</code>中运行<code>am-kernel/tests/am-tests</code>中的<code>real-time clock test</code>测试. 如果你的实现正确, 你将会看到程序每隔1秒往终端输出一行信息. 由于我们没有实现<code>AM_TIMER_RTC</code>, 测试总是输出1900年0月0日0时0分0秒, 这属于正常行为, 可以忽略.</p>
+</blockquote>
 <p><strong>跑分的bug</strong></p>
 <p>实现完RTC的IOE后，运行PA中的3个benchmark，</p>
 <p>出现了如下的bug：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Dhrystone Benchmark, Version C, Version 2.2</span><br><span class="line">Trying 500000 runs through Dhrystone.</span><br><span class="line">Finished <span class="keyword">in</span> 0 ms</span><br><span class="line">==================================================</span><br><span class="line">Dhrystone PASS         -1 Marks</span><br><span class="line">                   vs. 100000 Marks (i7-7700K @ 4.20GHz)</span><br><span class="line">[src/cpu/cpu-exec.c:125 cpu_exec] nemu: HIT GOOD TRAP at pc = 0x80000d2c</span><br><span class="line">[src/cpu/cpu-exec.c:92 statistic] host time spent = 8,835,660 us</span><br><span class="line">[src/cpu/cpu-exec.c:93 statistic] total guest instructions = 219,508,565</span><br><span class="line">[src/cpu/cpu-exec.c:94 statistic] simulation frequency = 24,843,482 inst/s</span><br></pre></td></tr></table></figure>
-<p>跑分为-1！</p>
-<p>原因是要先读取高位rtc才会刷新！</p>
+<p>跑分为<code>-1</code>！</p>
+<p>这是因为我实现AM的RTC有问题，因为要先读取RTC的高32位数据才会刷新！（看NEMU中<code>timer.c</code>的代码可以知道）。</p>
+<h3 id="2-5-3-将输入输出抽象成IOE"><a href="#2-5-3-将输入输出抽象成IOE" class="headerlink" title="2.5.3. 将输入输出抽象成IOE"></a>2.5.3. 将输入输出抽象成IOE</h3><h4 id="设备访问的踪迹-dtrace"><a href="#设备访问的踪迹-dtrace" class="headerlink" title="设备访问的踪迹 - dtrace"></a>设备访问的踪迹 - dtrace</h4><p>因为在NEMU中MMIO是通过在<code>map_read</code>和<code>map_write</code>这两个函数来实现的，所以我们只需要实现trace，然后在这两个函数中调用就行。你可能会遇到跟我一样的问题，如下。</p>
 <p>在utils.h中添加dtrace的函数声明如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ----------- dtrace ------------</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">IOMap</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trace_device_read</span><span class="params">(<span class="keyword">paddr_t</span> addr, <span class="keyword">int</span> len, struct IOMap *<span class="built_in">map</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trace_device_write</span><span class="params">(<span class="keyword">paddr_t</span> addr, <span class="keyword">int</span> len, <span class="keyword">word_t</span> data, struct IOMap *<span class="built_in">map</span>)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>其中，前向声明struct IOMap是必须的，因为这个结构体在map.h中，但是如果直接include “device/map.h”的话，会造成循环引用，从而导致以下错误：</p>
@@ -732,8 +1003,25 @@
 <p>同时，需要将map中的结构体定义改为：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">IOMap</span>&#123;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line">  <span class="comment">// we treat ioaddr_t as paddr_t here</span></span><br><span class="line">  <span class="keyword">paddr_t</span> low;</span><br><span class="line">  <span class="keyword">paddr_t</span> high;</span><br><span class="line">  <span class="keyword">void</span> *space;</span><br><span class="line">  <span class="keyword">io_callback_t</span> callback;</span><br><span class="line">&#125; IOMap;</span><br></pre></td></tr></table></figure>
 <p>即，在struct后面也加一个IOMap名称。这样才能使用前向声明，否则也会报错。</p>
-<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109.png" alt="image-20260426210557109"></p>
-<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105.png" alt="image-20260426210444105"></p>
+<h4 id="VGA"><a href="#VGA" class="headerlink" title="VGA"></a>VGA</h4><blockquote>
+<p><strong>神奇的调色板</strong></p>
+<p>现代的显示器一般都支持24位的颜色(R, G, B各占8个bit, 共有<code>2^8*2^8*2^8</code>约1600万种颜色), 为了让屏幕显示不同的颜色成为可能, 在8位颜色深度时会使用调色板的概念. 调色板是一个颜色信息的数组, 每一个元素占4个字节, 分别代表R(red), G(green), B(blue), A(alpha)的值. 引入了调色板的概念之后, 一个像素存储的就不再是颜色的信息, 而是一个调色板的索引: 具体来说, 要得到一个像素的颜色信息, 就要把它的值当作下标, 在调色板这个数组中做下标运算, 取出相应的颜色信息. 因此, 只要使用不同的调色板, 就可以在不同的时刻使用不同的256种颜色了.</p>
+<p>在一些90年代的游戏中(比如仙剑奇侠传), 很多渐出渐入效果都是通过调色板实现的, 聪明的你知道其中的玄机吗?</p>
+</blockquote>
+<p>这里的调色板也是放在VGA设备侧的设备寄存器，相当于一个数组，这个与“显存”是相互独立的，当时的“显存”存放的应该是调色板的索引值，而不是直接的RGB值，相当于由调色板做一层“转译”，这个转译的过程是VGA设备这一侧实现的，而不是CPU，所以对于渐入渐出的情况能达到加速的效果，因为CPU只用修改调色板的值。</p>
+<h3 id="2-5-4-冯诺依曼计算机系统"><a href="#2-5-4-冯诺依曼计算机系统" class="headerlink" title="2.5.4. 冯诺依曼计算机系统"></a>2.5.4. 冯诺依曼计算机系统</h3><p>在NEMU上运行NEMU编译的时候，你可能遇到以下问题：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/home/doa/Documents/OS/ics2023/nemu/src/engine/interpreter/hostcall.c:36:10: error: format <span class="string">'%x'</span> expects argument of <span class="built_in">type</span> <span class="string">'unsigned int'</span>, but argument 11 has <span class="built_in">type</span> <span class="string">'uint32_t'</span> &#123;aka <span class="string">'long unsigned int'</span>&#125; [-Werror=format=]</span><br><span class="line">   36 |   <span class="built_in">printf</span>(<span class="string">"invalid opcode(PC = "</span> FMT_WORD <span class="string">"):\n"</span></span><br><span class="line">      |          ^~~~~~~~~~~~~~~~~~~~~~</span><br><span class="line">......</span><br><span class="line">   39 |       thispc, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], temp[0], temp[1]);</span><br><span class="line">      |                                                               ~~~~~~~</span><br><span class="line">      |                                                                   |</span><br><span class="line">      |                                                                   uint32_t &#123;aka long unsigned int&#125;</span><br><span class="line">/home/doa/Documents/OS/ics2023/nemu/src/engine/interpreter/hostcall.c:36:10: error: format <span class="string">'%x'</span> expects argument of <span class="built_in">type</span> <span class="string">'unsigned int'</span>, but argument 12 has <span class="built_in">type</span> <span class="string">'uint32_t'</span> &#123;aka <span class="string">'long unsigned int'</span>&#125; [-Werror=format=]</span><br><span class="line">   36 |   <span class="built_in">printf</span>(<span class="string">"invalid opcode(PC = "</span> FMT_WORD <span class="string">"):\n"</span></span><br><span class="line">      |          ^~~~~~~~~~~~~~~~~~~~~~</span><br><span class="line">......</span><br><span class="line">   39 |       thispc, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], temp[0], temp[1]);</span><br><span class="line">      |                                                                        ~~~~~~~</span><br><span class="line">      |                                                                            |</span><br><span class="line">      |                                                                            uint32_t &#123;aka long unsigned int&#125;</span><br><span class="line">cc1: all warnings being treated as errors</span><br></pre></td></tr></table></figure>
+<p>这个问题一开始看得我很懵逼，因为temp是<code>uint32_t</code>类型的，为什么会报警告呢？即使展开成<code>long unsigned int</code>，也是32位呀，为什么还是报警告呢？解决起来很简单，就是把前面对应的<code>%x</code>改为<code>%lx</code>，但是我很奇怪，为很么单层NEMU得时候编译没有问题，一嵌套就报警告了呢？</p>
+<blockquote>
+<p>编译过程中，不止这一个地方的格式有问题，还有很多类似的警告，但解决方法都是一样的。不过要注意关闭NEMU的trace噢，不然里面有一些NEMU不支持的东西。</p>
+</blockquote>
+<p>经过一路追查，发现是由于不同编译器对<code>uint32_t</code>这些类型的最终实现不一定一样：</p>
+<p>编译运行在NEMU上的NEMU时使用的是riscv32的交叉编译器，而运行在我们x86上的NEMU使用的是x86版本的编译器，对于<code>uint32_t</code>这种类型来说，上面这个报错说明riscv32编译器定义的是<code>long unsigned int</code>，所以需要加上长度修饰符<code>l</code>。对于这些类型的打印格式，最好使用<code>inttype.h</code>头文件中的可移植宏定义（<code>PRIx32</code>，<code>PRIu32</code>这种），它会根据不同平台来自动添加长度修饰符。下图是我找到的riscv32平台的<code>inttypes.h</code>中的定义以及最终展开的<code>__INT32</code>长度修饰符：</p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210557109-1781426867627.png" alt="image-20260426210557109"></p>
+<p><img src="/2024/08/22/NJU-ICS2023-PA%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/image-20260426210444105-1781426867627.png" alt="image-20260426210444105"></p>
+<blockquote>
+<p>所以你实现的printf也要支持这些长度描述符</p>
+</blockquote>
 <h1 id="参考blog"><a href="#参考blog" class="headerlink" title="参考blog"></a>参考blog</h1><p><a href="https://www.cnblogs.com/nosae/p/17066439.html#实现iringbuf" target="_blank" rel="noopener">nju pa2 - NOSAE - 博客园</a></p>
 <p><a href="https://www.yizishun.com/?p=158" target="_blank" rel="noopener">NJU PA2日记，我的实现经历和感悟（已完结） – YZS</a></p>
 
@@ -830,7 +1118,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-PA1"><span class="nav-text">1. PA1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-RTFSC"><span class="nav-text">1.3 RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-准备第一个客户程序"><span class="nav-text">1.3.1 准备第一个客户程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-运行第一个客户程序"><span class="nav-text">1.3.2 运行第一个客户程序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#究竟要执行多久"><span class="nav-text">究竟要执行多久?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#潜在的威胁-建议二周目思考"><span class="nav-text">潜在的威胁 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#谁来指示程序的结束"><span class="nav-text">谁来指示程序的结束?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#有始有终-建议二周目思考"><span class="nav-text">有始有终 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优美地退出"><span class="nav-text">优美地退出</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-基础设施"><span class="nav-text">1.4 基础设施</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-简易调试器"><span class="nav-text">1.4.1. 简易调试器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-表达式求值"><span class="nav-text">1.4.2. 表达式求值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-PA2"><span class="nav-text">2. PA2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-基础设施2"><span class="nav-text">2.4. 基础设施2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-函数调用的踪迹"><span class="nav-text">2.4.1. 函数调用的踪迹</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#冗余的符号表"><span class="nav-text">冗余的符号表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-输入输出"><span class="nav-text">2.4.2. 输入输出</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考blog"><span class="nav-text">参考blog</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-PA1"><span class="nav-text">1. PA1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-RTFSC"><span class="nav-text">1.3 RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-准备第一个客户程序"><span class="nav-text">1.3.1 准备第一个客户程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-运行第一个客户程序"><span class="nav-text">1.3.2 运行第一个客户程序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#究竟要执行多久"><span class="nav-text">究竟要执行多久?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#潜在的威胁-建议二周目思考"><span class="nav-text">潜在的威胁 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#谁来指示程序的结束"><span class="nav-text">谁来指示程序的结束?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#有始有终-建议二周目思考"><span class="nav-text">有始有终 (建议二周目思考)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优美地退出"><span class="nav-text">优美地退出</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-基础设施"><span class="nav-text">1.4 基础设施</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-简易调试器"><span class="nav-text">1.4.1. 简易调试器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-表达式求值"><span class="nav-text">1.4.2. 表达式求值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-PA2"><span class="nav-text">2. PA2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-不停计算的机器"><span class="nav-text">2.1. 不停计算的机器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-RTFSC"><span class="nav-text">2.2. RTFSC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RTFSC-2"><span class="nav-text">RTFSC(2)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-程序-运行时环境与AM"><span class="nav-text">2.3. 程序, 运行时环境与AM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-运行时环境"><span class="nav-text">2.3.1. 运行时环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-将运行时环境封装成库函数"><span class="nav-text">2.3.2. 将运行时环境封装成库函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-AM-裸机-bare-metal-运行时环境"><span class="nav-text">2.3.3.  AM - 裸机(bare-metal)运行时环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-4-RTFSC-3"><span class="nav-text">2.3.4. RTFSC(3)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-5-实现常用的库函数"><span class="nav-text">2.3.5. 实现常用的库函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-6-重新认识计算机-计算机是个抽象层"><span class="nav-text">2.3.6. 重新认识计算机: 计算机是个抽象层</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-基础设施2"><span class="nav-text">2.4. 基础设施2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-bug诊断的利器-踪迹"><span class="nav-text">2.4.1. bug诊断的利器 - 踪迹</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-1-2-指令环形缓冲区-iringbuf"><span class="nav-text">2.4.1.2. 指令环形缓冲区 - iringbuf</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-1-4-函数调用的踪迹"><span class="nav-text">2.4.1.4. 函数调用的踪迹</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#寻找”Hello-World-”"><span class="nav-text">寻找”Hello World!”</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#冗余的符号表"><span class="nav-text">冗余的符号表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-AM作为基础设施"><span class="nav-text">2.4.2.  AM作为基础设施</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-输入输出"><span class="nav-text">2.5. 输入输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-设备与CPU"><span class="nav-text">2.5.1. 设备与CPU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-NEMU中的输入输出"><span class="nav-text">2.5.2. NEMU中的输入输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-3-将输入输出抽象成IOE"><span class="nav-text">2.5.3. 将输入输出抽象成IOE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设备访问的踪迹-dtrace"><span class="nav-text">设备访问的踪迹 - dtrace</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VGA"><span class="nav-text">VGA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-4-冯诺依曼计算机系统"><span class="nav-text">2.5.4. 冯诺依曼计算机系统</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考blog"><span class="nav-text">参考blog</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
@@ -849,7 +1137,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -875,7 +1163,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">80</span>
+        <span class="site-state-item-count">81</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
